@@ -31,62 +31,90 @@ class _MyAppState extends State<MyApp> {
     futureWeather = fetchWeather();
   }
 
-  Column _buildWeatherInfoColumn(
+  // String tempLabel pretty redundant as we get the data from our builder
+  // TODO: Remove the tempLabel
+  Widget _buildWeatherInfoColumn(
       Color color, IconData icon, String timeLabel, String tempLabel) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        BoxedIcon(
-          WeatherIcons.day_sunny
-          // Package https://pub.dev/packages/weather_icons
-          // Dynamic weather
-          // WeatherIcons.fromString(
-          //     weatherCode,
-          //     // Fallback is optional, throws if not found, and not supplied.
-          //     fallback: WeatherIcons.na
-          // ),
-        ),
-        Container(
-          margin: const EdgeInsets.only(top: 8),
-          child: Text(
-            timeLabel,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-              color: color,
-            ),
-          ),
-        ),
-        Container(
-          margin: const EdgeInsets.only(top: 8),
-          child: Text(
-            tempLabel,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-              color: color,
-            ),
-          ),
-        ),
-      ],
-    );
+
+    return FutureBuilder<Weather>(
+        future: futureWeather,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            String returnData = snapshot.data.metadata.stations[0].name +
+                " Temperature : " +
+                snapshot.data.items[0].readings[0].value.toString() +
+                "C";
+            String temperatureString = snapshot.data.items[0].readings[0].value.toString() +
+                "C";
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                BoxedIcon(WeatherIcons.day_sunny
+                    // Package https://pub.dev/packages/weather_icons
+                    // Dynamic weather
+                    // WeatherIcons.fromString(
+                    //     weatherCode,
+                    //     // Fallback is optional, throws if not found, and not supplied.
+                    //     fallback: WeatherIcons.na
+                    // ),
+                    ),
+                Container(
+                  margin: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    timeLabel,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: color,
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    temperatureString,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: color,
+                    ),
+                  ),
+                ),
+              ],
+            );
+            //return Text(returnData);
+          } else if (snapshot.hasError) {
+            return Text("${snapshot.error}");
+          }
+
+          // By default, show a loading spinner.
+          return CircularProgressIndicator();
+        });
+  }
+
+  String toHourString(int hour) {
+    if(hour < 10) {
+      return "0" + hour.toString() + ":00";
+    }
+    return hour.toString() + ":00";
   }
 
   @override
   Widget build(BuildContext context) {
     // Widget Weather Section
     Color color = Theme.of(context).primaryColor;
+    int currentHour = DateTime.now().hour;
 
     Widget weatherSection = Container(
         child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildWeatherInfoColumn(color, Icons.star, '-2hr', '26C'),
-        _buildWeatherInfoColumn(color, Icons.star, '-1hr', '28C'),
-        _buildWeatherInfoColumn(color, Icons.star, 'now', '29C'),
-        _buildWeatherInfoColumn(color, Icons.star, '1hr', '26C'),
-        _buildWeatherInfoColumn(color, Icons.star, '2hr', '27C'),
+        _buildWeatherInfoColumn(color, Icons.star, toHourString(currentHour - 2), '26C'),
+        _buildWeatherInfoColumn(color, Icons.star, toHourString(currentHour - 1), '28C'),
+        _buildWeatherInfoColumn(color, Icons.star, "now", '29C'),
+        _buildWeatherInfoColumn(color, Icons.star, toHourString(currentHour + 1), '26C'),
+        _buildWeatherInfoColumn(color, Icons.star, toHourString(currentHour + 2), '27C'),
       ],
     ));
 
@@ -108,10 +136,9 @@ class _MyAppState extends State<MyApp> {
           itemCount: entries.length,
           itemBuilder: (BuildContext context, int index) {
             return Container(
-              height: 80,
-              color: Colors.amber[colorCodes[index]],
-              child: Row(
-                children: [
+                height: 80,
+                color: Colors.amber[colorCodes[index]],
+                child: Row(children: [
                   const SizedBox(width: 15),
                   CircleAvatar(
                     backgroundColor: Colors.white,
@@ -120,24 +147,20 @@ class _MyAppState extends State<MyApp> {
                   ),
                   const SizedBox(width: 30),
                   Expanded(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                         Text('Dog ${entries[index]}'),
                         Text('Birthday: '),
                         Text('Fav Food: ')
-                      ]
-                    )
-                  )
-                ]
-              )
-              //child: Center(child: Text('Dog ${entries[index]}')),
-            );
+                      ]))
+                ])
+                //child: Center(child: Text('Dog ${entries[index]}')),
+                );
           },
           separatorBuilder: (BuildContext context, int index) =>
               const Divider(),
-        )
-    );
+        ));
 
     // Widget useful links
     Widget usefulLinkSection = Container(
