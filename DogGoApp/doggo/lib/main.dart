@@ -2,217 +2,18 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'weather.dart';
+import 'FirstRoute.dart';
+import 'package:weather_icons/weather_icons.dart';
 
-Future<Weather> fetchWeather() async{
-  final response=
-      await http.get('https://api.data.gov.sg/v1/environment/air-temperature?date=2020-09-16');
+void main() {
+  runApp(MyApp());
 
-  if (response.statusCode ==200){
-    return Weather.fromJson(json.decode(response.body));
-  } else{
-    throw Exception('failed to load data');
-  }
+  // runApp(MaterialApp(
+  //   title: 'Navigation Basics',
+  //   home: Foo(),
+  // ));
 }
-
-
-Weather weatherFromJson(String str) => Weather.fromJson(json.decode(str));
-
-String weatherToJson(Weather data) => json.encode(data.toJson());
-
-class Weather {
-  Weather({
-    this.metadata,
-    this.items,
-    this.apiInfo,
-  });
-
-  final Metadata metadata;
-  final List<Item> items;
-  final ApiInfo apiInfo;
-
-  factory Weather.fromJson(Map<String, dynamic> json) => Weather(
-    metadata: Metadata.fromJson(json["metadata"]),
-    items: List<Item>.from(json["items"].map((x) => Item.fromJson(x))),
-    apiInfo: ApiInfo.fromJson(json["api_info"]),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "metadata": metadata.toJson(),
-    "items": List<dynamic>.from(items.map((x) => x.toJson())),
-    "api_info": apiInfo.toJson(),
-  };
-}
-
-class ApiInfo {
-  ApiInfo({
-    this.status,
-  });
-
-  final String status;
-
-  factory ApiInfo.fromJson(Map<String, dynamic> json) => ApiInfo(
-    status: json["status"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "status": status,
-  };
-}
-
-class Item {
-  Item({
-    this.timestamp,
-    this.readings,
-  });
-
-  final DateTime timestamp;
-  final List<Reading> readings;
-
-  factory Item.fromJson(Map<String, dynamic> json) => Item(
-    timestamp: DateTime.parse(json["timestamp"]),
-    readings: List<Reading>.from(json["readings"].map((x) => Reading.fromJson(x))),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "timestamp": timestamp.toIso8601String(),
-    "readings": List<dynamic>.from(readings.map((x) => x.toJson())),
-  };
-}
-
-class Reading {
-  Reading({
-    this.stationId,
-    this.value,
-  });
-
-  final DeviceId stationId;
-  final double value;
-
-  factory Reading.fromJson(Map<String, dynamic> json) => Reading(
-    stationId: deviceIdValues.map[json["station_id"]],
-    value: json["value"].toDouble(),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "station_id": deviceIdValues.reverse[stationId],
-    "value": value,
-  };
-}
-
-enum DeviceId { S109, S117, S50, S107, S43, S108, S44, S121, S106, S111, S122, S60, S115, S24, S116, S104, S100 }
-
-final deviceIdValues = EnumValues({
-  "S100": DeviceId.S100,
-  "S104": DeviceId.S104,
-  "S106": DeviceId.S106,
-  "S107": DeviceId.S107,
-  "S108": DeviceId.S108,
-  "S109": DeviceId.S109,
-  "S111": DeviceId.S111,
-  "S115": DeviceId.S115,
-  "S116": DeviceId.S116,
-  "S117": DeviceId.S117,
-  "S121": DeviceId.S121,
-  "S122": DeviceId.S122,
-  "S24": DeviceId.S24,
-  "S43": DeviceId.S43,
-  "S44": DeviceId.S44,
-  "S50": DeviceId.S50,
-  "S60": DeviceId.S60
-});
-
-class Metadata {
-  Metadata({
-    this.stations,
-    this.readingType,
-    this.readingUnit,
-  });
-
-  final List<Station> stations;
-  final String readingType;
-  final String readingUnit;
-
-  factory Metadata.fromJson(Map<String, dynamic> json) => Metadata(
-    stations: List<Station>.from(json["stations"].map((x) => Station.fromJson(x))),
-    readingType: json["reading_type"],
-    readingUnit: json["reading_unit"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "stations": List<dynamic>.from(stations.map((x) => x.toJson())),
-    "reading_type": readingType,
-    "reading_unit": readingUnit,
-  };
-}
-
-class Station {
-  Station({
-    this.id,
-    this.deviceId,
-    this.name,
-    this.location,
-  });
-
-  final DeviceId id;
-  final DeviceId deviceId;
-  final String name;
-  final Location location;
-
-  factory Station.fromJson(Map<String, dynamic> json) => Station(
-    id: deviceIdValues.map[json["id"]],
-    deviceId: deviceIdValues.map[json["device_id"]],
-    name: json["name"],
-    location: Location.fromJson(json["location"]),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "id": deviceIdValues.reverse[id],
-    "device_id": deviceIdValues.reverse[deviceId],
-    "name": name,
-    "location": location.toJson(),
-  };
-
-  String getName(){
-    return name;
-  }
-}
-
-class Location {
-  Location({
-    this.latitude,
-    this.longitude,
-  });
-
-  final double latitude;
-  final double longitude;
-
-  factory Location.fromJson(Map<String, dynamic> json) => Location(
-    latitude: json["latitude"].toDouble(),
-    longitude: json["longitude"].toDouble(),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "latitude": latitude,
-    "longitude": longitude,
-  };
-}
-
-class EnumValues<T> {
-  Map<String, T> map;
-  Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    if (reverseMap == null) {
-      reverseMap = map.map((k, v) => new MapEntry(v, k));
-    }
-    return reverseMap;
-  }
-}
-
-void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
   MyApp({Key key}) : super(key: key);
@@ -230,8 +31,143 @@ class _MyAppState extends State<MyApp> {
     futureWeather = fetchWeather();
   }
 
+  // String tempLabel pretty redundant as we get the data from our builder
+  // TODO: Remove the tempLabel
+  Widget _buildWeatherInfoColumn(
+      Color color, IconData icon, String timeLabel, String tempLabel) {
+
+    return FutureBuilder<Weather>(
+        future: futureWeather,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            String returnData = snapshot.data.metadata.stations[0].name +
+                " Temperature : " +
+                snapshot.data.items[0].readings[0].value.toString() +
+                "C";
+            String temperatureString = snapshot.data.items[0].readings[0].value.toString() +
+                "C";
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                BoxedIcon(WeatherIcons.day_sunny
+                    // Package https://pub.dev/packages/weather_icons
+                    // Dynamic weather
+                    // WeatherIcons.fromString(
+                    //     weatherCode,
+                    //     // Fallback is optional, throws if not found, and not supplied.
+                    //     fallback: WeatherIcons.na
+                    // ),
+                    ),
+                Container(
+                  margin: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    timeLabel,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: color,
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    temperatureString,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: color,
+                    ),
+                  ),
+                ),
+              ],
+            );
+            //return Text(returnData);
+          } else if (snapshot.hasError) {
+            return Text("${snapshot.error}");
+          }
+
+          // By default, show a loading spinner.
+          return CircularProgressIndicator();
+        });
+  }
+
+  String toHourString(int hour) {
+    if(hour < 10) {
+      return "0" + hour.toString() + ":00";
+    }
+    return hour.toString() + ":00";
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Widget Weather Section
+    Color color = Theme.of(context).primaryColor;
+    int currentHour = DateTime.now().hour;
+
+    Widget weatherSection = Container(
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildWeatherInfoColumn(color, Icons.star, toHourString(currentHour - 2), '26C'),
+        _buildWeatherInfoColumn(color, Icons.star, toHourString(currentHour - 1), '28C'),
+        _buildWeatherInfoColumn(color, Icons.star, "now", '29C'),
+        _buildWeatherInfoColumn(color, Icons.star, toHourString(currentHour + 1), '26C'),
+        _buildWeatherInfoColumn(color, Icons.star, toHourString(currentHour + 2), '27C'),
+      ],
+    ));
+
+    // Widget Should I walk my dog button
+    Widget walkDogSection = Container(
+        child: RaisedButton(
+      onPressed: () {},
+      child: Text('Should I walk my dog?', style: TextStyle(fontSize: 20)),
+    ));
+
+    // Widget Dog Profiles
+    final List<String> entries = <String>['A', 'B', 'C'];
+    final List<int> colorCodes = <int>[600, 500, 100];
+
+    Widget dogProfileSection = Container(
+        height: 250,
+        child: ListView.separated(
+          padding: const EdgeInsets.all(8),
+          itemCount: entries.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+                height: 80,
+                color: Colors.amber[colorCodes[index]],
+                child: Row(children: [
+                  const SizedBox(width: 15),
+                  CircleAvatar(
+                    backgroundColor: Colors.white,
+                    backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
+                    //child: Text('AH'),
+                  ),
+                  const SizedBox(width: 30),
+                  Expanded(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                        Text('Dog ${entries[index]}'),
+                        Text('Birthday: '),
+                        Text('Fav Food: ')
+                      ]))
+                ])
+                //child: Center(child: Text('Dog ${entries[index]}')),
+                );
+          },
+          separatorBuilder: (BuildContext context, int index) =>
+              const Divider(),
+        ));
+
+    // Widget useful links
+    Widget usefulLinkSection = Container(
+        child: Column(
+      children: [Text('Useful links')],
+    ));
+
     return MaterialApp(
       title: 'Fetch weather test',
       theme: ThemeData(
@@ -239,24 +175,87 @@ class _MyAppState extends State<MyApp> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Weather test [0]'),
+          title: Text('My First DogGo'),
         ),
-        body: Center(
-          child: FutureBuilder<Weather>(
-            future: futureWeather,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                String returnData = snapshot.data.metadata.stations[0].name + " Temperature : " + snapshot.data.items[0].readings[0].value.toString() +"C";
-
-                return Text(returnData);
-              } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
-              }
-
-              // By default, show a loading spinner.
-              return CircularProgressIndicator();
-            },
+        drawer: Drawer(
+          // Add a ListView to the drawer. This ensures the user can scroll
+          // through the options in the drawer if there isn't enough vertical
+          // space to fit everything.
+          child: ListView(
+            // Important: Remove any padding from the ListView.
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                child: Text('Settings'),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+              ),
+              ListTile(
+                title: Text('Notification Settings'),
+                onTap: () {
+                  // Update the state of the app.
+                  // ...
+                },
+              ),
+              ListTile(
+                title: Text('Dog Profile'),
+                onTap: () {
+                  // Update the state of the app.
+                  // ...
+                },
+              ),
+              ListTile(
+                title: Text('Feeding Times'),
+                onTap: () {
+                  // Update the state of the app.
+                  // ...
+                },
+              ),
+              ListTile(
+                title: Text('Vet Visits'),
+                onTap: () {
+                  // Update the state of the app.
+                  // ...
+                },
+              ),
+              ListTile(
+                title: Text('Hotline and Links'),
+                onTap: () {
+                  // Update the state of the app.
+                  // ...
+                },
+              ),
+            ],
           ),
+        ),
+        // body: Center(
+        //   child: FutureBuilder<Weather>(
+        //     future: futureWeather,
+        //     builder: (context, snapshot) {
+        //       if (snapshot.hasData) {
+        //         String returnData = snapshot.data.metadata.stations[0].name + " Temperature : " + snapshot.data.items[0].readings[0].value.toString() +"C";
+        //
+        //         return Text(returnData);
+        //       } else if (snapshot.hasError) {
+        //         return Text("${snapshot.error}");
+        //       }
+        //
+        //       // By default, show a loading spinner.
+        //       return CircularProgressIndicator();
+        //     },
+        //   ),
+        body: ListView(
+          children: [
+            const SizedBox(height: 30),
+            weatherSection,
+            const SizedBox(height: 30),
+            walkDogSection,
+            const SizedBox(height: 30),
+            dogProfileSection,
+            const SizedBox(height: 30),
+            usefulLinkSection
+          ],
         ),
       ),
     );
