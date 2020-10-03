@@ -4,6 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:flutter/material.dart';
 import 'weather.dart';
 import 'FirstRoute.dart';
+import 'package:weather_icons/weather_icons.dart';
 
 void main() {
   runApp(MyApp());
@@ -36,7 +37,16 @@ class _MyAppState extends State<MyApp> {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, color: color),
+        BoxedIcon(
+          WeatherIcons.day_sunny
+          // Package https://pub.dev/packages/weather_icons
+          // Dynamic weather
+          // WeatherIcons.fromString(
+          //     weatherCode,
+          //     // Fallback is optional, throws if not found, and not supplied.
+          //     fallback: WeatherIcons.na
+          // ),
+        ),
         Container(
           margin: const EdgeInsets.only(top: 8),
           child: Text(
