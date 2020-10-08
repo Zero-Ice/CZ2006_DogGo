@@ -2,119 +2,126 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:flutter/material.dart';
+import 'Routes/settings.dart';
+import 'Routes/NotificationSettings.dart';
+import 'Routes/DogProfile.dart';
+import 'Routes/FeedingTime.dart';
+import 'Routes/VetVisit.dart';
+import 'Routes/HotlineLinks.dart';
 import 'weather.dart';
-import 'FirstRoute.dart';
 import 'package:weather_icons/weather_icons.dart';
 
 void main() {
-  runApp(MyApp());
+  //runApp(MyApp());
 
-  // runApp(MaterialApp(
-  //   title: 'Navigation Basics',
-  //   home: Foo(),
-  // ));
+  runApp(new MaterialApp(
+    title: 'Fetch weather test',
+    initialRoute: '/',
+    routes: {
+      '/': (context) => Home(),
+      '/Settings': (context) => Settings(),
+      '/NotificationSettings': (context) => NotificationSettings(),
+      '/DogProfile': (context) => DogProfile(),
+      '/FeedingTime': (context) => FeedingTime(),
+      '/VetVisit': (context) => VetVisit(),
+      '/HotlineLinks': (context) => HotlineLinks(),
+    },
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+    ),
+  ));
 }
 
-class MyApp extends StatefulWidget {
-  MyApp({Key key}) : super(key: key);
-
-  @override
-  _MyAppState createState() => _MyAppState();
+String toHourString(int hour) {
+  if (hour < 10) {
+    return "0" + hour.toString() + ":00";
+  }
+  return hour.toString() + ":00";
 }
 
-class _MyAppState extends State<MyApp> {
-  Future<Weather> futureWeather;
-
+class Home extends StatelessWidget {
   @override
-  void initState() {
-    super.initState();
-    futureWeather = fetchWeather();
-  }
+  Future<Weather> futureWeather = fetchWeather();
 
-  // String tempLabel pretty redundant as we get the data from our builder
-  // TODO: Remove the tempLabel
-  Widget _buildWeatherInfoColumn(
-      Color color, IconData icon, String timeLabel, String tempLabel) {
-
-    return FutureBuilder<Weather>(
-        future: futureWeather,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            String returnData = snapshot.data.metadata.stations[0].name +
-                " Temperature : " +
-                snapshot.data.items[0].readings[0].value.toString() +
-                "C";
-            String temperatureString = snapshot.data.items[0].readings[0].value.toString() +
-                "C";
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                BoxedIcon(WeatherIcons.day_sunny
-                    // Package https://pub.dev/packages/weather_icons
-                    // Dynamic weather
-                    // WeatherIcons.fromString(
-                    //     weatherCode,
-                    //     // Fallback is optional, throws if not found, and not supplied.
-                    //     fallback: WeatherIcons.na
-                    // ),
-                    ),
-                Container(
-                  margin: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    timeLabel,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: color,
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    temperatureString,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: color,
-                    ),
-                  ),
-                ),
-              ],
-            );
-            //return Text(returnData);
-          } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
-          }
-
-          // By default, show a loading spinner.
-          return CircularProgressIndicator();
-        });
-  }
-
-  String toHourString(int hour) {
-    if(hour < 10) {
-      return "0" + hour.toString() + ":00";
-    }
-    return hour.toString() + ":00";
-  }
-
-  @override
   Widget build(BuildContext context) {
     // Widget Weather Section
     Color color = Theme.of(context).primaryColor;
     int currentHour = DateTime.now().hour;
 
+    // String tempLabel pretty redundant as we get the data from our builder
+    // TODO: Remove the tempLabel
+    Widget _buildWeatherInfoColumn(
+        Color color, IconData icon, String timeLabel, String tempLabel) {
+      return FutureBuilder<Weather>(
+          future: futureWeather,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              String returnData = snapshot.data.metadata.stations[0].name +
+                  " Temperature : " +
+                  snapshot.data.items[0].readings[0].value.toString() +
+                  "C";
+              String temperatureString =
+                  snapshot.data.items[0].readings[0].value.toString() + "C";
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  BoxedIcon(WeatherIcons.day_sunny
+                      // Package https://pub.dev/packages/weather_icons
+                      // Dynamic weather
+                      // WeatherIcons.fromString(
+                      //     weatherCode,
+                      //     // Fallback is optional, throws if not found, and not supplied.
+                      //     fallback: WeatherIcons.na
+                      // ),
+                      ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      timeLabel,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: color,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      temperatureString,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: color,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+              //return Text(returnData);
+            } else if (snapshot.hasError) {
+              return Text("${snapshot.error}");
+            }
+
+            // By default, show a loading spinner.
+            return CircularProgressIndicator();
+          });
+    }
+
     Widget weatherSection = Container(
         child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildWeatherInfoColumn(color, Icons.star, toHourString(currentHour - 2), '26C'),
-        _buildWeatherInfoColumn(color, Icons.star, toHourString(currentHour - 1), '28C'),
+        _buildWeatherInfoColumn(
+            color, Icons.star, toHourString(currentHour - 2), '26C'),
+        _buildWeatherInfoColumn(
+            color, Icons.star, toHourString(currentHour - 1), '28C'),
         _buildWeatherInfoColumn(color, Icons.star, "now", '29C'),
-        _buildWeatherInfoColumn(color, Icons.star, toHourString(currentHour + 1), '26C'),
-        _buildWeatherInfoColumn(color, Icons.star, toHourString(currentHour + 2), '27C'),
+        _buildWeatherInfoColumn(
+            color, Icons.star, toHourString(currentHour + 1), '26C'),
+        _buildWeatherInfoColumn(
+            color, Icons.star, toHourString(currentHour + 2), '27C'),
       ],
     ));
 
@@ -126,6 +133,7 @@ class _MyAppState extends State<MyApp> {
     ));
 
     // Widget Dog Profiles
+    // Have to reuse this in dog profile page.
     final List<String> entries = <String>['A', 'B', 'C'];
     final List<int> colorCodes = <int>[600, 500, 100];
 
@@ -168,95 +176,94 @@ class _MyAppState extends State<MyApp> {
       children: [Text('Useful links')],
     ));
 
-    return MaterialApp(
-      title: 'Fetch weather test',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('My First DogGo'),
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('My First DogGo'),
-        ),
-        drawer: Drawer(
-          // Add a ListView to the drawer. This ensures the user can scroll
-          // through the options in the drawer if there isn't enough vertical
-          // space to fit everything.
-          child: ListView(
-            // Important: Remove any padding from the ListView.
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                child: Text('Settings'),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                ),
+      drawer: Drawer(
+        // Add a ListView to the drawer. This ensures the user can scroll
+        // through the options in the drawer if there isn't enough vertical
+        // space to fit everything.
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              child: Text('Settings'),
+              decoration: BoxDecoration(
+                color: Colors.blue,
               ),
-              ListTile(
-                title: Text('Notification Settings'),
-                onTap: () {
-                  // Update the state of the app.
-                  // ...
-                },
-              ),
-              ListTile(
-                title: Text('Dog Profile'),
-                onTap: () {
-                  // Update the state of the app.
-                  // ...
-                },
-              ),
-              ListTile(
-                title: Text('Feeding Times'),
-                onTap: () {
-                  // Update the state of the app.
-                  // ...
-                },
-              ),
-              ListTile(
-                title: Text('Vet Visits'),
-                onTap: () {
-                  // Update the state of the app.
-                  // ...
-                },
-              ),
-              ListTile(
-                title: Text('Hotline and Links'),
-                onTap: () {
-                  // Update the state of the app.
-                  // ...
-                },
-              ),
-            ],
-          ),
-        ),
-        // body: Center(
-        //   child: FutureBuilder<Weather>(
-        //     future: futureWeather,
-        //     builder: (context, snapshot) {
-        //       if (snapshot.hasData) {
-        //         String returnData = snapshot.data.metadata.stations[0].name + " Temperature : " + snapshot.data.items[0].readings[0].value.toString() +"C";
-        //
-        //         return Text(returnData);
-        //       } else if (snapshot.hasError) {
-        //         return Text("${snapshot.error}");
-        //       }
-        //
-        //       // By default, show a loading spinner.
-        //       return CircularProgressIndicator();
-        //     },
-        //   ),
-        body: ListView(
-          children: [
-            const SizedBox(height: 30),
-            weatherSection,
-            const SizedBox(height: 30),
-            walkDogSection,
-            const SizedBox(height: 30),
-            dogProfileSection,
-            const SizedBox(height: 30),
-            usefulLinkSection
+            ),
+            ListTile(
+              title: Text('Notification Settings'),
+              onTap: () {
+                // Update the state of the app.
+                Navigator.pushNamed(context, '/NotificationSettings');
+                // ...
+              },
+            ),
+            ListTile(
+              title: Text('Dog Profile'),
+              onTap: () {
+                // Update the state of the app.
+                Navigator.pushNamed(context, '/DogProfile');
+                // ...
+              },
+            ),
+            ListTile(
+              title: Text('Feeding Times'),
+              onTap: () {
+                // Update the state of the app.
+                Navigator.pushNamed(context, '/FeedingTime');
+                // ...
+              },
+            ),
+            ListTile(
+              title: Text('Vet Visits'),
+              onTap: () {
+                // Update the state of the app.
+                Navigator.pushNamed(context, '/VetVisit');
+                // ...
+              },
+            ),
+            ListTile(
+              title: Text('Hotline and Links'),
+              onTap: () {
+                // Update the state of the app.
+                Navigator.pushNamed(context, '/HotlineLinks');
+                // ...
+              },
+            ),
           ],
         ),
+      ),
+      // body: Center(
+      //   child: FutureBuilder<Weather>(
+      //     future: futureWeather,
+      //     builder: (context, snapshot) {
+      //       if (snapshot.hasData) {
+      //         String returnData = snapshot.data.metadata.stations[0].name + " Temperature : " + snapshot.data.items[0].readings[0].value.toString() +"C";
+      //
+      //         return Text(returnData);
+      //       } else if (snapshot.hasError) {
+      //         return Text("${snapshot.error}");
+      //       }
+      //
+      //       // By default, show a loading spinner.
+      //       return CircularProgressIndicator();
+      //     },
+      //   ),
+      body: ListView(
+        children: [
+          const SizedBox(height: 30),
+          weatherSection,
+          const SizedBox(height: 30),
+          walkDogSection,
+          const SizedBox(height: 30),
+          dogProfileSection,
+          const SizedBox(height: 30),
+          usefulLinkSection
+        ],
       ),
     );
   }
