@@ -26,7 +26,7 @@ class DogProfile extends StatelessWidget {
     );
 
     Widget dog2 = Container(
-        child: Text("hi")
+        child: Text("test2")
     );
 
 
