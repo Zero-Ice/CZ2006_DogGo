@@ -22,11 +22,11 @@ class DogProfile extends StatelessWidget {
 
 
     Widget dog1 = Container(
-        child: Text("Test Pull req")
+        child: Text("hi")
     );
 
     Widget dog2 = Container(
-        child: Text("hi")
+        child: Text("test2")
     );
 
 
