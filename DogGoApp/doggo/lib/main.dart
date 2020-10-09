@@ -10,6 +10,7 @@ import 'Routes/VetVisit.dart';
 import 'Routes/HotlineLinks.dart';
 import 'weather.dart';
 import 'package:weather_icons/weather_icons.dart';
+import 'DogProfileComponent.dart';
 
 void main() {
   //runApp(MyApp());
@@ -132,48 +133,17 @@ class Home extends StatelessWidget {
       child: Text('Should I walk my dog?', style: TextStyle(fontSize: 20)),
     ));
 
-    // Widget Dog Profiles
-    // Have to reuse this in dog profile page.
-    final List<String> entries = <String>['A', 'B', 'C'];
-    final List<int> colorCodes = <int>[600, 500, 100];
-
-    Widget dogProfileSection = Container(
-        height: 250,
-        child: ListView.separated(
-          padding: const EdgeInsets.all(8),
-          itemCount: entries.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Container(
-                height: 80,
-                color: Colors.amber[colorCodes[index]],
-                child: Row(children: [
-                  const SizedBox(width: 15),
-                  CircleAvatar(
-                    backgroundColor: Colors.white,
-                    backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
-                    //child: Text('AH'),
-                  ),
-                  const SizedBox(width: 30),
-                  Expanded(
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                        Text('Dog ${entries[index]}'),
-                        Text('Birthday: '),
-                        Text('Fav Food: ')
-                      ]))
-                ])
-                //child: Center(child: Text('Dog ${entries[index]}')),
-                );
-          },
-          separatorBuilder: (BuildContext context, int index) =>
-              const Divider(),
-        ));
-
     // Widget useful links
     Widget usefulLinkSection = Container(
+      height: 80,
         child: Column(
-      children: [Text('Useful links')],
+      children: [
+        Align(
+          alignment: Alignment.topCenter,
+          child: Text('Useful links')),
+        Text('ASDF'),
+        Text('DSGSDG'),
+      ],
     ));
 
     return Scaffold(
@@ -253,18 +223,25 @@ class Home extends StatelessWidget {
       //       return CircularProgressIndicator();
       //     },
       //   ),
-      body: ListView(
+      body: Container(
+          child: Column(
         children: [
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
           weatherSection,
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
           walkDogSection,
-          const SizedBox(height: 30),
-          dogProfileSection,
-          const SizedBox(height: 30),
-          usefulLinkSection
+          const SizedBox(height: 10),
+          dogProfileComponent,
+          const SizedBox(height: 20),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child:Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: usefulLinkSection,
+            ),
+          )
         ],
-      ),
+      )),
     );
   }
 }
