@@ -1,32 +1,45 @@
-
-
+import 'package:doggo/Routes/AddDog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class DogProfile extends StatelessWidget {
+
+class DogProfile extends StatefulWidget {
+  @override
+  _DogProfileState createState() => _DogProfileState();
+}
+
+class _DogProfileState extends State<DogProfile> {
+  int i=0;
+
   @override
   Widget build(BuildContext context) {
 
     Widget addbutton=  FloatingActionButton(
-      onPressed: () {},
+      onPressed: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AddDog()));
+        setState((){
+          i+=1;
+        });
+      },
       child:
-      Text('+',
-        style: TextStyle(
-            fontSize: 28.0,
-            shadows: <Shadow>[Shadow(
-                offset: Offset(1.0, 2.0),
-                blurRadius: 3.0,
-                color: Colors.black45)]),
+      Icon(
+        Icons.add,
+        size: 30,
       ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(50.0),
+      ),
+
+
     );
 
 
     Widget dog1 = Container(
-        child: Text("hi")
+        child: Text('$i')
     );
 
     Widget dog2 = Container(
-        child: Text("test2")
+        child: Text("test2 5")
     );
 
 
