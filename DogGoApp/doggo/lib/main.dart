@@ -13,8 +13,6 @@ import 'package:weather_icons/weather_icons.dart';
 import 'DogProfileComponent.dart';
 
 void main() {
-  //runApp(MyApp());
-
   runApp(new MaterialApp(
     title: 'Fetch weather test',
     initialRoute: '/',
@@ -207,22 +205,6 @@ class Home extends StatelessWidget {
           ],
         ),
       ),
-      // body: Center(
-      //   child: FutureBuilder<Weather>(
-      //     future: futureWeather,
-      //     builder: (context, snapshot) {
-      //       if (snapshot.hasData) {
-      //         String returnData = snapshot.data.metadata.stations[0].name + " Temperature : " + snapshot.data.items[0].readings[0].value.toString() +"C";
-      //
-      //         return Text(returnData);
-      //       } else if (snapshot.hasError) {
-      //         return Text("${snapshot.error}");
-      //       }
-      //
-      //       // By default, show a loading spinner.
-      //       return CircularProgressIndicator();
-      //     },
-      //   ),
       body: Container(
           child: Column(
         children: [
