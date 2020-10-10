@@ -39,7 +39,7 @@ class _DogProfileState extends State<DogProfile> {
     );
 
     Widget dog2 = Container(
-        child: Text("test2")
+        child: Text("test2 5")
     );
 
 
