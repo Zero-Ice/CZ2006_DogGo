@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:flutter/material.dart';
-import 'Routes/settings.dart';
 import 'Routes/NotificationSettings.dart';
 import 'Routes/DogProfile.dart';
 import 'Routes/FeedingTime.dart';
@@ -18,7 +17,6 @@ void main() {
     initialRoute: '/',
     routes: {
       '/': (context) => Home(),
-      '/Settings': (context) => Settings(),
       '/NotificationSettings': (context) => NotificationSettings(),
       '/DogProfile': (context) => DogProfile(),
       '/FeedingTime': (context) => FeedingTime(),
