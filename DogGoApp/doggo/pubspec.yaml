@@ -26,6 +26,7 @@ dependencies:
   http: ^0.12.2
   json_annotation: ^3.0.0
   weather_icons: ^2.0.1
+  intl: ^0.16.1
 
 
   # The following adds the Cupertino Icons font to your application.
