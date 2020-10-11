@@ -1,3 +1,4 @@
+import 'package:doggo/Routes/DogProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -11,8 +12,9 @@ class _AddDogState extends State<AddDog> {
   String strDogName="";
   String strDogFood="";
   String strDate="";
-  String saveBt="";
+  List<String> saveBt = ["A","B","not"];
   DateTime _dateTime;
+
   @override
   Widget build(BuildContext context) {
     Widget dogParticulars = Container(
@@ -94,9 +96,9 @@ class _AddDogState extends State<AddDog> {
       child: Text( "Save",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold)),
       onPressed: (){
         setState(() {
-          saveBt="$strDogFood,$strDogName,$strDate";
+          saveBt=["$strDogName","$strDogFood","$strDate"];
         });
-        //Navigator.pop(context);
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => DogProfile(txt: saveBt,)));
       },
     );
 
@@ -130,8 +132,9 @@ class _AddDogState extends State<AddDog> {
               Text("Mybut: $strDogName"),
               SizedBox(height: 20,),
               Text("food: $strDogFood"),
-              Text("Mybut: $saveBt"),
-              SizedBox(height: 180,),
+              Text(saveBt[0]),
+              Text(saveBt[1]),
+              Text(saveBt[2]),
               saveButtonContainer,
 
 
