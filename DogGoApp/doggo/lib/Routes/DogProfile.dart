@@ -18,10 +18,8 @@ class _DogProfileState extends State<DogProfile> {
   _DogProfileState(this.txt);
 
     GoToAddDog(BuildContext context) async{
-    final result =await Navigator.push(context,MaterialPageRoute<List<String>>(builder: (context) => AddDog()));
-    txt=result;
-    print(result);
-    print(txt);
+      final result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog()));
+      txt= result;
   }
 
 
