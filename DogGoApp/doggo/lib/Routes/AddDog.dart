@@ -98,7 +98,7 @@ class _AddDogState extends State<AddDog> {
         setState(() {
           saveBt=["$strDogName","$strDogFood","$strDate"];
         });
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => DogProfile(txt: saveBt,)));
+        Navigator.pop(context,saveBt);
       },
     );
 
