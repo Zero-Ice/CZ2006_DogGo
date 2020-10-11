@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 class AddDog extends StatefulWidget {
   @override
@@ -9,32 +10,11 @@ class AddDog extends StatefulWidget {
 class _AddDogState extends State<AddDog> {
   String strDogName="";
   String strDogFood="";
+  String strDate="";
+  String saveBt="";
   DateTime _dateTime;
   @override
   Widget build(BuildContext context) {
-
-    /*
-    Widget DOB = Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget> [
-        Text(
-        Text(
-          'Date of Birth',
-          style: TextStyle(fontSize: 20),
-        ),
-        SizedBox(width: 10,),
-        Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Type in favourite food",
-              ),
-            )),
-            ],
-    );
-     */
-    var dogNameCon = TextEditingController();
-    var dogFoodCon = TextEditingController();
-
     Widget dogParticulars = Container(
       color: Colors.yellow,
         child: Column(
@@ -96,8 +76,7 @@ class _AddDogState extends State<AddDog> {
                   },
                 ),
                 Expanded(
-                  child: Text((_dateTime == null? "chosen" :
-                  _dateTime.toString()),
+                  child: Text((_dateTime == null? "chosen" : strDate = new DateFormat.yMd().format(_dateTime)),
                 ),),
               ],),
 
@@ -105,8 +84,6 @@ class _AddDogState extends State<AddDog> {
         ),
     );
 
-    Widget calendarIcon = Container(
-    );
 
     Widget saveButton = RaisedButton(
       shape: RoundedRectangleBorder(
@@ -116,7 +93,10 @@ class _AddDogState extends State<AddDog> {
       textColor: Colors.white,
       child: Text( "Save",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold)),
       onPressed: (){
-        Navigator.pop(context);
+        setState(() {
+          saveBt="$strDogFood,$strDogName,$strDate";
+        });
+        //Navigator.pop(context);
       },
     );
 
@@ -150,8 +130,10 @@ class _AddDogState extends State<AddDog> {
               Text("Mybut: $strDogName"),
               SizedBox(height: 20,),
               Text("food: $strDogFood"),
+              Text("Mybut: $saveBt"),
               SizedBox(height: 180,),
               saveButtonContainer,
+
 
 
           ],
