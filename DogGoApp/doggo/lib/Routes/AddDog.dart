@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 class AddDog extends StatefulWidget {
   @override
@@ -7,34 +8,13 @@ class AddDog extends StatefulWidget {
 }
 
 class _AddDogState extends State<AddDog> {
+  String strDogName="";
+  String strDogFood="";
+  String strDate="";
+  String saveBt="";
+  DateTime _dateTime;
   @override
   Widget build(BuildContext context) {
-    int i=0;
-    int j=0;
-    /*
-    Widget DOB = Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget> [
-        Text(
-        Text(
-          'Date of Birth',
-          style: TextStyle(fontSize: 20),
-        ),
-        SizedBox(width: 10,),
-        Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Type in favourite food",
-              ),
-            )),
-            ],
-    );
-     */
-    var dogNameCon = TextEditingController();
-    var dogFoodCon = TextEditingController();
-    var dogName = "dog name";
-    var dogFood ="dog food";
-
     Widget dogParticulars = Container(
       color: Colors.yellow,
         child: Column(
@@ -48,11 +28,15 @@ class _AddDogState extends State<AddDog> {
             ),
             SizedBox(width: 10,),
             Expanded(child: TextField(
-              controller: dogNameCon,
-              decoration: InputDecoration(
-                hintText: "Type in Dog name",
-              ),)),
+              decoration: InputDecoration(hintText: "Type in Dog name",),
+              onChanged: (String input) {
+                setState(() {
+                  strDogName=input;
+                });
+              },
+            )),
             ],),
+            SizedBox(height: 20,),
             /////////////////////////////////
             Row(
               children: [
@@ -63,25 +47,45 @@ class _AddDogState extends State<AddDog> {
               SizedBox(width: 10,),
               Expanded(
                   child: TextField(
-                    controller: dogFoodCon,
-                    decoration: InputDecoration(
-                      hintText: "Type in favourite food",
-                    ),
+                    decoration: InputDecoration(hintText: "Type in favourite food",),
+                    onChanged: (String input){
+                      setState(() {
+                        strDogFood=input;
+                      });
+                    },
                   )),
               ],
             ),
+            SizedBox(height: 20,),
             //////////////////////////////////////
-
+            Row(
+              children: [
+                Text(
+                  'Date of Birth',
+                  style: TextStyle(fontSize: 20),
+                ),
+                SizedBox(width: 10,),
+                IconButton(
+                  icon: Icon(Icons.calendar_today,color: Colors.black,),
+                  onPressed: (){
+                    showDatePicker(
+                        context: context,
+                        initialDate: _dateTime== null ? DateTime.now(): _dateTime,
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime.now()).then((date) { setState(() {_dateTime=date;});});
+                  },
+                ),
+                Expanded(
+                  child: Text((_dateTime == null? "chosen" : strDate = new DateFormat.yMd().format(_dateTime)),
+                ),),
+              ],),
 
           ],
         ),
     );
 
-    Widget dogImage = Container(
 
-    );
-
-    Widget saveButton = FlatButton(
+    Widget saveButton = RaisedButton(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15)
       ),
@@ -90,10 +94,9 @@ class _AddDogState extends State<AddDog> {
       child: Text( "Save",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold)),
       onPressed: (){
         setState(() {
-          i+=1;
-          dogName=dogNameCon.text;
-          dogFood=dogFoodCon.text;
+          saveBt="$strDogFood,$strDogName,$strDate";
         });
+        //Navigator.pop(context);
       },
     );
 
@@ -121,13 +124,17 @@ class _AddDogState extends State<AddDog> {
           color: Colors.orange,
           child: Column(
             children: [
+              SizedBox(height: 200,),
               dogParticulars,
               SizedBox(height: 20,),
+              Text("Mybut: $strDogName"),
+              SizedBox(height: 20,),
+              Text("food: $strDogFood"),
+              Text("Mybut: $saveBt"),
+              SizedBox(height: 180,),
               saveButtonContainer,
-              SizedBox(height: 20,),
-              Text("Test: $i"),
-              SizedBox(height: 20,),
-              Text("Mybut: $dogName")
+
+
 
           ],
           ),
