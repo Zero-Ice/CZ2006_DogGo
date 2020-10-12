@@ -4,19 +4,31 @@ import 'package:flutter/widgets.dart';
 
 
 class DogProfile extends StatefulWidget {
+  List<String> txt;
+//  String txt;
+  DogProfile({this.txt});
   @override
-  _DogProfileState createState() => _DogProfileState();
+  _DogProfileState createState() => _DogProfileState(txt);
 }
 
 class _DogProfileState extends State<DogProfile> {
   int i=0;
+  List<String> txt;
+//  String txt;
+  _DogProfileState(this.txt);
+
+    GoToAddDog(BuildContext context) async{
+      final result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog()));
+      txt= result;
+  }
+
 
   @override
   Widget build(BuildContext context) {
 
     Widget addbutton=  FloatingActionButton(
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => AddDog()));
+      onPressed: ()  {
+        GoToAddDog(context);
         setState((){
           i+=1;
         });
@@ -39,7 +51,14 @@ class _DogProfileState extends State<DogProfile> {
     );
 
     Widget dog2 = Container(
-        child: Text("testest meger")
+        child:Column(
+          children: [
+            Text(txt==null?"null":txt[0]),
+            Text(txt==null?"null":txt[1]),
+            Text(txt==null?"null":txt[2]),
+
+          ],
+        )
     );
 
 
@@ -67,15 +86,6 @@ class _DogProfileState extends State<DogProfile> {
         child: FittedBox(
             child:addbutton),
       ),
-
-      /*child:Align(
-          alignment: Alignment.bottomRight,
-          child:Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: floatingActionButton
-          ),)*/
-
-
     );
   }
 }
