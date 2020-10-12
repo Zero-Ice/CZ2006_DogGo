@@ -191,7 +191,7 @@ class Station {
     "location": location.toJson(),
   };
 }
-
+//data.items[0].forecasts[0].forecast
 class Location {
   Location({
     this.latitude,
