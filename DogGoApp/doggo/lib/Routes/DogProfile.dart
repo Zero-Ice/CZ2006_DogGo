@@ -1,32 +1,64 @@
-
-
+import 'package:doggo/Routes/AddDog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class DogProfile extends StatelessWidget {
+
+class DogProfile extends StatefulWidget {
+  List<String> txt;
+//  String txt;
+  DogProfile({this.txt});
+  @override
+  _DogProfileState createState() => _DogProfileState(txt);
+}
+
+class _DogProfileState extends State<DogProfile> {
+  int i=0;
+  List<String> txt;
+//  String txt;
+  _DogProfileState(this.txt);
+
+    GoToAddDog(BuildContext context) async{
+      final result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog()));
+      txt= result;
+  }
+
+
   @override
   Widget build(BuildContext context) {
 
     Widget addbutton=  FloatingActionButton(
-      onPressed: () {},
+      onPressed: ()  {
+        GoToAddDog(context);
+        setState((){
+          i+=1;
+        });
+      },
       child:
-      Text('+',
-        style: TextStyle(
-            fontSize: 28.0,
-            shadows: <Shadow>[Shadow(
-                offset: Offset(1.0, 2.0),
-                blurRadius: 3.0,
-                color: Colors.black45)]),
+      Icon(
+        Icons.add,
+        size: 30,
       ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(50.0),
+      ),
+
+
     );
 
 
     Widget dog1 = Container(
-        child: Text("hi")
+        child: Text('$i')
     );
 
     Widget dog2 = Container(
-        child: Text("test2")
+        child:Column(
+          children: [
+            Text(txt==null?"null":txt[0]),
+            Text(txt==null?"null":txt[1]),
+            Text(txt==null?"null":txt[2]),
+
+          ],
+        )
     );
 
 
@@ -54,15 +86,6 @@ class DogProfile extends StatelessWidget {
         child: FittedBox(
             child:addbutton),
       ),
-
-      /*child:Align(
-          alignment: Alignment.bottomRight,
-          child:Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: floatingActionButton
-          ),)*/
-
-
     );
   }
 }

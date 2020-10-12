@@ -3,12 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class Settings extends StatelessWidget {
+class EditVet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Settings"),
+        title: Text("Edit an appointment"),
       ),
       body: Center(
         child: RaisedButton(

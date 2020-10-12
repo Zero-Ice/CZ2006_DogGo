@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:flutter/material.dart';
-import 'Routes/settings.dart';
 import 'Routes/NotificationSettings.dart';
 import 'Routes/DogProfile.dart';
 import 'Routes/FeedingTime.dart';
@@ -13,14 +12,11 @@ import 'package:weather_icons/weather_icons.dart';
 import 'DogProfileComponent.dart';
 
 void main() {
-  //runApp(MyApp());
-
   runApp(new MaterialApp(
     title: 'Fetch weather test',
     initialRoute: '/',
     routes: {
       '/': (context) => Home(),
-      '/Settings': (context) => Settings(),
       '/NotificationSettings': (context) => NotificationSettings(),
       '/DogProfile': (context) => DogProfile(),
       '/FeedingTime': (context) => FeedingTime(),
@@ -207,22 +203,6 @@ class Home extends StatelessWidget {
           ],
         ),
       ),
-      // body: Center(
-      //   child: FutureBuilder<Weather>(
-      //     future: futureWeather,
-      //     builder: (context, snapshot) {
-      //       if (snapshot.hasData) {
-      //         String returnData = snapshot.data.metadata.stations[0].name + " Temperature : " + snapshot.data.items[0].readings[0].value.toString() +"C";
-      //
-      //         return Text(returnData);
-      //       } else if (snapshot.hasError) {
-      //         return Text("${snapshot.error}");
-      //       }
-      //
-      //       // By default, show a loading spinner.
-      //       return CircularProgressIndicator();
-      //     },
-      //   ),
       body: Container(
           child: Column(
         children: [
