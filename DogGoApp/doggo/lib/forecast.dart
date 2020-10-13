@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -20,47 +21,30 @@ String forecastToJson(Forecast data) => json.encode(data.toJson());
 
 class Forecast {
   Forecast({
-    this.greeting,
-    this.instructions,
-  });
-
-  String greeting;
-  List<Instruction> instructions;
-
-  factory Forecast.fromJson(Map<String, dynamic> json) => Forecast(
-    greeting: json["greeting"],
-    instructions: List<Instruction>.from(json["instructions"].map((x) => Instruction.fromJson(x))),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "greeting": greeting,
-    "instructions": List<dynamic>.from(instructions.map((x) => x.toJson())),
-  };
-}
-
-class Instruction {
-  Instruction({
-    this.metadata,
+    this.areaMetadata,
     this.items,
     this.apiInfo,
+
   });
 
-  Metadata metadata;
+  List<AreaMetadatum> areaMetadata;
   List<Item> items;
   ApiInfo apiInfo;
 
-  factory Instruction.fromJson(Map<String, dynamic> json) => Instruction(
-    metadata: Metadata.fromJson(json["metadata"]),
+  factory Forecast.fromJson(Map<String, dynamic> json) => Forecast(
+    areaMetadata: List<AreaMetadatum>.from(json["area_metadata"].map((x) => AreaMetadatum.fromJson(x))),
     items: List<Item>.from(json["items"].map((x) => Item.fromJson(x))),
     apiInfo: ApiInfo.fromJson(json["api_info"]),
   );
 
   Map<String, dynamic> toJson() => {
-    "metadata": metadata.toJson(),
+    "area_metadata": List<dynamic>.from(areaMetadata.map((x) => x.toJson())),
     "items": List<dynamic>.from(items.map((x) => x.toJson())),
     "api_info": apiInfo.toJson(),
   };
 }
+
+
 
 class ApiInfo {
   ApiInfo({
@@ -78,122 +62,28 @@ class ApiInfo {
   };
 }
 
-class Item {
-  Item({
-    this.timestamp,
-    this.readings,
-  });
-
-  DateTime timestamp;
-  List<Reading> readings;
-
-  factory Item.fromJson(Map<String, dynamic> json) => Item(
-    timestamp: DateTime.parse(json["timestamp"]),
-    readings: List<Reading>.from(json["readings"].map((x) => Reading.fromJson(x))),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "timestamp": timestamp.toIso8601String(),
-    "readings": List<dynamic>.from(readings.map((x) => x.toJson())),
-  };
-}
-
-class Reading {
-  Reading({
-    this.stationId,
-    this.value,
-  });
-
-  DeviceId stationId;
-  double value;
-
-  factory Reading.fromJson(Map<String, dynamic> json) => Reading(
-    stationId: deviceIdValues.map[json["station_id"]],
-    value: json["value"].toDouble(),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "station_id": deviceIdValues.reverse[stationId],
-    "value": value,
-  };
-}
-
-enum DeviceId { S109, S117, S50, S107, S43, S108, S44, S121, S106, S111, S122, S60, S115, S24, S116, S104, S100 }
-
-final deviceIdValues = EnumValues({
-  "S100": DeviceId.S100,
-  "S104": DeviceId.S104,
-  "S106": DeviceId.S106,
-  "S107": DeviceId.S107,
-  "S108": DeviceId.S108,
-  "S109": DeviceId.S109,
-  "S111": DeviceId.S111,
-  "S115": DeviceId.S115,
-  "S116": DeviceId.S116,
-  "S117": DeviceId.S117,
-  "S121": DeviceId.S121,
-  "S122": DeviceId.S122,
-  "S24": DeviceId.S24,
-  "S43": DeviceId.S43,
-  "S44": DeviceId.S44,
-  "S50": DeviceId.S50,
-  "S60": DeviceId.S60
-});
-
-class Metadata {
-  Metadata({
-    this.stations,
-    this.readingType,
-    this.readingUnit,
-  });
-
-  List<Station> stations;
-  String readingType;
-  String readingUnit;
-
-  factory Metadata.fromJson(Map<String, dynamic> json) => Metadata(
-    stations: List<Station>.from(json["stations"].map((x) => Station.fromJson(x))),
-    readingType: json["reading_type"],
-    readingUnit: json["reading_unit"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "stations": List<dynamic>.from(stations.map((x) => x.toJson())),
-    "reading_type": readingType,
-    "reading_unit": readingUnit,
-  };
-}
-
-class Station {
-  Station({
-    this.id,
-    this.deviceId,
+class AreaMetadatum {
+  AreaMetadatum({
     this.name,
-    this.location,
+    this.labelLocation,
   });
 
-  DeviceId id;
-  DeviceId deviceId;
-  String name;
-  Location location;
+  Name name;
+  LabelLocation labelLocation;
 
-  factory Station.fromJson(Map<String, dynamic> json) => Station(
-    id: deviceIdValues.map[json["id"]],
-    deviceId: deviceIdValues.map[json["device_id"]],
-    name: json["name"],
-    location: Location.fromJson(json["location"]),
+  factory AreaMetadatum.fromJson(Map<String, dynamic> json) => AreaMetadatum(
+    name: nameValues.map[json["name"]],
+    labelLocation: LabelLocation.fromJson(json["label_location"]),
   );
 
   Map<String, dynamic> toJson() => {
-    "id": deviceIdValues.reverse[id],
-    "device_id": deviceIdValues.reverse[deviceId],
-    "name": name,
-    "location": location.toJson(),
+    "name": nameValues.reverse[name],
+    "label_location": labelLocation.toJson(),
   };
 }
-//data.items[0].forecasts[0].forecast
-class Location {
-  Location({
+
+class LabelLocation {
+  LabelLocation({
     this.latitude,
     this.longitude,
   });
@@ -201,7 +91,7 @@ class Location {
   double latitude;
   double longitude;
 
-  factory Location.fromJson(Map<String, dynamic> json) => Location(
+  factory LabelLocation.fromJson(Map<String, dynamic> json) => LabelLocation(
     latitude: json["latitude"].toDouble(),
     longitude: json["longitude"].toDouble(),
   );
@@ -209,6 +99,136 @@ class Location {
   Map<String, dynamic> toJson() => {
     "latitude": latitude,
     "longitude": longitude,
+  };
+}
+
+enum Name { ANG_MO_KIO, BEDOK, BISHAN, BOON_LAY, BUKIT_BATOK, BUKIT_MERAH, BUKIT_PANJANG, BUKIT_TIMAH, CENTRAL_WATER_CATCHMENT, CHANGI, CHOA_CHU_KANG, CLEMENTI, CITY, GEYLANG, HOUGANG, JALAN_BAHAR, JURONG_EAST, JURONG_ISLAND, JURONG_WEST, KALLANG, LIM_CHU_KANG, MANDAI, MARINE_PARADE, NOVENA, PASIR_RIS, PAYA_LEBAR, PIONEER, PULAU_TEKONG, PULAU_UBIN, PUNGGOL, QUEENSTOWN, SELETAR, SEMBAWANG, SENGKANG, SENTOSA, SERANGOON, SOUTHERN_ISLANDS, SUNGEI_KADUT, TAMPINES, TANGLIN, TENGAH, TOA_PAYOH, TUAS, WESTERN_ISLANDS, WESTERN_WATER_CATCHMENT, WOODLANDS, YISHUN }
+
+final nameValues = EnumValues({
+  "Ang Mo Kio": Name.ANG_MO_KIO,
+  "Bedok": Name.BEDOK,
+  "Bishan": Name.BISHAN,
+  "Boon Lay": Name.BOON_LAY,
+  "Bukit Batok": Name.BUKIT_BATOK,
+  "Bukit Merah": Name.BUKIT_MERAH,
+  "Bukit Panjang": Name.BUKIT_PANJANG,
+  "Bukit Timah": Name.BUKIT_TIMAH,
+  "Central Water Catchment": Name.CENTRAL_WATER_CATCHMENT,
+  "Changi": Name.CHANGI,
+  "Choa Chu Kang": Name.CHOA_CHU_KANG,
+  "City": Name.CITY,
+  "Clementi": Name.CLEMENTI,
+  "Geylang": Name.GEYLANG,
+  "Hougang": Name.HOUGANG,
+  "Jalan Bahar": Name.JALAN_BAHAR,
+  "Jurong East": Name.JURONG_EAST,
+  "Jurong Island": Name.JURONG_ISLAND,
+  "Jurong West": Name.JURONG_WEST,
+  "Kallang": Name.KALLANG,
+  "Lim Chu Kang": Name.LIM_CHU_KANG,
+  "Mandai": Name.MANDAI,
+  "Marine Parade": Name.MARINE_PARADE,
+  "Novena": Name.NOVENA,
+  "Pasir Ris": Name.PASIR_RIS,
+  "Paya Lebar": Name.PAYA_LEBAR,
+  "Pioneer": Name.PIONEER,
+  "Pulau Tekong": Name.PULAU_TEKONG,
+  "Pulau Ubin": Name.PULAU_UBIN,
+  "Punggol": Name.PUNGGOL,
+  "Queenstown": Name.QUEENSTOWN,
+  "Seletar": Name.SELETAR,
+  "Sembawang": Name.SEMBAWANG,
+  "Sengkang": Name.SENGKANG,
+  "Sentosa": Name.SENTOSA,
+  "Serangoon": Name.SERANGOON,
+  "Southern Islands": Name.SOUTHERN_ISLANDS,
+  "Sungei Kadut": Name.SUNGEI_KADUT,
+  "Tampines": Name.TAMPINES,
+  "Tanglin": Name.TANGLIN,
+  "Tengah": Name.TENGAH,
+  "Toa Payoh": Name.TOA_PAYOH,
+  "Tuas": Name.TUAS,
+  "Western Islands": Name.WESTERN_ISLANDS,
+  "Western Water Catchment": Name.WESTERN_WATER_CATCHMENT,
+  "Woodlands": Name.WOODLANDS,
+  "Yishun": Name.YISHUN
+});
+
+class Item {
+  Item({
+    this.updateTimestamp,
+    this.timestamp,
+    this.validPeriod,
+    this.forecasts,
+  });
+
+  DateTime updateTimestamp;
+  DateTime timestamp;
+  ValidPeriod validPeriod;
+  List<ForecastElement> forecasts;
+
+  factory Item.fromJson(Map<String, dynamic> json) => Item(
+    updateTimestamp: DateTime.parse(json["update_timestamp"]),
+    timestamp: DateTime.parse(json["timestamp"]),
+    validPeriod: ValidPeriod.fromJson(json["valid_period"]),
+    forecasts: List<ForecastElement>.from(json["forecasts"].map((x) => ForecastElement.fromJson(x))),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "update_timestamp": updateTimestamp.toIso8601String(),
+    "timestamp": timestamp.toIso8601String(),
+    "valid_period": validPeriod.toJson(),
+    "forecasts": List<dynamic>.from(forecasts.map((x) => x.toJson())),
+  };
+}
+
+class ForecastElement {
+  ForecastElement({
+    this.area,
+    this.forecast,
+  });
+
+  Name area;
+  ForecastEnum forecast;
+
+  factory ForecastElement.fromJson(Map<String, dynamic> json) => ForecastElement(
+    area: nameValues.map[json["area"]],
+    forecast: forecastEnumValues.map[json["forecast"]],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "area": nameValues.reverse[area],
+    "forecast": forecastEnumValues.reverse[forecast],
+  };
+}
+
+enum ForecastEnum { CLOUDY, HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS, MODERATE_RAIN, THUNDERY_SHOWERS, LIGHT_RAIN }
+
+final forecastEnumValues = EnumValues({
+  "Cloudy": ForecastEnum.CLOUDY,
+  "Heavy Thundery Showers with Gusty Winds": ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS,
+  "Light Rain": ForecastEnum.LIGHT_RAIN,
+  "Moderate Rain": ForecastEnum.MODERATE_RAIN,
+  "Thundery Showers": ForecastEnum.THUNDERY_SHOWERS
+});
+
+class ValidPeriod {
+  ValidPeriod({
+    this.start,
+    this.end,
+  });
+
+  DateTime start;
+  DateTime end;
+
+  factory ValidPeriod.fromJson(Map<String, dynamic> json) => ValidPeriod(
+    start: DateTime.parse(json["start"]),
+    end: DateTime.parse(json["end"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "start": start.toIso8601String(),
+    "end": end.toIso8601String(),
   };
 }
 
