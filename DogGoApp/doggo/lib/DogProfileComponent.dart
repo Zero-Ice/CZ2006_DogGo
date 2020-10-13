@@ -3,8 +3,8 @@ import 'package:flutter/widgets.dart';
 
 // Widget Dog Profiles
 // Have to reuse this in dog profile page.
-final List<String> entries = <String>['A', 'B', 'C', 'D', 'E', 'F'];
-final List<int> colorCodes = <int>[600, 500, 100, 300, 200, 100];
+final List<String> entries = <String>['A', 'B', 'C'];
+final List<int> colorCodes = <int>[600, 500, 100];
 
 Widget dogProfileComponent = Expanded(
     child: Container(
