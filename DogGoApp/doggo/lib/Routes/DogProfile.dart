@@ -1,6 +1,7 @@
 import 'package:doggo/Routes/AddDog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class DogProfile extends StatefulWidget {
@@ -17,9 +18,14 @@ class _DogProfileState extends State<DogProfile> {
 //  String txt;
   _DogProfileState(this.txt);
 
-    GoToAddDog(BuildContext context) async{
-      final result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog()));
-      txt= result;
+    Future<List<String>> GoToAddDog(BuildContext context) async{
+      List<String> result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog()));
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      preferences.setStringList("key", result);
+      List<String> share = preferences.getStringList("key");
+      txt= share;
+
+//      print(txt==null?"null":txt);
   }
 
 
@@ -28,8 +34,8 @@ class _DogProfileState extends State<DogProfile> {
 
     Widget addbutton=  FloatingActionButton(
       onPressed: ()  {
-        GoToAddDog(context);
         setState((){
+          GoToAddDog(context);
           i+=1;
         });
       },
