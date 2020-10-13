@@ -11,14 +11,10 @@ import 'weather.dart';
 import 'package:weather_icons/weather_icons.dart';
 import 'DogProfileComponent.dart';
 import 'package:http/http.dart' as http;
-import 'dart:async';
-import 'dart:convert';
-import 'weather.dart';
 import 'package:intl/intl.dart';
 import 'forecast.dart';
-import 'package:http/http.dart' as http;
-import 'dart:async';
-import 'dart:convert';
+
+
 
 
 void main() {
@@ -60,6 +56,7 @@ String hour_back1_s = "$hour_back1";
 
 int hour_back2 = int.parse(current_hour) -2;
 String hour_back2_s = "$hour_back2";
+
 
 int hour_forward1 = int.parse(current_hour_11);
 String hour_forward1_s = "$hour_forward1";
@@ -140,9 +137,8 @@ Future<Weather> fetchWeather5() async{
 
 
 Future<Forecast> forecast1() async{
-  print(current_day+hour_back2_s);
   final response=
-  await http.get(('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time='+current_day+hour_back2_s+'%3A45%3A00'));
+  await http.get('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time='+current_day+hour_back2_s+'%3A00%3A00');
 
   if (response.statusCode ==200){
     return Forecast.fromJson(json.decode(response.body));
@@ -152,7 +148,7 @@ Future<Forecast> forecast1() async{
 }
 Future<Forecast> forecast2() async{
   final response=
-  await http.get('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time='+current_day+hour_back1_s+'%3A45%3A00');
+  await http.get('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time='+current_day+hour_back1_s+'%3A00%3A00');
 
   if (response.statusCode ==200){
     return Forecast.fromJson(json.decode(response.body));
@@ -172,7 +168,7 @@ Future<Forecast> forecast3() async{
 }
 Future<Forecast> forecast4() async{
   final response=
-  await http.get('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time='+current_day+hour_forward1_s+'%3A45%3A00');
+  await http.get('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time='+current_day+hour_forward1_s+'%3A00%3A00');
 
   if (response.statusCode ==200){
     return Forecast.fromJson(json.decode(response.body));
@@ -182,7 +178,7 @@ Future<Forecast> forecast4() async{
 }
 Future<Forecast> forecast5() async{
   final response=
-  await http.get('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time='+current_day+hour_forward2_s+'%3A45%3A00');
+  await http.get('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time='+current_day+hour_forward2_s+'%3A00%3A00');
 
   if (response.statusCode ==200){
     return Forecast.fromJson(json.decode(response.body));
@@ -199,6 +195,7 @@ class Home extends StatelessWidget {
   Future<Weather> futureWeather4 = fetchWeather4();
   Future<Weather> futureWeather5 = fetchWeather5();
 
+  @override
   Future<Forecast> futureforecast1 = forecast1();
   Future<Forecast> futureforecast2 = forecast2();
   Future<Forecast> futureforecast3 = forecast3();
@@ -264,32 +261,38 @@ class Home extends StatelessWidget {
         Color color, String timeLabel) {
       return FutureBuilder<Forecast>(
           future: futureforecast1,
-          builder: ( context, snapshot) {
+          builder: (context, snapshot) {
             if (snapshot.hasData) {
-              String weathercodetest = snapshot.data.items[0].forecasts[0].forecast.toString();
-              print(weathercodetest);
+              String weathercodetest1 = snapshot.data.items[0].forecasts[0].forecast.toString();
+              print(weathercodetest1);
+              // ignore: unnecessary_statements
               (() {
-                if(weathercodetest == 'ForecastEnum.CLOUDY')
-                  weathercodetest = 'wi-day-cloudy';
-
-                if(weathercodetest == 'ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS')
-                  weathercodetest = 'wi-day-thunderstorm';
-
-                if(weathercodetest == 'ForecastEnum.LIGHT_RAIN')
-                  weathercodetest = 'wi-day-rain';
-
-                if(weathercodetest == 'ForecastEnum.MODERATE_RAIN')
-                  weathercodetest = 'wi-day-rain-wind';
-
-                if(weathercodetest == 'ForecastEnum.THUNDERY_SHOWERS')
-                  weathercodetest = 'wi-thunderstorm';
+                switch(weathercodetest1) {
+                  case "ForecastEnum.CLOUDY":
+                    weathercodetest1 = 'wi-day-cloudy';
+                    break;
+                  case "ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS":
+                    weathercodetest1 = 'wi-day-thunderstorm';
+                    break;
+                  case "ForecastEnum.LIGHT_RAIN":
+                    weathercodetest1 = 'wi-day-rain';
+                    break;
+                  case "ForecastEnum.MODERATE_RAIN":
+                    weathercodetest1 = 'wi-day-rain-wind';
+                    break;
+                  case "ForecastEnum.THUNDERY_SHOWERS":
+                    weathercodetest1 = 'wi-thunderstorm';
+                    break;
+                  default:
+                    weathercodetest1 = 'wi-day-cloudy';
+                }
               }());
                return Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                   BoxedIcon(
-                  WeatherIcons.fromString(weathercodetest, fallback: WeatherIcons.na), // Icons
+                  WeatherIcons.fromString(weathercodetest1, fallback: WeatherIcons.na), // Icons
             // icon
 
             )]);
@@ -305,24 +308,29 @@ class Home extends StatelessWidget {
         Color color, String timeLabel) {
       return FutureBuilder<Forecast>(
           future: futureforecast2,
-          builder: ( context, snapshot) {
-            if (snapshot.hasData) {
-              String weathercodetest2 = (snapshot.data.items[0].forecasts[0].forecast).toString();
+          builder: ( context, snapshot1) {
+            if (snapshot1.hasData) {
+              String weathercodetest2 = snapshot1.data.items[0].forecasts[0].forecast.toString();
               (() {
-                if(weathercodetest2 == 'ForecastEnum.CLOUDY')
-                  weathercodetest2 = 'wi-day-cloudy';
-
-                if(weathercodetest2 == 'ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS')
-                  weathercodetest2 = 'wi-day-thunderstorm';
-
-                if(weathercodetest2 == 'ForecastEnum.LIGHT_RAIN')
-                  weathercodetest2 = 'wi-day-rain';
-
-                if(weathercodetest2 == 'ForecastEnum.MODERATE_RAIN')
-                  weathercodetest2 = 'wi-day-rain-wind';
-
-                if(weathercodetest2 == 'ForecastEnum.THUNDERY_SHOWERS')
-                  weathercodetest2 = 'wi-thunderstorm';
+                switch(weathercodetest2) {
+                  case "ForecastEnum.CLOUDY":
+                    weathercodetest2 = 'wi-day-cloudy';
+                    break;
+                  case "ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS":
+                    weathercodetest2 = 'wi-day-thunderstorm';
+                    break;
+                  case "ForecastEnum.LIGHT_RAIN":
+                    weathercodetest2 = 'wi-day-rain';
+                    break;
+                  case "ForecastEnum.MODERATE_RAIN":
+                    weathercodetest2 = 'wi-day-rain-wind';
+                    break;
+                  case "ForecastEnum.THUNDERY_SHOWERS":
+                    weathercodetest2 = 'wi-thunderstorm';
+                    break;
+                  default:
+                    weathercodetest2 = 'wi-day-cloudy';
+                }
               }());
               return Column(
                   mainAxisSize: MainAxisSize.min,
@@ -333,8 +341,8 @@ class Home extends StatelessWidget {
                       // icon
 
                     )]);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
+            } else if (snapshot1.hasError) {
+              return Text("${snapshot1.error}");
             }
 
             // By default, show a loading spinner.
@@ -347,22 +355,27 @@ class Home extends StatelessWidget {
           future: futureforecast3,
           builder: ( context, snapshot) {
             if (snapshot.hasData) {
-              String weathercodetest3 = (snapshot.data.items[0].forecasts[0].forecast).toString();
+              String weathercodetest3 = snapshot.data.items[0].forecasts[0].forecast.toString();
               (() {
-                if(weathercodetest3 == 'ForecastEnum.CLOUDY')
-                  weathercodetest3 = 'wi-day-cloudy';
-
-                if(weathercodetest3 == 'ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS')
-                  weathercodetest3 = 'wi-day-thunderstorm';
-
-                if(weathercodetest3 == 'ForecastEnum.LIGHT_RAIN')
-                  weathercodetest3 = 'wi-day-rain';
-
-                if(weathercodetest3 == 'ForecastEnum.MODERATE_RAIN')
-                  weathercodetest3 = 'wi-day-rain-wind';
-
-                if(weathercodetest3 == 'ForecastEnum.THUNDERY_SHOWERS')
-                  weathercodetest3 = 'wi-thunderstorm';
+                switch(weathercodetest3) {
+                  case "ForecastEnum.CLOUDY":
+                    weathercodetest3 = 'wi-day-cloudy';
+                    break;
+                  case "ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS":
+                    weathercodetest3 = 'wi-day-thunderstorm';
+                    break;
+                  case "ForecastEnum.LIGHT_RAIN":
+                    weathercodetest3 = 'wi-day-rain';
+                    break;
+                  case "ForecastEnum.MODERATE_RAIN":
+                    weathercodetest3 = 'wi-day-rain-wind';
+                    break;
+                  case "ForecastEnum.THUNDERY_SHOWERS":
+                    weathercodetest3 = 'wi-thunderstorm';
+                    break;
+                  default:
+                    weathercodetest3 = 'wi-day-cloudy';
+                }
               }());
               return Column(
                   mainAxisSize: MainAxisSize.min,
@@ -387,22 +400,26 @@ class Home extends StatelessWidget {
           future: futureforecast4,
           builder: ( context, snapshot) {
             if (snapshot.hasData) {
-              String weathercodetest4 = (snapshot.data.items[0].forecasts[0].forecast).toString();
-              (() {
-                if(weathercodetest4 == 'ForecastEnum.CLOUDY')
+              String weathercodetest4 = snapshot.data.items[0].forecasts[0].forecast.toString();
+              (() {switch(weathercodetest4) {
+                case "ForecastEnum.CLOUDY":
                   weathercodetest4 = 'wi-day-cloudy';
-
-                if(weathercodetest4 == 'ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS')
+                  break;
+                case "ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS":
                   weathercodetest4 = 'wi-day-thunderstorm';
-
-                if(weathercodetest4 == 'ForecastEnum.LIGHT_RAIN')
+                  break;
+                case "ForecastEnum.LIGHT_RAIN":
                   weathercodetest4 = 'wi-day-rain';
-
-                if(weathercodetest4 == 'ForecastEnum.MODERATE_RAIN')
+                  break;
+                case "ForecastEnum.MODERATE_RAIN":
                   weathercodetest4 = 'wi-day-rain-wind';
-
-                if(weathercodetest4 == 'ForecastEnum.THUNDERY_SHOWERS')
+                  break;
+                case "ForecastEnum.THUNDERY_SHOWERS":
                   weathercodetest4 = 'wi-thunderstorm';
+                  break;
+                default:
+                  weathercodetest4 = 'wi-day-cloudy';
+              }
               }());
               return Column(
                   mainAxisSize: MainAxisSize.min,
@@ -428,22 +445,30 @@ class Home extends StatelessWidget {
           builder: ( context, snapshot) {
             if (snapshot.hasData) {
               String weathercodetest5 = (snapshot.data.items[0].forecasts[0].forecast).toString();
+              print(weathercodetest5);
 
               (() {
-                if(weathercodetest5 == 'ForecastEnum.CLOUDY')
-                  weathercodetest5 = 'wi-day-cloudy';
+                switch(weathercodetest5) {
+                  case "ForecastEnum.CLOUDY":
+                    weathercodetest5='wi-day-cloudy';
+                    break;
+                  case "ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS":
+                    weathercodetest5 = 'wi-day-thunderstorm';
+                    break;
+                  case "ForecastEnum.LIGHT_RAIN":
+                    weathercodetest5 = 'wi-day-rain';
+                    break;
+                  case "ForecastEnum.MODERATE_RAIN":
+                    weathercodetest5 = 'wi-day-rain-wind';
+                    break;
+                  case "ForecastEnum.THUNDERY_SHOWERS":
+                    weathercodetest5 = 'wi-thunderstorm';
+                    break;
+                  default:
+                    weathercodetest5='wi-day-cloudy';
 
-                if(weathercodetest5 == 'ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS')
-                  weathercodetest5 = 'wi-day-thunderstorm';
+                }
 
-                if(weathercodetest5 == 'ForecastEnum.LIGHT_RAIN')
-                  weathercodetest5 = 'wi-day-rain';
-
-                if(weathercodetest5 == 'ForecastEnum.MODERATE_RAIN')
-                  weathercodetest5 = 'wi-day-rain-wind';
-
-                if(weathercodetest5 == 'ForecastEnum.THUNDERY_SHOWERS')
-                  weathercodetest5 = 'wi-thunderstorm';
               }());
               return Column(
                   mainAxisSize: MainAxisSize.min,
