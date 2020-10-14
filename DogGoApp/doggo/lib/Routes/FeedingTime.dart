@@ -7,7 +7,8 @@ var time2 = new DateTime(2020, 1, 1, 19, 30);
 List timings = [time1, time2];
 
 var dog1 = new Dog("Doggo1", timings, "Kibble");
-var dog2 = new Dog("Doggo2", timings, "Kibble");
+var dog2 = new Dog("Doggo2", timings, "Meat");
+var dog3 = new Dog("Doggo3", timings, "");
 
 class FeedingTime extends StatefulWidget {
   @override
@@ -15,7 +16,7 @@ class FeedingTime extends StatefulWidget {
 }
 
 class _FeedingTimeState extends State<FeedingTime> {
-  List<Dog> dogList = [dog1, dog2];
+  List<Dog> dogList = [dog1, dog2, dog3];
   TimeOfDay _time = TimeOfDay.now();
   Future<Null> selectTime(BuildContext context) async {
     TimeOfDay selectedTime = await showTimePicker(
@@ -30,8 +31,10 @@ class _FeedingTimeState extends State<FeedingTime> {
     foodController.text = "${dogList[index].getFood}";
     DateTime dt1 = dogList[index].getFeedTimings[0];// add condition for empty value
     DateTime dt2 = dogList[index].getFeedTimings[1];
-    timeCon1.text = printTime(dt1);
-    timeCon2.text = printTime(dt2);
+    //if (dt1 != null)
+      timeCon1.text = printTime(dt1);
+    //if (dt2 != null)
+      timeCon2.text = printTime(dt2);
     TimeOfDay t1, t2;
 
     final now = new DateTime.now();
@@ -215,7 +218,7 @@ String printTime(DateTime dt){
   hour = int.parse("${dt.hour}");
   minute = int.parse("${dt.minute}");
   if (hour < 10) hour = hour.toString().padLeft(2, '0');
-  if (minute < 9) minute = minute.toString().padLeft(2, '0');
+  if (minute <= 9) minute = minute.toString().padLeft(2, '0');
 
   result = "$hour:$minute";
   return result;
@@ -254,7 +257,7 @@ class Dog {
       hour = int.parse("${feedTimings[i].hour}");
       minute = int.parse("${feedTimings[i].minute}");
       if (hour < 10) hour = hour.toString().padLeft(2, '0');
-      if (minute < 9) minute = minute.toString().padLeft(2, '0');
+      if (minute <= 9) minute = minute.toString().padLeft(2, '0');
 
       result = "$hour:$minute";
       temp.add(result);
