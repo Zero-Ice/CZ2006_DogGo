@@ -24,20 +24,86 @@ class _FeedingTimeState extends State<FeedingTime> {
     );
   }
   Future<Dog>_showEditForm(int index){
-    TextEditingController customController = TextEditingController();
+    TextEditingController foodController = TextEditingController();
+    TextEditingController timeCon1 = TextEditingController();
+    TextEditingController timeCon2 = TextEditingController();
+    foodController.text = "${dogList[index].getFood}";
+    DateTime dt1 = dogList[index].getFeedTimings[0];// add condition for empty value
+    DateTime dt2 = dogList[index].getFeedTimings[1];
+    timeCon1.text = printTime(dt1);
+    timeCon2.text = printTime(dt2);
+    TimeOfDay t1, t2;
+
+    final now = new DateTime.now();
+    bool timeChange1 = false; bool timeChange2 = false;
     return showDialog(context: context, builder: (context){
       return AlertDialog(
 
         title: Text("${dogList[index].getName}"),
-        content: TextField(
-            controller: customController,
-            decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: "Food",
-          ),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+
+          children:<Widget>[
+            TextFormField (
+                controller: foodController,
+                decoration: InputDecoration(
+                  //border: OutlineInputBorder(),
+                    labelText: "Food"
+                )
+            ),
+            TextFormField(
+              enableInteractiveSelection : false,
+              controller: timeCon1,
+              decoration: InputDecoration(
+                //border: OutlineInputBorder(),
+                labelText: 'Feeding Time 1',
+              ),
+              onTap: () async {
+                TimeOfDay time = TimeOfDay.now(); //TimeOfDay.fromDateTime(dogList[index].getFeedTimings[0]);
+                FocusScope.of(context).requestFocus(new FocusNode());
+                //timeChange1 = true;
+                TimeOfDay picked =
+                await showTimePicker(context: context, initialTime: time);
+                if (picked != null) { //picked != time
+                    setState(() {
+                    //time = picked;
+                    //t1 = time;
+                      t1= picked;
+                    dt1 = new DateTime(now.year, now.month, now.day, t1.hour, t1.minute);
+                    timeCon1.text = printTime(dt1);
+                  });
+                }
+              },
+            ),
+            TextFormField(
+              enableInteractiveSelection : false,
+              controller: timeCon2,
+              decoration: InputDecoration(
+                //border: OutlineInputBorder(),
+                labelText: 'Feeding Time 2',
+              ),
+              onTap: () async {
+                TimeOfDay time = TimeOfDay.now();//TimeOfDay.fromDateTime(dogList[index].getFeedTimings[1]);
+                FocusScope.of(context).requestFocus(new FocusNode());
+
+                TimeOfDay picked =
+                await showTimePicker(context: context, initialTime: time);
+                if (picked != null) { //picked != null &&  picked != time
+                  //timeChange2 = true;
+                  setState(() {
+                    //time = picked;
+                    //t2 = time;
+                    t2 = picked;
+                    dt2 = new DateTime(now.year, now.month, now.day, t2.hour, t2.minute);
+                    timeCon2.text = printTime(dt2);
+                  });
+                }
+              },
+            ),
+
+          ],
         ),
-
-
 
         actions:<Widget>[
           MaterialButton(
@@ -45,7 +111,9 @@ class _FeedingTimeState extends State<FeedingTime> {
             child: Text("Save"),
             onPressed: (){
               setState(() {
-                dogList[index].setFood = customController.text.toString();
+                List dtList= [dt1,dt2];
+                dogList[index].setTimings = dtList;
+                dogList[index].setFood = foodController.text.toString();
               });
               Navigator.of(context).pop();
             },
@@ -89,7 +157,7 @@ class _FeedingTimeState extends State<FeedingTime> {
                           Text(
                               '${dogList[index].getName} - ${dogList[index].getFrequency} time(s) per day'),
                           Text(
-                              'Feeding Times: ${dogList[index].getFeedTimings}'),
+                              'Feeding Times: ${dogList[index].printFeedTimings}'),
                           Text('Food: ${dogList[index].getFood}'),
                         ])),
                     const SizedBox(width: 15),
@@ -101,13 +169,10 @@ class _FeedingTimeState extends State<FeedingTime> {
                           if (val == 1){
                             _showEditForm(index);
                           }
-                          if (val == 2){
+                          if (val == 2){ //add delete confirmation dialog
                             dogList.removeAt(index);
-                            print(dogList);
                           }
-
                         });
-
                       },
                       itemBuilder: (context) => [
                         PopupMenuItem(
@@ -143,69 +208,18 @@ class _FeedingTimeState extends State<FeedingTime> {
   }
 }
 
+String printTime(DateTime dt){
+  String result;
+  var hour;
+  var minute;
+  hour = int.parse("${dt.hour}");
+  minute = int.parse("${dt.minute}");
+  if (hour < 10) hour = hour.toString().padLeft(2, '0');
+  if (minute < 9) minute = minute.toString().padLeft(2, '0');
 
-
-/*
-Widget FeedingProfile = Expanded(
-    child: Container(
-        child: ListView.separated(
-  padding: const EdgeInsets.all(8),
-  itemCount: dogList.length,
-  itemBuilder: (BuildContext context, int index) {
-    return Container(
-        height: 80,
-        color: Colors.amber[colorCodes[index]],
-        child: Row(children: [
-          const SizedBox(width: 15),
-          CircleAvatar(
-            backgroundColor: Colors.white,
-            backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
-            //child: Text('AH'),
-          ),
-          const SizedBox(width: 30),
-
-          Expanded(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                Text(
-                    '${dogList[index].getName} - ${dogList[index].getFrequency} time(s) per day'),
-                Text('Feeding Times: ${dogList[index].getFeedTimings}'),
-                Text('Food: ${dogList[index].getFood}'),
-              ])),
-          const SizedBox(width: 15),
-          //_popupSettings(index),
-
-          PopupMenuButton<int>(
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 1,
-                child: Row(
-                  children: <Widget>[
-                    Icon(Icons.edit),
-                    Text('Edit'),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: 2,
-                child: Row(
-                  children: <Widget>[
-                    Icon(Icons.delete),
-                    Text('Delete'),
-                  ],
-                ),
-              ),
-            ],
-          )
-        ])
-        //child: Center(child: Text('Dog ${entries[index]}')),
-        );
-  },
-  separatorBuilder: (BuildContext context, int index) => const Divider(),
-)));
-
- */
+  result = "$hour:$minute";
+  return result;
+}
 
 class Dog {
   String name;
@@ -227,8 +241,10 @@ class Dog {
   int get getFrequency {
     return frequency;
   }
-
-  String get getFeedTimings {
+  List get getFeedTimings{
+    return feedTimings;
+  }
+  String get printFeedTimings {
     //var period;
     List<String> temp = new List();
     var result;
@@ -238,12 +254,8 @@ class Dog {
       hour = int.parse("${feedTimings[i].hour}");
       minute = int.parse("${feedTimings[i].minute}");
       if (hour < 10) hour = hour.toString().padLeft(2, '0');
-      if (minute == 0) minute = minute.toString().padLeft(2, '0');
-      /*
-      if (hour > 12){
-        period = "PM";
-      } else period = "AM";
-      */
+      if (minute < 9) minute = minute.toString().padLeft(2, '0');
+
       result = "$hour:$minute";
       temp.add(result);
     }
@@ -255,11 +267,16 @@ class Dog {
     return food;
   }
 
-  set setFreqency(int frequency) {
+  set setFrequency(int frequency) {
     this.frequency = frequency;
   }
 
-  set setTimings(List feedTimings) {
+  set setTimings(List feedTimings){
+    this.feedTimings = feedTimings;
+  }
+
+  set deleteTiming(int index){
+    feedTimings.removeAt(index);
     this.feedTimings = feedTimings;
   }
 
@@ -267,30 +284,3 @@ class Dog {
     this.food = food;
   }
 }
-
-
-
-/*
-Widget _popupSettings() => PopupMenuButton<int>(
-  itemBuilder: (context) => [
-    PopupMenuItem(
-      value: 1,
-      child: Row(
-        children: <Widget>[
-          Icon(Icons.edit),
-          Text('Edit'),
-        ],
-      ),
-    ),
-    PopupMenuItem(
-      value: 2,
-      child: Row(
-        children: <Widget>[
-          Icon(Icons.delete),
-          Text('Delete'),
-        ],
-      ),
-    ),
-  ],
-);
- */
