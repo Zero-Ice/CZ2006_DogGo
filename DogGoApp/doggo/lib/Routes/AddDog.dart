@@ -1,4 +1,5 @@
 import 'package:doggo/Routes/DogProfile.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -116,12 +117,12 @@ class _AddDogState extends State<AddDog> {
 
 
     Widget buttonContainer =Container(
-      alignment: Alignment.bottomRight,
+        alignment: Alignment.bottomRight,
      // margin: const EdgeInsets.only(right: 10.0),
 
       child: Row(
         children: [
-          SizedBox(width: 180,),
+          SizedBox(width: 185,),
         SizedBox(
             height: 45,
             width: 100,
@@ -160,13 +161,13 @@ class _AddDogState extends State<AddDog> {
               Divider( height:30,color: Colors.grey[600],),
               dogParticulars,
               SizedBox(height: 20,),
-              Text("Mybut: $strDogName"),
-              SizedBox(height: 20,),
-              Text("food: $strDogFood"),
-              Text(saveBt[0]),
-              Text(saveBt[1]),
-              Text(saveBt[2]),
-              SizedBox(height: 20,),
+//              Text("Mybut: $strDogName"),
+//              SizedBox(height: 20,),
+//              Text("food: $strDogFood"),
+//              Text(saveBt[0]),
+//              Text(saveBt[1]),
+//              Text(saveBt[2]),
+              SizedBox(height: 30,),
               buttonContainer,
 
 
