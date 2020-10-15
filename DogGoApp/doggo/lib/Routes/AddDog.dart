@@ -18,7 +18,7 @@ class _AddDogState extends State<AddDog> {
   @override
   Widget build(BuildContext context) {
     Widget dogParticulars = Container(
-      color: Colors.yellow,
+      //color: Colors.yellow,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget> [
@@ -102,17 +102,46 @@ class _AddDogState extends State<AddDog> {
       },
     );
 
-    Widget saveButtonContainer =Container(
+    Widget cancelButton = RaisedButton(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15)
+      ),
+      color: Colors.blue,
+      textColor: Colors.white,
+      child: Text( "Cancel",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold)),
+      onPressed: (){
+        Navigator.pop(context);
+      },
+    );
+
+
+    Widget buttonContainer =Container(
       alignment: Alignment.bottomRight,
-      margin: const EdgeInsets.only(right: 10.0),
+     // margin: const EdgeInsets.only(right: 10.0),
 
-      child: SizedBox(
-        height: 45,
-        width: 100,
-        child: saveButton
-    ),);
+      child: Row(
+        children: [
+          SizedBox(width: 180,),
+        SizedBox(
+            height: 45,
+            width: 100,
+            child: cancelButton),
+          SizedBox(width: 10,),
+          SizedBox(
+              height: 45,
+              width: 100,
+              child: saveButton),
+        ]
+      ));
 
-
+    Widget profileImage  = Container(
+      child: Center(
+          child: CircleAvatar(
+                    backgroundColor: Colors.grey[300],
+                    backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
+                    radius: 60.0,)
+      )
+    );
 
 
     return Scaffold(
@@ -123,10 +152,12 @@ class _AddDogState extends State<AddDog> {
       body: Padding(
         padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
         child: Container(
-          color: Colors.orange,
+          //color: Colors.orange,
           child: Column(
             children: [
-              SizedBox(height: 200,),
+              SizedBox(height: 20,),
+              profileImage,
+              Divider( height:30,color: Colors.grey[600],),
               dogParticulars,
               SizedBox(height: 20,),
               Text("Mybut: $strDogName"),
@@ -135,7 +166,8 @@ class _AddDogState extends State<AddDog> {
               Text(saveBt[0]),
               Text(saveBt[1]),
               Text(saveBt[2]),
-              saveButtonContainer,
+              SizedBox(height: 20,),
+              buttonContainer,
 
 
 
