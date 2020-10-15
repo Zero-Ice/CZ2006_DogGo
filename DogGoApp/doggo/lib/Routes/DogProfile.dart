@@ -2,6 +2,7 @@ import 'package:doggo/Routes/AddDog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:doggo/DogProfileComponent.dart';
 
 
 class DogProfile extends StatefulWidget {
@@ -27,8 +28,6 @@ class _DogProfileState extends State<DogProfile> {
 
 //      print(txt==null?"null":txt);
   }
-
-
   @override
   Widget build(BuildContext context) {
 
@@ -67,6 +66,38 @@ class _DogProfileState extends State<DogProfile> {
         )
     );
 
+    Widget userAdded = Expanded(
+        child: Container(
+            child: ListView.separated(
+              padding: const EdgeInsets.all(8),
+              itemCount: (txt==null?0:1),
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                    height: 80,
+                    child: Row(children: [
+                      const SizedBox(width: 15),
+                      CircleAvatar(
+                        backgroundColor: Colors.white,
+                        backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
+                        //child: Text('AH'),
+                      ),
+                      const SizedBox(width: 30),
+                      Expanded(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Dog : '+txt[0]),
+                                Text('Birthday: '+txt[2]),
+                                Text('Fav Food: '+txt[1])
+                              ]))
+                    ])
+                  //child: Center(child: Text('Dog ${entries[index]}')),
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) => const Divider(),
+            )));
+
+
 
 
     return Scaffold(
@@ -80,6 +111,12 @@ class _DogProfileState extends State<DogProfile> {
               dog1,
               const SizedBox(height: 20),
               dog2,
+              const SizedBox(height: 20),
+              dogProfileComponent,
+              const SizedBox(height: 20),
+              userAdded,
+
+
             ]
         ),
       ),
