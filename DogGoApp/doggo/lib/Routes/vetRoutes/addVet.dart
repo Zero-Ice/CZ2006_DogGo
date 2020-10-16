@@ -1,4 +1,4 @@
-
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -11,11 +11,15 @@ class AddVet extends StatefulWidget {
 
 
   class _AddVetState extends State<AddVet>{
+  String strDogName = "";
     String strDate="";
     String strTime="";
+    DateTime saveDate;
+    TimeOfDay saveTime;
     DateTime _dateTime;
     TimeOfDay _time;
     TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
+    List saveVet;
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,12 +45,15 @@ class AddVet extends StatefulWidget {
                               style: TextStyle(fontSize: 20),
                             ),
                             SizedBox(width: 10,),
-                            Expanded(child: TextField(
-                              controller: TextEditingController(),
-                              decoration: InputDecoration(
-                                hintText: "Which dog to bring",
-                              ),)),
-                          ],),
+                    Expanded(child: TextField(
+                      decoration: InputDecoration(hintText: "Type in Dog name",),
+                      onChanged: (String input) {
+                        setState(() {
+                          strDogName=input;
+                        });
+                      },
+                    ),
+                    )],),
 
                         Row(
                           children: [
@@ -66,7 +73,7 @@ class AddVet extends StatefulWidget {
                               },
                             ),
                             Expanded(
-                              child: Text((_dateTime == null? "Appointment Date" : strDate = new DateFormat.yMd().format(_dateTime)),
+                              child: Text((_dateTime == null? "Appointment Date" : strDate = new DateFormat.yMd().format(_dateTime) ),
                               ),),
                           ],),
                         /////////////////////////////////
@@ -94,12 +101,17 @@ class AddVet extends StatefulWidget {
                         ),
                         //////////////////////////////////////
                         RaisedButton(
+                          child: Text('Save'),
                           onPressed: () {
                             // Navigate back to first screen when tapped.
                             setState((){
+                              saveDate = _dateTime;
+                              saveTime = _time;
+                              saveVet=["$strDogName","$saveDate","$saveTime"];
                             });
+                            Navigator.pop(context,saveVet);
+
                           },
-                          child: Text('Save'),
                         ),
 
                       ],

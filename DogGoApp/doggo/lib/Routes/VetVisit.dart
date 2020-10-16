@@ -1,14 +1,12 @@
 
 import 'package:doggo/Routes/vetRoutes/addVet.dart';
-import 'package:doggo/Routes/vetRoutes/deleteVet.dart';
-import 'package:doggo/Routes/vetRoutes/editVet.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-var time1 = new DateTime(2020, 1, 1, 9, 0);
-var time2 = new DateTime(2020, 1, 1, 19, 30);
-List timings = [time1, time2];
+
 
 var vDate=new DateTime(2020,1, 1, 9, 0);
 var vTime = new TimeOfDay(hour: 00, minute: 00);
@@ -20,12 +18,20 @@ var appt3 = new Appointment("Doggo3", vDateTime);
 
 
 
+
 class VetVisit extends StatefulWidget{
   @override
   _VetVisitState createState() => _VetVisitState();
 }
 
 class _VetVisitState extends State<VetVisit> {
+  int i = 0;
+  int j = 0;
+  String dogName;
+  String newDate;
+  String newTime;
+  List l =List();
+  List<dynamic> data;
   List<Appointment> apptList = [appt1,appt2,appt3];
 
   TimeOfDay _time = TimeOfDay.now();
@@ -131,8 +137,73 @@ class _VetVisitState extends State<VetVisit> {
     });
   }
 
+
+  /*Future<List<String>> GoToAddVet(BuildContext context) async{
+    List<dynamic> result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddVet()));
+    SharedPreferences prefs1 = await SharedPreferences.getInstance();
+    String dogName1 = result[0];
+    List newDateTime = [result[1],result[2]];
+    var newAppt = new Appointment(dogName1,newDateTime);
+    apptList.add(newAppt);
+    prefs1.setStringList(j.toString(), result);
+    List<dynamic> share = prefs1.getStringList(j.toString());
+    j++;
+    setState(() {
+      data= share;
+      dogName= data[0];
+      newDate=data[1];
+      newTime=data[2];
+      l.add(data);
+      print(prefs1.get("0"));
+      print(prefs1.get("1"));
+      print(l);
+    });
+  }
+  */
+  Future<List<String>> GoToAddVet(BuildContext context) async{
+    List<dynamic> result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddVet()));
+    print(result[0]);
+    print(result[1]);
+    print(result[2]);
+
+    setState(() {
+      String dogName1 = result[0];
+      DateTime newDate = result[1];
+      TimeOfDay newTime = result[2];
+      List newDateTime = [newDate, newTime];
+      Appointment newAppt = new Appointment(dogName1,newDateTime);
+      apptList.add(newAppt);
+      print(newAppt.getDogName);
+      print(newAppt.getAppt[0]);
+      print(newAppt.getAppt[1]);
+      print(apptList[4].getDogName);
+      print(apptList[4].getAppt[0]);
+      print(apptList[4].getAppt[1]);
+
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    Widget addbutton=  FloatingActionButton(
+      onPressed: ()  {
+        setState((){
+          GoToAddVet(context);
+          i+=1;
+        });
+      },
+      child:
+      Icon(
+        Icons.add,
+        size: 30,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(50.0),
+      ),
+
+
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text("Vet Appointment"),
@@ -165,7 +236,8 @@ class _VetVisitState extends State<VetVisit> {
                                           Text(
                                               '${apptList[index].getDogName}'),
                                           Text(
-                                              'Appointment Date: ${apptList[index].printTime}'),
+                                              'Appointment Date: '),
+                                          Text('${apptList[index].printDateTime}'),
 
                                         ])),
                                 const SizedBox(width: 15),
@@ -212,7 +284,13 @@ class _VetVisitState extends State<VetVisit> {
                       )))
             ],
           )),
-    );
+
+        floatingActionButton: Container(
+          height: 65.0,
+          width: 65.0,
+          child: FittedBox(
+              child:addbutton),
+        ));
   }
 
 }
@@ -294,7 +372,7 @@ class Appointment{
     allAppt.removeAt(index);
     this.allAppt = allAppt;
   }
-  String get printTime {
+  String get printDateTime {
     //var period;
 
 
@@ -313,11 +391,12 @@ class Appointment{
       result = "$hour:$minute";
       temp.add(result);
     }*/
-    hour = int.parse("${allAppt[1].hour}");
-    minute = int.parse("${allAppt[1].minute}");
     year = int.parse("${allAppt[0].year}");
     month = int.parse("${allAppt[0].month}");
     day = int.parse("${allAppt[0].day}");
+    hour = int.parse("${allAppt[1].hour}");
+    minute = int.parse("${allAppt[1].minute}");
+
 
     if (hour < 10) hour = hour.toString().padLeft(2, '0');
     if (minute <= 9) minute = minute.toString().padLeft(2, '0');
