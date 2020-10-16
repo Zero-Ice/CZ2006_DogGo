@@ -6,27 +6,40 @@ import 'package:doggo/DogProfileComponent.dart';
 
 
 class DogProfile extends StatefulWidget {
-  List<String> txt;
+  List<String> data;
 //  String txt;
-  DogProfile({this.txt});
+  DogProfile({this.data});
   @override
-  _DogProfileState createState() => _DogProfileState(txt);
+  _DogProfileState createState() => _DogProfileState(data);
 }
 
 class _DogProfileState extends State<DogProfile> {
   int i=0;
-  List<String> txt;
+  int j =0;
+  List<String> data;
+  String dogName;
+  String dogFavFood;
+  String dogBirthdate;
+  List l =List();
 //  String txt;
-  _DogProfileState(this.txt);
+  _DogProfileState(this.data);
 
     Future<List<String>> GoToAddDog(BuildContext context) async{
       List<String> result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog()));
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-      preferences.setStringList("key", result);
-      List<String> share = preferences.getStringList("key");
-      txt= share;
-
-//      print(txt==null?"null":txt);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setStringList(j.toString(), result);
+      List<String> share = prefs.getStringList(j.toString());
+      j++;
+      setState(() {
+        data= share;
+        dogName= data[0];
+        dogFavFood=data[1];
+        dogBirthdate=data[2];
+        l.add(data);
+        print(prefs.get("0"));
+        print(prefs.get("1"));
+        print(l);
+      });
   }
   @override
   Widget build(BuildContext context) {
@@ -58,46 +71,77 @@ class _DogProfileState extends State<DogProfile> {
     Widget dog2 = Container(
         child:Column(
           children: [
-            Text(txt==null?"null":txt[0]),
-            Text(txt==null?"null":txt[1]),
-            Text(txt==null?"null":txt[2]),
+            Text(data==null?"null":data[0]),
+            Text(data==null?"null":data[1]),
+            Text(data==null?"null":data[2]),
+
 
           ],
         )
     );
 
-    Widget userAdded = Expanded(
-        child: Container(
-            child: ListView.separated(
-              padding: const EdgeInsets.all(8),
-              itemCount: (txt==null?0:1),
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                    height: 80,
-                    child: Row(children: [
-                      const SizedBox(width: 15),
-                      CircleAvatar(
-                        backgroundColor: Colors.white,
-                        backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
-                        //child: Text('AH'),
-                      ),
-                      const SizedBox(width: 30),
-                      Expanded(
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Dog : '+txt[0]),
-                                Text('Birthday: '+txt[2]),
-                                Text('Fav Food: '+txt[1])
-                              ]))
-                    ])
-                  //child: Center(child: Text('Dog ${entries[index]}')),
-                );
-              },
-              separatorBuilder: (BuildContext context, int index) => const Divider(),
-            )));
+//    Widget userAdded = Expanded(
+//        child: Container(
+//            child: ListView.separated(
+//              padding: const EdgeInsets.all(8),
+//              itemCount: (data==null?0:1),
+//              itemBuilder: (BuildContext context, int index) {
+//                return Container(
+//                    height: 80,
+//                    child: Row(children: [
+//                      const SizedBox(width: 15),
+//                      CircleAvatar(
+//                        backgroundColor: Colors.grey[300],
+//                        backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
+//                        radius: 35,
+//                        //child: Text('AH'),
+//                      ),
+//                      const SizedBox(width: 30),
+//                      Expanded(
+//                          child: Column(
+//                              crossAxisAlignment: CrossAxisAlignment.start,
+//                              children: [
+//                                Text('Dog : '+ data[0]),
+//                                SizedBox(height: 5,),
+//                                Text('Birthday: ' + data[2]),
+//                                SizedBox(height: 5,),
+//                                Text('Fav Food: '+ data[1])
+//                              ]))
+//                    ])
+//                  //child: Center(child: Text('Dog ${entries[index]}')),
+//                );
+//              },
+//              separatorBuilder: (BuildContext context, int index) => const Divider(),
+//            )));
+
+    Widget idk = Container(
+      child: ListView(
+        shrinkWrap: true,
+        children: l.map((data) => Container(
+            child: Row(children: [
+              const SizedBox(width: 15,height: 100,),
+              CircleAvatar(
+                backgroundColor: Colors.grey[300],
+                backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
+                radius: 35,
+                //child: Text('AH'),
+              ),
+              const SizedBox(width: 30),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Dog : '+ data[0]),
+                    SizedBox(height: 5,),
+                    Text('Birthday: ' + data[2]),
+                    SizedBox(height: 5,),
+                    Text('Fav Food: '+ data[1]),
+                    Divider(height: 15,),
+              ],)),
+              ],),
 
 
+        )).toList())
+    );
 
 
     return Scaffold(
@@ -107,20 +151,22 @@ class _DogProfileState extends State<DogProfile> {
       body: Center(
         child: Column(
             children: [
-              const SizedBox(height: 20),
-              dog1,
-              const SizedBox(height: 20),
-              dog2,
-              const SizedBox(height: 20),
+//              const SizedBox(height: 20),
+//              dog1,
+//              const SizedBox(height: 20),
+//              dog2,
+//              const SizedBox(height: 20),
+              idk,
               dogProfileComponent,
-              const SizedBox(height: 20),
-              userAdded,
+//              userAdded,
+
+//              ListView(shrinkWrap: true,children: l.map((data) => Column(children: [Text(data[0]),Text(data[1]),Text(data[2]),SizedBox(height: 5,)],)).toList())
+
 
 
             ]
         ),
       ),
-
 
 
       floatingActionButton: Container(
@@ -131,4 +177,5 @@ class _DogProfileState extends State<DogProfile> {
       ),
     );
   }
+
 }
