@@ -16,7 +16,6 @@ class AddVet extends StatefulWidget {
     DateTime _dateTime;
     TimeOfDay _time;
     TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
-  @override
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,6 +96,8 @@ class AddVet extends StatefulWidget {
                         RaisedButton(
                           onPressed: () {
                             // Navigate back to first screen when tapped.
+                            setState((){
+                            });
                           },
                           child: Text('Save'),
                         ),
