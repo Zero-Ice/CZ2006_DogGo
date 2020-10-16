@@ -11,9 +11,10 @@ class AddDogList {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> spList = prefs.getStringList("dogData");
     sm = spList.map((index) => DogCreation.fromMap(json.decode(index))).toList();
+    print(sm.length);
   }
 
-  Widget dogGo = Expanded(
+  Widget dogList = Expanded(
       child: Container(
           child: ListView.separated(
             padding: const EdgeInsets.all(8),
@@ -36,9 +37,9 @@ class AddDogList {
                             children: [
                               Text('Dog: ${sm[index].getName}'),
                               SizedBox(height: 5,),
-                              Text('Fav Food: ${sm[1].geFavFood}'),
+                              Text('Fav Food: ${sm[index].geFavFood}'),
                               SizedBox(height: 5,),
-                              Text('Birthday: ${sm[1].getBirthDate}'),
+                              Text('Birthday: ${sm[index].getBirthDate}'),
                             ]))
                   ])
                 //child: Center(child: Text('Dog ${entries[index]}')),
@@ -47,8 +48,23 @@ class AddDogList {
             separatorBuilder: (BuildContext context,
                 int index) => const Divider(height: 20,),
           )));
+
+   Widget emptyList = Container(
+     child: Column(
+         children: [
+           SizedBox(height: 300,),
+           Text("There are no dogs added."),
+           SizedBox(height: 300,),
+         ]
+        )
+   );
+
   Widget run(){
     getSPlist();
-    return dogGo;
+    if(sm.length==0){
+      return emptyList;
+    }else{
+      return dogList;
+    }
   }
 }

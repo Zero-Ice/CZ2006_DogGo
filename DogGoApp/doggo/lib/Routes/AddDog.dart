@@ -182,13 +182,6 @@ class _AddDogState extends State<AddDog> {
               profileImage,
               Divider( height:30,color: Colors.grey[600],),
               dogParticulars,
-              SizedBox(height: 20,),
-//              Text("Mybut: $strDogName"),
-//              SizedBox(height: 20,),
-//              Text("food: $strDogFood"),
-//              Text(saveBt[0]),
-//              Text(saveBt[1]),
-//              Text(saveBt[2]),
               SizedBox(height: 30,),
               buttonContainer,
 

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:doggo/Routes/AddDog.dart';
-import 'package:doggo/SavedDogList.dart';
+import 'package:doggo/AddDogList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,7 +25,6 @@ class _DogProfileState extends State<DogProfile> {
   List l =List();
   SharedPreferences prefs;
   _DogProfileState(this.addedData);
-
   @override
   void initState() {
     // TODO: implement initState
@@ -47,6 +46,7 @@ class _DogProfileState extends State<DogProfile> {
     List<String> spList = prefs.getStringList("dogData");
     dogsList = spList.map((index) => DogCreation.fromMap(json.decode(index))).toList();
     setState(() {});
+
   }
 
 
@@ -172,6 +172,7 @@ class _DogProfileState extends State<DogProfile> {
     );
 
 
+
     return Scaffold(
       appBar: AppBar(
         title: Text("DogProfile"),
@@ -180,7 +181,7 @@ class _DogProfileState extends State<DogProfile> {
         child: Column(
             children: [
               dogListBuilder,
-              AddDogList().run()
+
             ]
         ),
       ),
