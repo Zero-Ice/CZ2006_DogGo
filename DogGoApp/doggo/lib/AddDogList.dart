@@ -52,9 +52,8 @@ class AddDogList {
    Widget emptyList = Container(
      child: Column(
          children: [
-           SizedBox(height: 300,),
+           SizedBox(height: 25,),
            Text("There are no dogs added."),
-           SizedBox(height: 300,),
          ]
         )
    );
