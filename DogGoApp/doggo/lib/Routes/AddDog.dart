@@ -5,6 +5,11 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 class AddDog extends StatefulWidget {
+  final String eName;
+  final String eFood;
+  final String eBday;
+  AddDog({this.eName,this.eFood,this.eBday});
+
   @override
   _AddDogState createState() => _AddDogState();
 }
@@ -12,10 +17,28 @@ class AddDog extends StatefulWidget {
 class _AddDogState extends State<AddDog> {
   String strDogName="";
   String strDogFood="";
-  String strDate="";
-  List<String> saveBt = ["A","B","not"];
+  String strBirthday="Not Specified";
+  TextEditingController conDogName;
+  TextEditingController conDogFood;
+  TextEditingController conBday;
+  List<String> saveBt = ["","",""];
   DateTime _dateTime;
 
+  Widget dateTextHandling(){
+    if(conBday.text=="" || conBday.text=="Not Specified"){
+      return Text("Not Specfied",style: TextStyle(color: Colors.grey[600]),);
+    }else{
+      return Text(conBday.text);
+    }
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    conDogName = TextEditingController(text: widget.eName);
+    conDogFood = TextEditingController(text: widget.eFood);
+    conBday = TextEditingController(text: widget.eBday);
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     Widget dogParticulars = Container(
@@ -32,11 +55,7 @@ class _AddDogState extends State<AddDog> {
             SizedBox(width: 10,),
             Expanded(child: TextField(
               decoration: InputDecoration(hintText: "Type in Dog name",),
-              onChanged: (String input) {
-                setState(() {
-                  strDogName=input;
-                });
-              },
+              controller: conDogName,
             )),
             ],),
             SizedBox(height: 20,),
@@ -51,11 +70,7 @@ class _AddDogState extends State<AddDog> {
               Expanded(
                   child: TextField(
                     decoration: InputDecoration(hintText: "Type in favourite food",),
-                    onChanged: (String input){
-                      setState(() {
-                        strDogFood=input;
-                      });
-                    },
+                    controller: conDogFood,
                   )),
               ],
             ),
@@ -69,7 +84,8 @@ class _AddDogState extends State<AddDog> {
                 ),
                 SizedBox(width: 10,),
                 IconButton(
-                  icon: Icon(Icons.calendar_today,color: Colors.black,),
+                  icon: Icon(Icons.calendar_today,color: Colors.grey[625],),
+                  iconSize: 30,
                   onPressed: (){
                     showDatePicker(
                         context: context,
@@ -79,13 +95,20 @@ class _AddDogState extends State<AddDog> {
                   },
                 ),
                 Expanded(
-                  child: Text((_dateTime == null? "chosen" : strDate = new DateFormat.yMd().format(_dateTime)),
-                ),),
+                  child:
+                    (_dateTime == null?
+                    //null
+                    dateTextHandling() :
+                    //date
+                    Text(strBirthday = new DateFormat.yMd().format(_dateTime))
+                    ),
+                ),
               ],),
 
           ],
         ),
     );
+
 
 
     Widget saveButton = RaisedButton(
@@ -97,7 +120,7 @@ class _AddDogState extends State<AddDog> {
       child: Text( "Save",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold)),
       onPressed: (){
         setState(() {
-          saveBt=["$strDogName","$strDogFood","$strDate"];
+          saveBt=[conDogName.text,conDogFood.text,"$strBirthday"];
         });
         Navigator.pop(context,saveBt);
       },
@@ -160,13 +183,6 @@ class _AddDogState extends State<AddDog> {
               profileImage,
               Divider( height:30,color: Colors.grey[600],),
               dogParticulars,
-              SizedBox(height: 20,),
-//              Text("Mybut: $strDogName"),
-//              SizedBox(height: 20,),
-//              Text("food: $strDogFood"),
-//              Text(saveBt[0]),
-//              Text(saveBt[1]),
-//              Text(saveBt[2]),
               SizedBox(height: 30,),
               buttonContainer,
 

@@ -30,9 +30,10 @@ Widget dogProfileComponent = Expanded(
                   children: [
                 Text('Dog ${entries[index]}'),
                 SizedBox(height: 5,),
-                Text('Birthday: '),
+                Text('Fav Food: '),
                 SizedBox(height: 5,),
-                Text('Fav Food: ')
+                Text('Birthday: '),
+
               ]))
         ])
         //child: Center(child: Text('Dog ${entries[index]}')),

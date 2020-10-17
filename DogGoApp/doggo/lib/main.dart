@@ -13,6 +13,7 @@ import 'DogProfileComponent.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'forecast.dart';
+import 'package:doggo/AddDogList.dart';
 
 
 
@@ -188,20 +189,31 @@ Future<Forecast> forecast5() async{
 }
 
 
-class Home extends StatelessWidget {
-  Future<Weather> futureWeather1 = fetchWeather1(); // gets temperature from api
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  Future<Weather> futureWeather1 = fetchWeather1();
   Future<Weather> futureWeather2 = fetchWeather2();
+
   Future<Weather> futureWeather3 = fetchWeather3();
+
   Future<Weather> futureWeather4 = fetchWeather4();
+
   Future<Weather> futureWeather5 = fetchWeather5();
 
   @override
   Future<Forecast> futureforecast1 = forecast1();
-  Future<Forecast> futureforecast2 = forecast2();
-  Future<Forecast> futureforecast3 = forecast3();
-  Future<Forecast> futureforecast4 = forecast4();
-  Future<Forecast> futureforecast5 = forecast5();
 
+  Future<Forecast> futureforecast2 = forecast2();
+
+  Future<Forecast> futureforecast3 = forecast3();
+
+  Future<Forecast> futureforecast4 = forecast4();
+
+  Future<Forecast> futureforecast5 = forecast5();
 
   Widget build(BuildContext context) {
     // Widget Weather Section
@@ -743,6 +755,17 @@ class Home extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('My First DogGo'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh,color: Colors.white,),
+            iconSize: 35,
+            onPressed: (){
+              setState(() {
+                AddDogList().getSPlist();
+              });
+            },
+          ),
+        ],
       ),
       drawer: Drawer(
         // Add a ListView to the drawer. This ensures the user can scroll
@@ -753,10 +776,18 @@ class Home extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              child: Text('Settings'),
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Text('Settings',
+                      style: TextStyle(fontSize: 25, color: Colors.white),),
+                  ),
+                ],
+              )
             ),
             ListTile(
               title: Text('Notification Settings'),
@@ -811,7 +842,7 @@ class Home extends StatelessWidget {
           const SizedBox(height: 20),
           walkDogSection,
           const SizedBox(height: 10),
-          dogProfileComponent,
+          AddDogList().run(),
           const SizedBox(height: 20),
           Align(
             alignment: Alignment.bottomCenter,
