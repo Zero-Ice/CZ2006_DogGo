@@ -143,12 +143,13 @@ class _FeedingTimeState extends State<FeedingTime> {
             itemBuilder: (BuildContext context, int index) {
               return Container(
                   height: 80,
-                  color: Colors.amber[600],
+                  //color: Colors.amber[600],
                   child: Row(children: [
-                    const SizedBox(width: 15),
+                    const SizedBox(width: 15, height: 100),
                     CircleAvatar(
-                      backgroundColor: Colors.white,
+                      backgroundColor: Colors.grey[300],
                       backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
+                      radius: 35,
                       //child: Text('AH'),
                     ),
                     const SizedBox(width: 30),
@@ -158,7 +159,7 @@ class _FeedingTimeState extends State<FeedingTime> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                           Text(
-                              '${dogList[index].getName} - ${dogList[index].getFrequency} time(s) per day'),
+                              '${dogList[index].getName}'), //- ${dogList[index].getFrequency} time(s) per day'
                           Text(
                               'Feeding Times: ${dogList[index].printFeedTimings}'),
                           Text('Food: ${dogList[index].getFood}'),
@@ -203,7 +204,7 @@ class _FeedingTimeState extends State<FeedingTime> {
                   );
             },
             separatorBuilder: (BuildContext context, int index) =>
-                const Divider(),
+                const Divider(height: 20),
           )))
         ],
       )),
