@@ -3,8 +3,8 @@ import 'package:flutter/widgets.dart';
 
 // Widget Dog Profiles
 // Have to reuse this in dog profile page.
-final List<String> entries = <String>['A', 'B', 'C', 'D', 'E', 'F'];
-final List<int> colorCodes = <int>[600, 500, 100, 300, 200, 100];
+final List<String> entries = <String>['A', 'B', 'C'];
+//final List<int> colorCodes = <int>[600, 500, 100];
 
 Widget dogProfileComponent = Expanded(
     child: Container(
@@ -14,12 +14,13 @@ Widget dogProfileComponent = Expanded(
   itemBuilder: (BuildContext context, int index) {
     return Container(
         height: 80,
-        color: Colors.amber[colorCodes[index]],
+        //color: Colors.amber[colorCodes[index]],
         child: Row(children: [
           const SizedBox(width: 15),
           CircleAvatar(
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.grey[300],
             backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
+            radius: 35,
             //child: Text('AH'),
           ),
           const SizedBox(width: 30),
@@ -28,12 +29,15 @@ Widget dogProfileComponent = Expanded(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                 Text('Dog ${entries[index]}'),
+                SizedBox(height: 5,),
+                Text('Fav Food: '),
+                SizedBox(height: 5,),
                 Text('Birthday: '),
-                Text('Fav Food: ')
+
               ]))
         ])
         //child: Center(child: Text('Dog ${entries[index]}')),
         );
   },
-  separatorBuilder: (BuildContext context, int index) => const Divider(),
+  separatorBuilder: (BuildContext context, int index) => const Divider( height: 20,),
 )));
