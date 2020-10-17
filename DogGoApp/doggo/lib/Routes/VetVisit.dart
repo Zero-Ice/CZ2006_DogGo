@@ -168,17 +168,17 @@ class _VetVisitState extends State<VetVisit> {
 
     setState(() {
       String dogName1 = result[0];
-      DateTime newDate = result[1];
-      TimeOfDay newTime = result[2];
+      DateTime newDate = DateTime.parse( result[1]);
+      TimeOfDay newTime = TimeOfDay(hour:int.parse(result[2].split(":")[0]),minute: int.parse(result[2].split(":")[1]));
       List newDateTime = [newDate, newTime];
       Appointment newAppt = new Appointment(dogName1,newDateTime);
       apptList.add(newAppt);
       print(newAppt.getDogName);
       print(newAppt.getAppt[0]);
       print(newAppt.getAppt[1]);
-      print(apptList[4].getDogName);
-      print(apptList[4].getAppt[0]);
-      print(apptList[4].getAppt[1]);
+      //print(apptList[4].getDogName);
+      //print(apptList[4].getAppt[0]);
+      //print(apptList[4].getAppt[1]);
 
     });
   }

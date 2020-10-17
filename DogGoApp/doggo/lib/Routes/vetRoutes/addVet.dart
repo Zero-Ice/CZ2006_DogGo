@@ -107,7 +107,7 @@ class AddVet extends StatefulWidget {
                             setState((){
                               saveDate = _dateTime;
                               saveTime = _time;
-                              saveVet=["$strDogName","$saveDate","$saveTime"];
+                              saveVet=["$strDogName","$saveDate","$strTime"];
                             });
                             Navigator.pop(context,saveVet);
 
