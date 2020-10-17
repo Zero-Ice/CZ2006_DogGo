@@ -7,7 +7,7 @@ import 'package:doggo/DogCreationClass.dart';
 class AddDogList {
    static List<DogCreation> sm = List<DogCreation>();
 
-  getSPlist() async {
+   getSPlist() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> spList = prefs.getStringList("dogData");
     sm = spList.map((index) => DogCreation.fromMap(json.decode(index))).toList();

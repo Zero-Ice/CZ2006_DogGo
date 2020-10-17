@@ -84,7 +84,8 @@ class _AddDogState extends State<AddDog> {
                 ),
                 SizedBox(width: 10,),
                 IconButton(
-                  icon: Icon(Icons.calendar_today,color: Colors.black,),
+                  icon: Icon(Icons.calendar_today,color: Colors.grey[625],),
+                  iconSize: 30,
                   onPressed: (){
                     showDatePicker(
                         context: context,

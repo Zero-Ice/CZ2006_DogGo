@@ -8,23 +8,24 @@ import 'package:doggo/DogCreationClass.dart';
 
 
 class DogProfile extends StatefulWidget {
-  final List<String> addedData;
-  DogProfile({this.addedData});
   @override
-  _DogProfileState createState() => _DogProfileState(addedData);
+  _DogProfileState createState() => _DogProfileState();
 }
 
 class _DogProfileState extends State<DogProfile> {
   int i=0;
   int j =0;
   List<DogCreation> dogsList = List<DogCreation>();
-  List<String> addedData;
   String dogName;
   String dogFavFood;
   String dogBirthdate;
   List l =List();
   SharedPreferences prefs;
-  _DogProfileState(this.addedData);
+
+
+
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -172,16 +173,15 @@ class _DogProfileState extends State<DogProfile> {
     );
 
 
-
     return Scaffold(
       appBar: AppBar(
         title: Text("DogProfile"),
+
       ),
       body: Center(
         child: Column(
             children: [
               dogListBuilder,
-
             ]
         ),
       ),
