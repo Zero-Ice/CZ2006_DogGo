@@ -15,9 +15,6 @@ import 'package:intl/intl.dart';
 import 'forecast.dart';
 import 'package:doggo/AddDogList.dart';
 
-
-
-
 void main() {
   runApp(new MaterialApp(
     title: 'Fetch weather test',
@@ -36,158 +33,113 @@ void main() {
   ));
 }
 
-
-DateFormat dateFormat = DateFormat("yyyy-MM-dd");
-String current_day = dateFormat.format(DateTime.now())+'T';
-DateFormat dateFormat1 = DateFormat("HH");
-var now = new DateTime.now();
-String current_hour = DateFormat('kk').format(now);
-
-
-var now1 = new DateTime.now();
-var current_hour_1 = now1.add(Duration(days: 0, hours: 1, minutes: 0));
-String current_hour_11 = DateFormat('kk').format(now);
-
-var now2 = new DateTime.now();
-var current_hour_2 = now2.add(Duration(days: 0, hours: 2, minutes: 0));
-String current_hour_22 = DateFormat('kk').format(now);
-
-int hour_back1 = int.parse(current_hour) -1;
-String hour_back1_s = "$hour_back1";
-
-int hour_back2 = int.parse(current_hour) -2;
-String hour_back2_s = "$hour_back2";
-
-
-int hour_forward1 = int.parse(current_hour_11);
-String hour_forward1_s = "$hour_forward1";
-
-int hour_forward2 = int.parse(current_hour_22);
-String hour_forward2_s = "$hour_forward2";
-
-
-
 String toHourString(int hour) {
   if (hour < 10) {
-    return "0" + hour.toString() + ":00";
-  }
-  else if(hour>=25)
-  {
-    return "0" + (hour-24).toString() + ":00";
+    return "0" + hour.toString() + ":00:00";
+  } else if (hour >= 25) {
+    return "0" + (hour - 24).toString() + ":00:00";
   }
 
-  return hour.toString() + ":00";
+  return hour.toString() + ":00:00";
 }
 
-// Temperature
-Future<Weather> fetchWeather1() async{
-
-  final response=
-  await http.get(('https://api.data.gov.sg/v1/environment/air-temperature?date_time='+current_day+hour_back2_s+'%3A45%3A00'));
-
-  if (response.statusCode ==200){
-    return Weather.fromJson(json.decode(response.body));
-  } else{
-    throw Exception('failed to load data');
+// Air Temperature
+Future<List<Weather>> fetchAllWeather(List<String> hours) async {
+  print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa');
+  List<Weather> weathers = new List(5);
+  for (int i = 0; i < hours.length; i++) {
+    print("fetching weather " + hours[i]);
+    var response = await http.get(
+        ('https://api.data.gov.sg/v1/environment/air-temperature?date_time=' +
+            hours[i]));
+    print("got response");
+    if (response.statusCode == 200) {
+      weathers[i] = (Weather.fromJson(json.decode(response.body)));
+    } else {
+      // throw Exception('N/A');
+    }
   }
+
+  return weathers;
 }
 
-Future<Weather> fetchWeather2() async{
-  final response=
-  await http.get(('https://api.data.gov.sg/v1/environment/air-temperature?date_time='+current_day+hour_back1_s+'%3A45%3A00'));
-
-  if (response.statusCode ==200){
-    return Weather.fromJson(json.decode(response.body));
-  } else{
-    throw Exception('failed to load data');
+// Fetch weather all forecasts
+Future<List<Forecast>> fetchAllForecasts(List<String> hours) async {
+  print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa');
+  print(hours.length);
+  List<Forecast> forecasts = new List(5);
+  for (int i = 0; i < hours.length; i++) {
+    print('fetching forecast' + hours[i]);
+    var response = await http.get(
+        ('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time=' +
+            hours[i]));
+    print('got forecast response ' + response.statusCode.toString());
+    if (response.statusCode == 200) {
+      print('adding response');
+      forecasts[i] = (Forecast.fromJson(json.decode(response.body)));
+    } else {
+      // throw Exception('N/A');
+    }
   }
+
+  return forecasts;
 }
 
-Future<Weather> fetchWeather3() async{
-  final response=
-  await http.get(('https://api.data.gov.sg/v1/environment/air-temperature?date_time='+current_day+current_hour+'%3A45%3A00'));
-
-  if (response.statusCode ==200){
-    return Weather.fromJson(json.decode(response.body));
-  } else{
-    throw Exception('failed to load data');
+// Get weather code
+String getWeatherCodeFromForecast(String forecast) {
+  String weatherCode = "";
+  switch (forecast) {
+    case "ForecastEnum.CLOUDY":
+      weatherCode = 'wi-day-cloudy';
+      break;
+    case "ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS":
+      weatherCode = 'wi-day-thunderstorm';
+      break;
+    case "ForecastEnum.LIGHT_RAIN":
+      weatherCode = 'wi-day-rain';
+      break;
+    case "ForecastEnum.MODERATE_RAIN":
+      weatherCode = 'wi-day-rain-wind';
+      break;
+    case "ForecastEnum.THUNDERY_SHOWERS":
+      weatherCode = 'wi-thunderstorm';
+      break;
+    default:
+      weatherCode = 'wi-day-cloudy';
   }
-}
-Future<Weather> fetchWeather4() async{
-  final response=
-  await http.get(('https://api.data.gov.sg/v1/environment/air-temperature?date_time='+current_day+hour_forward1_s+'%3A45%3A00'));
-
-  if (response.statusCode ==200){
-    return Weather.fromJson(json.decode(response.body));
-  } else{
-    throw Exception('failed to load data');
-  }
-}
-
-Future<Weather> fetchWeather5() async{
-  final response=
-  await http.get(('https://api.data.gov.sg/v1/environment/air-temperature?date_time='+current_day+hour_forward2_s+'%3A45%3A00'));
-
-  if (response.statusCode ==200){
-    return Weather.fromJson(json.decode(response.body));
-  } else{
-    throw Exception('failed to load data');
-  }
+  
+  return weatherCode;
 }
 
+// Returns a list of string from +=2 from current hour and current hour, starting from -2 to +2
+List<String> UpdateHourArray() {
+  print("Updating hour array");
+  DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+  String current_day = dateFormat.format(DateTime.now()) + 'T';
 
+  var now = new DateTime.now();
+  int current_hour = now.hour;
 
-Future<Forecast> forecast1() async{
-  final response=
-  await http.get('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time='+current_day+hour_back2_s+'%3A00%3A00');
+  int hour_back1 = current_hour - 1;
+  String hour_back1_s = toHourString(hour_back1);
 
-  if (response.statusCode ==200){
-    return Forecast.fromJson(json.decode(response.body));
-  } else{
-    throw Exception('failed to load data');
-  }
+  int hour_back2 = current_hour - 2;
+  String hour_back2_s = toHourString(hour_back2);
+
+  int hour_forward1 = current_hour + 1;
+  String hour_forward1_s = toHourString(hour_forward1);
+
+  int hour_forward2 = current_hour + 2;
+  String hour_forward2_s = toHourString(hour_forward2);
+
+  return [
+    current_day + hour_back2_s,
+    current_day + hour_back1_s,
+    current_day + toHourString(current_hour),
+    current_day + hour_forward1_s,
+    current_day + hour_forward2_s
+  ];
 }
-Future<Forecast> forecast2() async{
-  final response=
-  await http.get('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time='+current_day+hour_back1_s+'%3A00%3A00');
-
-  if (response.statusCode ==200){
-    return Forecast.fromJson(json.decode(response.body));
-  } else{
-    throw Exception('failed to load data');
-  }
-}
-Future<Forecast> forecast3() async{
-  final response=
-  await http.get('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time='+current_day+current_hour+'%3A45%3A00');
-
-  if (response.statusCode ==200){
-    return Forecast.fromJson(json.decode(response.body));
-  } else{
-    throw Exception('failed to load data');
-  }
-}
-Future<Forecast> forecast4() async{
-  final response=
-  await http.get('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time='+current_day+hour_forward1_s+'%3A00%3A00');
-
-  if (response.statusCode ==200){
-    return Forecast.fromJson(json.decode(response.body));
-  } else{
-    throw Exception('failed to load data');
-  }
-}
-Future<Forecast> forecast5() async{
-  final response=
-  await http.get('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time='+current_day+hour_forward2_s+'%3A00%3A00');
-
-  if (response.statusCode ==200){
-    return Forecast.fromJson(json.decode(response.body));
-  } else{
-    throw Exception('failed to load data');
-  }
-}
-
 
 class Home extends StatefulWidget {
   @override
@@ -195,69 +147,77 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Future<Weather> futureWeather1 = fetchWeather1();
-  Future<Weather> futureWeather2 = fetchWeather2();
+  int currentHour = DateTime.now().hour;
+  List<String> hoursArray = [];
 
-  Future<Weather> futureWeather3 = fetchWeather3();
-
-  Future<Weather> futureWeather4 = fetchWeather4();
-
-  Future<Weather> futureWeather5 = fetchWeather5();
+  Future<List<Weather>> futureWeather;
+  Future<List<Forecast>> futureForecasts;
 
   @override
-  Future<Forecast> futureforecast1 = forecast1();
-
-  Future<Forecast> futureforecast2 = forecast2();
-
-  Future<Forecast> futureforecast3 = forecast3();
-
-  Future<Forecast> futureforecast4 = forecast4();
-
-  Future<Forecast> futureforecast5 = forecast5();
+  void initState() {
+    super.initState();
+    hoursArray = UpdateHourArray();
+    print(hoursArray);
+    futureWeather = fetchAllWeather(hoursArray);
+    futureForecasts = fetchAllForecasts(hoursArray);
+    print('init');
+  }
 
   Widget build(BuildContext context) {
     // Widget Weather Section
     Color color = Theme.of(context).primaryColor;
-    int currentHour = DateTime.now().hour;
 
-    // String tempLabel pretty redundant as we get the data from our builder
-    // TODO: Remove the tempLabel
-
-    Widget _buildWeatherInfoColumn1(
-        Color color, String timeLabel) {
-      return FutureBuilder<Weather>(
-          future: futureWeather1,
+    Widget _buildAllWeatherInfoColumn() {
+      return FutureBuilder<List<Weather>>(
+          future: futureWeather,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              String weather =
-                  snapshot.data.items[0].readings[0].value.toString() + "C"; // The value of the temperature in stirng
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      timeLabel,
-                      style: TextStyle(
-                        fontSize: 12, // font of the time
-                        fontWeight: FontWeight.w400,
-                        color: color,
-                      ),
-                    ),
+              // String weather =
+              //     snapshot.data.items[0].readings[0].value.toString() +
+              //         "C"; // The value of the temperature in string
+              print("Weather data");
+              print(snapshot.data);
+              return Container(
+                height: 100,
+                width: MediaQuery.of(context).size.width,
+                child: Center(
+
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 5,
+                    itemBuilder: (context, index){
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(top: 8),
+                            child: Text(
+                              "A",
+                              // hoursArray[index],
+                              style: TextStyle(
+                                fontSize: 12, // font of the time
+                                fontWeight: FontWeight.w400,
+                                color: color,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 8),
+                            child: Text(
+                              snapshot.data[index] != null ? snapshot.data[index].items[0].readings[0].value.toString() + "C" : "C", // Temperature value
+                              style: TextStyle(
+                                fontSize: 12, // font of the temperature
+                                fontWeight: FontWeight.w400,
+                                color: color,
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      weather, // Temperature value
-                      style: TextStyle(
-                        fontSize: 12, // font of the tmeperature
-                        fontWeight: FontWeight.w400,
-                        color: color,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               );
               //return Text(returnData);
             } else if (snapshot.hasError) {
@@ -269,275 +229,33 @@ class _HomeState extends State<Home> {
           });
     }
 
-    Widget _buildForecastInfoColumn1(
-        Color color, String timeLabel) {
-      return FutureBuilder<Forecast>(
-          future: futureforecast1,
+    Widget _buildForecastInfoSection() {
+      return FutureBuilder<List<Forecast>>(
+          future: futureForecasts,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              String weathercodetest1 = snapshot.data.items[0].forecasts[0].forecast.toString();
-              print(weathercodetest1);
-              // ignore: unnecessary_statements
-              (() {
-                switch(weathercodetest1) {
-                  case "ForecastEnum.CLOUDY":
-                    weathercodetest1 = 'wi-day-cloudy';
-                    break;
-                  case "ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS":
-                    weathercodetest1 = 'wi-day-thunderstorm';
-                    break;
-                  case "ForecastEnum.LIGHT_RAIN":
-                    weathercodetest1 = 'wi-day-rain';
-                    break;
-                  case "ForecastEnum.MODERATE_RAIN":
-                    weathercodetest1 = 'wi-day-rain-wind';
-                    break;
-                  case "ForecastEnum.THUNDERY_SHOWERS":
-                    weathercodetest1 = 'wi-thunderstorm';
-                    break;
-                  default:
-                    weathercodetest1 = 'wi-day-cloudy';
-                }
-              }());
-               return Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                  BoxedIcon(
-                  WeatherIcons.fromString(weathercodetest1, fallback: WeatherIcons.na), // Icons
-            // icon
-
-            )]);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
-
-            // By default, show a loading spinner.
-            return CircularProgressIndicator();
-          });
-    }
-    Widget _buildForecastInfoColumn2(
-        Color color, String timeLabel) {
-      return FutureBuilder<Forecast>(
-          future: futureforecast2,
-          builder: ( context, snapshot1) {
-            if (snapshot1.hasData) {
-              String weathercodetest2 = snapshot1.data.items[0].forecasts[0].forecast.toString();
-              (() {
-                switch(weathercodetest2) {
-                  case "ForecastEnum.CLOUDY":
-                    weathercodetest2 = 'wi-day-cloudy';
-                    break;
-                  case "ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS":
-                    weathercodetest2 = 'wi-day-thunderstorm';
-                    break;
-                  case "ForecastEnum.LIGHT_RAIN":
-                    weathercodetest2 = 'wi-day-rain';
-                    break;
-                  case "ForecastEnum.MODERATE_RAIN":
-                    weathercodetest2 = 'wi-day-rain-wind';
-                    break;
-                  case "ForecastEnum.THUNDERY_SHOWERS":
-                    weathercodetest2 = 'wi-thunderstorm';
-                    break;
-                  default:
-                    weathercodetest2 = 'wi-day-cloudy';
-                }
-              }());
-              return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    BoxedIcon(
-                      WeatherIcons.fromString(weathercodetest2, fallback: WeatherIcons.na), // Icons
-                      // icon
-
-                    )]);
-            } else if (snapshot1.hasError) {
-              return Text("${snapshot1.error}");
-            }
-
-            // By default, show a loading spinner.
-            return CircularProgressIndicator();
-          });
-    }
-    Widget _buildForecastInfoColumn3(
-        Color color, String timeLabel) {
-      return FutureBuilder<Forecast>(
-          future: futureforecast3,
-          builder: ( context, snapshot) {
-            if (snapshot.hasData) {
-              String weathercodetest3 = snapshot.data.items[0].forecasts[0].forecast.toString();
-              (() {
-                switch(weathercodetest3) {
-                  case "ForecastEnum.CLOUDY":
-                    weathercodetest3 = 'wi-day-cloudy';
-                    break;
-                  case "ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS":
-                    weathercodetest3 = 'wi-day-thunderstorm';
-                    break;
-                  case "ForecastEnum.LIGHT_RAIN":
-                    weathercodetest3 = 'wi-day-rain';
-                    break;
-                  case "ForecastEnum.MODERATE_RAIN":
-                    weathercodetest3 = 'wi-day-rain-wind';
-                    break;
-                  case "ForecastEnum.THUNDERY_SHOWERS":
-                    weathercodetest3 = 'wi-thunderstorm';
-                    break;
-                  default:
-                    weathercodetest3 = 'wi-day-cloudy';
-                }
-              }());
-              return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    BoxedIcon(
-                      WeatherIcons.fromString(weathercodetest3, fallback: WeatherIcons.na), // Icons
-                      // icon
-
-                    )]);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
-
-            // By default, show a loading spinner.
-            return CircularProgressIndicator();
-          });
-    }
-    Widget _buildForecastInfoColumn4(
-        Color color, String timeLabel) {
-      return FutureBuilder<Forecast>(
-          future: futureforecast4,
-          builder: ( context, snapshot) {
-            if (snapshot.hasData) {
-              String weathercodetest4 = snapshot.data.items[0].forecasts[0].forecast.toString();
-              (() {switch(weathercodetest4) {
-                case "ForecastEnum.CLOUDY":
-                  weathercodetest4 = 'wi-day-cloudy';
-                  break;
-                case "ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS":
-                  weathercodetest4 = 'wi-day-thunderstorm';
-                  break;
-                case "ForecastEnum.LIGHT_RAIN":
-                  weathercodetest4 = 'wi-day-rain';
-                  break;
-                case "ForecastEnum.MODERATE_RAIN":
-                  weathercodetest4 = 'wi-day-rain-wind';
-                  break;
-                case "ForecastEnum.THUNDERY_SHOWERS":
-                  weathercodetest4 = 'wi-thunderstorm';
-                  break;
-                default:
-                  weathercodetest4 = 'wi-day-cloudy';
-              }
-              }());
-              return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    BoxedIcon(
-                      WeatherIcons.fromString(weathercodetest4, fallback: WeatherIcons.na), // Icons
-                      // icon
-
-                    )]);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
-
-            // By default, show a loading spinner.
-            return CircularProgressIndicator();
-          });
-    }
-    Widget _buildForecastInfoColumn5(
-        Color color, String timeLabel) {
-      return FutureBuilder<Forecast>(
-          future: futureforecast5,
-          builder: ( context, snapshot) {
-            if (snapshot.hasData) {
-              String weathercodetest5 = (snapshot.data.items[0].forecasts[0].forecast).toString();
-              print(weathercodetest5);
-
-              (() {
-                switch(weathercodetest5) {
-                  case "ForecastEnum.CLOUDY":
-                    weathercodetest5='wi-day-cloudy';
-                    break;
-                  case "ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS":
-                    weathercodetest5 = 'wi-day-thunderstorm';
-                    break;
-                  case "ForecastEnum.LIGHT_RAIN":
-                    weathercodetest5 = 'wi-day-rain';
-                    break;
-                  case "ForecastEnum.MODERATE_RAIN":
-                    weathercodetest5 = 'wi-day-rain-wind';
-                    break;
-                  case "ForecastEnum.THUNDERY_SHOWERS":
-                    weathercodetest5 = 'wi-thunderstorm';
-                    break;
-                  default:
-                    weathercodetest5='wi-day-cloudy';
-
-                }
-
-              }());
-              return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    BoxedIcon(
-                      WeatherIcons.fromString(weathercodetest5, fallback: WeatherIcons.na), // Icons
-                      // icon
-
-                    )]);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
-
-            // By default, show a loading spinner.
-            return CircularProgressIndicator();
-          });
-    }
-    Widget _buildWeatherInfoColumn2(
-        Color color, String timeLabel) {
-      return FutureBuilder<Weather>(
-          future: futureWeather2,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              /* String returnData = snapshot.data.metadata.stations[0].name +
-                  " Temperature : " +
-                  snapshot.data.items[0].readings[0].value.toString() +
-                  "C"; */
-              String weather =
-                  snapshot.data.items[0].readings[0].value.toString() + "C"; // The value of the temperature in stirng
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      timeLabel,
-                      style: TextStyle(
-                        fontSize: 12, // font of the time
-                        fontWeight: FontWeight.w400,
-                        color: color,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      weather, // Temperature value
-                      style: TextStyle(
-                        fontSize: 12, // font of the tmeperature
-                        fontWeight: FontWeight.w400,
-                        color: color,
-                      ),
-                    ),
-                  ),
-                ],
+              print("Forecast data");
+              print(snapshot.data);
+              return Container(
+                height: 100,
+                width: MediaQuery.of(context).size.width,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 5,
+                  itemBuilder: (context, index){
+                    return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          BoxedIcon(
+                            snapshot.data[index] != null ?
+                            WeatherIcons.fromString(getWeatherCodeFromForecast(snapshot.data[index].items[0].forecasts[0].forecast.toString()),
+                                fallback: WeatherIcons.na) : WeatherIcons.na, // Icons
+                            // icon
+                          )
+                        ]);
+                  },
+                ),
               );
               //return Text(returnData);
             } else if (snapshot.hasError) {
@@ -548,189 +266,10 @@ class _HomeState extends State<Home> {
             return CircularProgressIndicator();
           });
     }
-    Widget _buildWeatherInfoColumn3(
-        Color color, String timeLabel) {
-      return FutureBuilder<Weather>(
-          future: futureWeather3,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              /* String returnData = snapshot.data.metadata.stations[0].name +
-                  " Temperature : " +
-                  snapshot.data.items[0].readings[0].value.toString() +
-                  "C"; */
-              String weather =
-                  snapshot.data.items[0].readings[0].value.toString() + "C"; // The value of the temperature in stirng
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      timeLabel,
-                      style: TextStyle(
-                        fontSize: 12, // font of the time
-                        fontWeight: FontWeight.w400,
-                        color: color,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      weather, // Temperature value
-                      style: TextStyle(
-                        fontSize: 12, // font of the tmeperature
-                        fontWeight: FontWeight.w400,
-                        color: color,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-              //return Text(returnData);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
+    
+    Widget weatherSection = _buildAllWeatherInfoColumn();
 
-            // By default, show a loading spinner.
-            return CircularProgressIndicator();
-          });
-    }
-    Widget _buildWeatherInfoColumn4(
-        Color color, String timeLabel) {
-      return FutureBuilder<Weather>(
-          future: futureWeather4,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              /* String returnData = snapshot.data.metadata.stations[0].name +
-                  " Temperature : " +
-                  snapshot.data.items[0].readings[0].value.toString() +
-                  "C"; */
-              String weather =
-                  snapshot.data.items[0].readings[0].value.toString() + "C"; // The value of the temperature in stirng
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      timeLabel,
-                      style: TextStyle(
-                        fontSize: 12, // font of the time
-                        fontWeight: FontWeight.w400,
-                        color: color,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      weather, // Temperature value
-                      style: TextStyle(
-                        fontSize: 12, // font of the tmeperature
-                        fontWeight: FontWeight.w400,
-                        color: color,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-              //return Text(returnData);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
-
-            // By default, show a loading spinner.
-            return CircularProgressIndicator();
-          });
-    }
-    Widget _buildWeatherInfoColumn5(
-        Color color, String timeLabel) {
-      return FutureBuilder<Weather>(
-          future: futureWeather5,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              /* String returnData = snapshot.data.metadata.stations[0].name +
-                  " Temperature : " +
-                  snapshot.data.items[0].readings[0].value.toString() +
-                  "C"; */
-              String weather =
-                  snapshot.data.items[0].readings[0].value.toString() + "C"; // The value of the temperature in stirng
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-
-                  Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      timeLabel,
-                      style: TextStyle(
-                        fontSize: 12, // font of the time
-                        fontWeight: FontWeight.w400,
-                        color: color,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      weather, // Temperature value
-                      style: TextStyle(
-                        fontSize: 12, // font of the tmeperature
-                        fontWeight: FontWeight.w400,
-                        color: color,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-              //return Text(returnData);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
-
-            // By default, show a loading spinner.
-            return CircularProgressIndicator();
-          });
-    }
-
-    Widget forecastSection = Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildForecastInfoColumn1(
-                color, toHourString(currentHour - 2)),
-            _buildForecastInfoColumn2(
-                color, toHourString(currentHour - 1)),
-            _buildForecastInfoColumn3(color, "now"),
-            _buildForecastInfoColumn4(
-                color, toHourString(currentHour+1)),
-            _buildForecastInfoColumn5(
-                color, toHourString(currentHour+2)),
-          ],
-        ));
-
-
-    Widget weatherSection = Container(
-        child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _buildWeatherInfoColumn1(
-            color, toHourString(currentHour - 2)),
-        _buildWeatherInfoColumn2(
-            color, toHourString(currentHour - 1)),
-        _buildWeatherInfoColumn3(color, "now"),
-        _buildWeatherInfoColumn4(
-            color, toHourString(currentHour+1)),
-        _buildWeatherInfoColumn5(
-            color, toHourString(currentHour+2)),
-      ],
-    ));
-
-
+    Widget forecastSection = _buildForecastInfoSection();
 
     // Widget Should I walk my dog button
     Widget walkDogSection = Container(
@@ -741,25 +280,26 @@ class _HomeState extends State<Home> {
 
     // Widget useful links
     Widget usefulLinkSection = Container(
-      height: 80,
+        height: 80,
         child: Column(
-      children: [
-        Align(
-          alignment: Alignment.topCenter,
-          child: Text('Useful links')),
-        Text('ASDF'),
-        Text('DSGSDG'),
-      ],
-    ));
+          children: [
+            Align(alignment: Alignment.topCenter, child: Text('Useful links')),
+            Text('ASDF'),
+            Text('DSGSDG'),
+          ],
+        ));
 
     return Scaffold(
       appBar: AppBar(
         title: Text('My First DogGo'),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh,color: Colors.white,),
+            icon: Icon(
+              Icons.refresh,
+              color: Colors.white,
+            ),
             iconSize: 35,
-            onPressed: (){
+            onPressed: () {
               setState(() {
                 AddDogList().getSPlist();
               });
@@ -776,19 +316,20 @@ class _HomeState extends State<Home> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Text('Settings',
-                      style: TextStyle(fontSize: 25, color: Colors.white),),
-                  ),
-                ],
-              )
-            ),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Text(
+                        'Settings',
+                        style: TextStyle(fontSize: 25, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                )),
             ListTile(
               title: Text('Notification Settings'),
               onTap: () {
@@ -837,7 +378,7 @@ class _HomeState extends State<Home> {
         children: [
           const SizedBox(height: 20),
           forecastSection,
-          const SizedBox(height:20),
+          const SizedBox(height: 20),
           weatherSection,
           const SizedBox(height: 20),
           walkDogSection,
@@ -846,7 +387,7 @@ class _HomeState extends State<Home> {
           const SizedBox(height: 20),
           Align(
             alignment: Alignment.bottomCenter,
-            child:Padding(
+            child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: usefulLinkSection,
             ),
@@ -856,5 +397,3 @@ class _HomeState extends State<Home> {
     );
   }
 }
-
-
