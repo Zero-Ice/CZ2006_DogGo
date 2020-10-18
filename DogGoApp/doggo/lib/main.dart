@@ -43,6 +43,14 @@ String toHourString(int hour) {
   return hour.toString() + ":00:00";
 }
 
+String hourStringRemoveSeconds(String hourString) {
+  String result = null;
+  if((hourString != null) && hourString.length > 0) {
+    result = hourString.substring(11, hourString.length - 3);
+  }
+  return result;
+}
+
 // Air Temperature
 Future<List<Weather>> fetchAllWeather(List<String> hours) async {
   print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa');
@@ -178,14 +186,11 @@ class _HomeState extends State<Home> {
               print("Weather data");
               print(snapshot.data);
               return Container(
-                height: 100,
+                height: 64,
                 width: MediaQuery.of(context).size.width,
-                child: Center(
-
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 5,
-                    itemBuilder: (context, index){
+                child: GridView.count(
+                  crossAxisCount: 5,
+                  children: List.generate(5, (index) {
                       return Column(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -193,8 +198,7 @@ class _HomeState extends State<Home> {
                           Container(
                             margin: const EdgeInsets.only(top: 8),
                             child: Text(
-                              "A",
-                              // hoursArray[index],
+                              hourStringRemoveSeconds(hoursArray[index]),
                               style: TextStyle(
                                 fontSize: 12, // font of the time
                                 fontWeight: FontWeight.w400,
@@ -237,12 +241,11 @@ class _HomeState extends State<Home> {
               print("Forecast data");
               print(snapshot.data);
               return Container(
-                height: 100,
-                width: MediaQuery.of(context).size.width,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 5,
-                  itemBuilder: (context, index){
+                  height: 64,
+                  width: MediaQuery.of(context).size.width,
+                  child: GridView.count(
+                    crossAxisCount: 5,
+                    children: List.generate(5, (index) {
                     return Column(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -256,7 +259,7 @@ class _HomeState extends State<Home> {
                         ]);
                   },
                 ),
-              );
+              ));
               //return Text(returnData);
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");
@@ -376,9 +379,9 @@ class _HomeState extends State<Home> {
       body: Container(
           child: Column(
         children: [
-          const SizedBox(height: 20),
+          // const SizedBox(height: 20),
           forecastSection,
-          const SizedBox(height: 20),
+          // const SizedBox(height: 20),
           weatherSection,
           const SizedBox(height: 20),
           walkDogSection,
