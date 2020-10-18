@@ -108,8 +108,6 @@ class _AddDogState extends State<AddDog> {
         ),
     );
 
-
-
     Widget saveButton = RaisedButton(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15)
@@ -139,12 +137,8 @@ class _AddDogState extends State<AddDog> {
 
 
     Widget buttonContainer =Container(
-        alignment: Alignment.bottomRight,
-     // margin: const EdgeInsets.only(right: 10.0),
-
       child: Row(
         children: [
-          SizedBox(width: 185,),
         SizedBox(
             height: 45,
             width: 100,
