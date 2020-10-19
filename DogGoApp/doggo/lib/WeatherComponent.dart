@@ -43,6 +43,7 @@ class _WeatherState extends State<WeatherWidget> {
               height: 64,
               width: MediaQuery.of(context).size.width,
               child: GridView.count(
+                physics: new NeverScrollableScrollPhysics(),
                 crossAxisCount: 5,
                 children: List.generate(
                   5,
