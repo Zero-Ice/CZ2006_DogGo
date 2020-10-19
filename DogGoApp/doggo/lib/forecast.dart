@@ -3,6 +3,29 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 
+// Fetch weather all forecasts
+Future<List<Forecast>> fetchAllForecasts(List<String> hours) async {
+  print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa');
+  print(hours.length);
+  List<Forecast> forecasts = new List(5);
+  for (int i = 0; i < hours.length; i++) {
+    print('fetching forecast' + hours[i]);
+    var response = await http.get(
+        ('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time=' +
+            hours[i]));
+    print('got forecast response ' + response.statusCode.toString());
+    if (response.statusCode == 200) {
+      print('adding response');
+      forecasts[i] = (Forecast.fromJson(json.decode(response.body)));
+    } else {
+      // throw Exception('N/A');
+    }
+  }
+
+  return forecasts;
+}
+
+
 Future<Forecast> forecast() async{
   final response=
   await http.get('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date=2018-10-24');

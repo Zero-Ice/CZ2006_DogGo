@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:doggo/ForecastComponent.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:flutter/material.dart';
 import 'Routes/NotificationSettings.dart';
@@ -35,54 +36,6 @@ void main() {
       primarySwatch: Colors.blue,
     ),
   ));
-}
-
-// Fetch weather all forecasts
-Future<List<Forecast>> fetchAllForecasts(List<String> hours) async {
-  print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa');
-  print(hours.length);
-  List<Forecast> forecasts = new List(5);
-  for (int i = 0; i < hours.length; i++) {
-    print('fetching forecast' + hours[i]);
-    var response = await http.get(
-        ('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time=' +
-            hours[i]));
-    print('got forecast response ' + response.statusCode.toString());
-    if (response.statusCode == 200) {
-      print('adding response');
-      forecasts[i] = (Forecast.fromJson(json.decode(response.body)));
-    } else {
-      // throw Exception('N/A');
-    }
-  }
-
-  return forecasts;
-}
-
-// Get weather code
-String getWeatherCodeFromForecast(String forecast) {
-  String weatherCode = "";
-  switch (forecast) {
-    case "ForecastEnum.CLOUDY":
-      weatherCode = 'wi-day-cloudy';
-      break;
-    case "ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS":
-      weatherCode = 'wi-day-thunderstorm';
-      break;
-    case "ForecastEnum.LIGHT_RAIN":
-      weatherCode = 'wi-day-rain';
-      break;
-    case "ForecastEnum.MODERATE_RAIN":
-      weatherCode = 'wi-day-rain-wind';
-      break;
-    case "ForecastEnum.THUNDERY_SHOWERS":
-      weatherCode = 'wi-thunderstorm';
-      break;
-    default:
-      weatherCode = 'wi-day-cloudy';
-  }
-  
-  return weatherCode;
 }
 
 // Returns a list of string from +=2 from current hour and current hour, starting from -2 to +2
@@ -145,49 +98,10 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     // Widget Weather Section
     Color color = Theme.of(context).primaryColor;
-
-
-
-    Widget _buildForecastInfoSection() {
-      return FutureBuilder<List<Forecast>>(
-          future: futureForecasts,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              print("Forecast data");
-              print(snapshot.data);
-              return Container(
-                  height: 64,
-                  width: MediaQuery.of(context).size.width,
-                  child: GridView.count(
-                    crossAxisCount: 5,
-                    children: List.generate(5, (index) {
-                    return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          BoxedIcon(
-                            snapshot.data[index] != null ?
-                            WeatherIcons.fromString(getWeatherCodeFromForecast(snapshot.data[index].items[0].forecasts[0].forecast.toString()),
-                                fallback: WeatherIcons.na) : WeatherIcons.na, // Icons
-                            // icon
-                          )
-                        ]);
-                  },
-                ),
-              ));
-              //return Text(returnData);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
-
-            // By default, show a loading spinner.
-            return CircularProgressIndicator();
-          });
-    }
     
     Widget weatherSection = WeatherWidget(hoursArray);
 
-    Widget forecastSection = _buildForecastInfoSection();
+    Widget forecastSection = ForecastWidget(hoursArray);
 
     // Widget Should I walk my dog button
     Widget walkDogSection = Container(

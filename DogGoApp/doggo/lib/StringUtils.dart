@@ -15,3 +15,29 @@ String hourStringRemoveSeconds(String hourString) {
   }
   return result;
 }
+
+// Get weather code
+String getWeatherCodeFromForecast(String forecast) {
+  String weatherCode = "";
+  switch (forecast) {
+    case "ForecastEnum.CLOUDY":
+      weatherCode = 'wi-day-cloudy';
+      break;
+    case "ForecastEnum.HEAVY_THUNDERY_SHOWERS_WITH_GUSTY_WINDS":
+      weatherCode = 'wi-day-thunderstorm';
+      break;
+    case "ForecastEnum.LIGHT_RAIN":
+      weatherCode = 'wi-day-rain';
+      break;
+    case "ForecastEnum.MODERATE_RAIN":
+      weatherCode = 'wi-day-rain-wind';
+      break;
+    case "ForecastEnum.THUNDERY_SHOWERS":
+      weatherCode = 'wi-thunderstorm';
+      break;
+    default:
+      weatherCode = 'wi-day-cloudy';
+  }
+
+  return weatherCode;
+}
