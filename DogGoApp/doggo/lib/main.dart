@@ -99,9 +99,11 @@ class _HomeState extends State<Home> {
     // Widget Weather Section
     Color color = Theme.of(context).primaryColor;
     
-    Widget weatherSection = WeatherWidget(hoursArray);
+    WeatherWidget weatherWidget = WeatherWidget(hoursArray);
+    // weatherWidget.setHoursArray(hoursArray);
 
-    Widget forecastSection = ForecastWidget(hoursArray);
+    ForecastWidget forecastWidget = ForecastWidget(hoursArray);
+    // forecastWidget.setHoursArray(hoursArray);
 
     // Widget Should I walk my dog button
     Widget walkDogSection = Container(
@@ -132,13 +134,9 @@ class _HomeState extends State<Home> {
             ),
             iconSize: 35,
             onPressed: () {
+              UpdateHourArray();
               setState(() {
                 AddDogList().getSPlist();
-                setState(() {
-                  hoursArray = UpdateHourArray();
-                  futureWeather = fetchAllWeather(hoursArray);
-                  futureForecasts = fetchAllForecasts(hoursArray);
-                });
               });
             },
           ),
@@ -214,9 +212,9 @@ class _HomeState extends State<Home> {
           child: Column(
         children: [
           // const SizedBox(height: 20),
-          forecastSection,
+          forecastWidget,
           // const SizedBox(height: 20),
-          weatherSection,
+          weatherWidget,
           const SizedBox(height: 20),
           walkDogSection,
           const SizedBox(height: 10),

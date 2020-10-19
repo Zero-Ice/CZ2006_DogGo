@@ -8,31 +8,45 @@ import 'weather.dart';
 import 'StringUtils.dart';
 
 class ForecastWidget extends StatefulWidget {
-  final List<String> hoursArray;
 
-  const ForecastWidget(this.hoursArray);
+  List<String> hoursArray;
 
+  ForecastWidget(this.hoursArray);
+
+  _ForecastState myForecastState = new _ForecastState();
   @override
-  _ForecastState createState() => _ForecastState();
+  _ForecastState createState() => myForecastState;
+
+  void setHoursArray(List<String> hoursArray) {
+    myForecastState.setHoursArray(hoursArray);
+  }
 }
 
 class _ForecastState extends State<ForecastWidget> {
   Future<List<Forecast>> futureForecasts;
+  // List<String> hoursArray;
 
   @override
   void initState() {
     super.initState();
-    futureForecasts = fetchAllForecasts(widget.hoursArray);
+    // futureForecasts = fetchAllForecasts(hoursArray);
+  }
+
+  void setHoursArray(List<String> hoursArray) {
+    widget.hoursArray = hoursArray;
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Forecast>>(
-        future: futureForecasts,
+        future: fetchAllForecasts(widget.hoursArray),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            print("Forecast data");
-            print(snapshot.data);
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // By default, show a loading spinner.
+            return CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return new Text('ERR');
+          } else {
             return Container(
                 height: 64,
                 width: MediaQuery.of(context).size.width,
@@ -54,12 +68,7 @@ class _ForecastState extends State<ForecastWidget> {
                   ),
                 ));
             //return Text(returnData);
-          } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
           }
-
-          // By default, show a loading spinner.
-          return CircularProgressIndicator();
         });
   }
 }
