@@ -7,6 +7,8 @@ import 'Routes/DogProfile.dart';
 import 'Routes/FeedingTime.dart';
 import 'Routes/VetVisit.dart';
 import 'Routes/HotlineLinks.dart';
+import 'StringUtils.dart';
+import 'WeatherComponent.dart';
 import 'weather.dart';
 import 'package:weather_icons/weather_icons.dart';
 import 'DogProfileComponent.dart';
@@ -14,6 +16,8 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'forecast.dart';
 import 'package:doggo/AddDogList.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 
 void main() {
   runApp(new MaterialApp(
@@ -31,44 +35,6 @@ void main() {
       primarySwatch: Colors.blue,
     ),
   ));
-}
-
-String toHourString(int hour) {
-  if (hour < 10) {
-    return "0" + hour.toString() + ":00:00";
-  } else if (hour >= 25) {
-    return "0" + (hour - 24).toString() + ":00:00";
-  }
-
-  return hour.toString() + ":00:00";
-}
-
-String hourStringRemoveSeconds(String hourString) {
-  String result = null;
-  if((hourString != null) && hourString.length > 0) {
-    result = hourString.substring(11, hourString.length - 3);
-  }
-  return result;
-}
-
-// Air Temperature
-Future<List<Weather>> fetchAllWeather(List<String> hours) async {
-  print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa');
-  List<Weather> weathers = new List(5);
-  for (int i = 0; i < hours.length; i++) {
-    print("fetching weather " + hours[i]);
-    var response = await http.get(
-        ('https://api.data.gov.sg/v1/environment/air-temperature?date_time=' +
-            hours[i]));
-    print("got response");
-    if (response.statusCode == 200) {
-      weathers[i] = (Weather.fromJson(json.decode(response.body)));
-    } else {
-      // throw Exception('N/A');
-    }
-  }
-
-  return weathers;
 }
 
 // Fetch weather all forecasts
@@ -171,67 +137,16 @@ class _HomeState extends State<Home> {
     print('init');
   }
 
+  RefreshController _refreshController =
+  RefreshController(initialRefresh: false);
+
+
+
   Widget build(BuildContext context) {
     // Widget Weather Section
     Color color = Theme.of(context).primaryColor;
 
-    Widget _buildAllWeatherInfoColumn() {
-      return FutureBuilder<List<Weather>>(
-          future: futureWeather,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              // String weather =
-              //     snapshot.data.items[0].readings[0].value.toString() +
-              //         "C"; // The value of the temperature in string
-              print("Weather data");
-              print(snapshot.data);
-              return Container(
-                height: 64,
-                width: MediaQuery.of(context).size.width,
-                child: GridView.count(
-                  crossAxisCount: 5,
-                  children: List.generate(5, (index) {
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(top: 8),
-                            child: Text(
-                              hourStringRemoveSeconds(hoursArray[index]),
-                              style: TextStyle(
-                                fontSize: 12, // font of the time
-                                fontWeight: FontWeight.w400,
-                                color: color,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(top: 8),
-                            child: Text(
-                              snapshot.data[index] != null ? snapshot.data[index].items[0].readings[0].value.toString() + "C" : "C", // Temperature value
-                              style: TextStyle(
-                                fontSize: 12, // font of the temperature
-                                fontWeight: FontWeight.w400,
-                                color: color,
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-              );
-              //return Text(returnData);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
 
-            // By default, show a loading spinner.
-            return CircularProgressIndicator();
-          });
-    }
 
     Widget _buildForecastInfoSection() {
       return FutureBuilder<List<Forecast>>(
@@ -270,7 +185,7 @@ class _HomeState extends State<Home> {
           });
     }
     
-    Widget weatherSection = _buildAllWeatherInfoColumn();
+    Widget weatherSection = WeatherWidget(hoursArray);
 
     Widget forecastSection = _buildForecastInfoSection();
 
@@ -305,6 +220,11 @@ class _HomeState extends State<Home> {
             onPressed: () {
               setState(() {
                 AddDogList().getSPlist();
+                setState(() {
+                  hoursArray = UpdateHourArray();
+                  futureWeather = fetchAllWeather(hoursArray);
+                  futureForecasts = fetchAllForecasts(hoursArray);
+                });
               });
             },
           ),

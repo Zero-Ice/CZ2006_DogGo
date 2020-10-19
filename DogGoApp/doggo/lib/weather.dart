@@ -1,19 +1,27 @@
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 
-
-Future<Weather> fetchWeather() async{
-  final response=
-  await http.get('https://api.data.gov.sg/v1/environment/air-temperature?date=2020-09-16');
-
-  if (response.statusCode ==200){
-    return Weather.fromJson(json.decode(response.body));
-  } else{
-    throw Exception('failed to load data');
+// Air Temperature
+Future<List<Weather>> fetchAllWeather(List<String> hours) async {
+  print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa');
+  List<Weather> weathers = new List(5);
+  for (int i = 0; i < hours.length; i++) {
+    print("fetching weather " + hours[i]);
+    var response = await http.get(
+        ('https://api.data.gov.sg/v1/environment/air-temperature?date_time=' +
+            hours[i]));
+    print("got response");
+    if (response.statusCode == 200) {
+      weathers[i] = (Weather.fromJson(json.decode(response.body)));
+    } else {
+      // throw Exception('N/A');
+    }
   }
-}
 
+  return weathers;
+}
 
 Weather weatherFromJson(String str) => Weather.fromJson(json.decode(str));
 
