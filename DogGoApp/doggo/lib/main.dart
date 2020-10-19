@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:doggo/ForecastComponent.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:flutter/material.dart';
 import 'Routes/NotificationSettings.dart';
@@ -18,7 +19,6 @@ import 'package:intl/intl.dart';
 import 'forecast.dart';
 import 'package:doggo/AddDogList.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
 
 void main() {
   runApp(new MaterialApp(
@@ -91,14 +91,12 @@ class _HomeState extends State<Home> {
   }
 
   RefreshController _refreshController =
-  RefreshController(initialRefresh: false);
-
-
+      RefreshController(initialRefresh: false);
 
   Widget build(BuildContext context) {
     // Widget Weather Section
     Color color = Theme.of(context).primaryColor;
-    
+
     WeatherWidget weatherWidget = WeatherWidget(hoursArray);
     // weatherWidget.setHoursArray(hoursArray);
 
@@ -122,6 +120,28 @@ class _HomeState extends State<Home> {
             Text('DSGSDG'),
           ],
         ));
+
+    void _onRefresh() async{
+      UpdateHourArray();
+      setState(() {
+
+      });
+      // monitor network fetch
+      await Future.delayed(Duration(milliseconds: 1000));
+      // if failed,use refreshFailed()
+      _refreshController.refreshCompleted();
+    }
+
+    void _onLoading() async{
+      // monitor network fetch
+      await Future.delayed(Duration(milliseconds: 1000));
+      // if failed,use loadFailed(),if no data return,use LoadNodata()
+      if(mounted)
+        setState(() {
+
+        });
+      _refreshController.loadComplete();
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -208,27 +228,55 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      body: Container(
-          child: Column(
-        children: [
-          // const SizedBox(height: 20),
-          forecastWidget,
-          // const SizedBox(height: 20),
-          weatherWidget,
-          const SizedBox(height: 20),
-          walkDogSection,
-          const SizedBox(height: 10),
-          AddDogList().run(),
-          const SizedBox(height: 20),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: usefulLinkSection,
-            ),
-          )
-        ],
-      )),
+      body: SmartRefresher(
+        enablePullDown: true,
+        enablePullUp: false,
+        header: WaterDropHeader(),
+        footer: CustomFooter(
+          builder: (BuildContext context, LoadStatus mode) {
+            Widget body;
+            if (mode == LoadStatus.idle) {
+              body = Text("pull up load");
+            } else if (mode == LoadStatus.loading) {
+              body = CupertinoActivityIndicator();
+            } else if (mode == LoadStatus.failed) {
+              body = Text("Load Failed!Click retry!");
+            } else if (mode == LoadStatus.canLoading) {
+              body = Text("release to load more");
+            } else {
+              body = Text("No more Data");
+            }
+            return Container(
+              height: 55.0,
+              child: Center(child: body),
+            );
+          },
+        ),
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        onLoading: _onLoading,
+        child: Container(
+            child: Column(
+          children: [
+            // const SizedBox(height: 20),
+            forecastWidget,
+            // const SizedBox(height: 20),
+            weatherWidget,
+            const SizedBox(height: 20),
+            walkDogSection,
+            const SizedBox(height: 10),
+            AddDogList().run(),
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: usefulLinkSection,
+              ),
+            )
+          ],
+        )),
+      ),
     );
   }
 }
