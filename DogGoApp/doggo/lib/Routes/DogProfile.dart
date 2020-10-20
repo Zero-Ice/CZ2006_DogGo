@@ -16,7 +16,6 @@ class _DogProfileState extends State<DogProfile> {
   String dogName;
   String dogFavFood;
   String dogBirthdate;
-  List l =List();
   SharedPreferences prefs;
 
   @override
@@ -102,8 +101,6 @@ class _DogProfileState extends State<DogProfile> {
             itemCount: dogsList.length,
             itemBuilder: (BuildContext context, int index){
             return Container(
-              height: 80,
-              //color: Colors.amber[colorCodes[index]],
               child: Row(children: [
                 const SizedBox(width: 15),
                 CircleAvatar(
