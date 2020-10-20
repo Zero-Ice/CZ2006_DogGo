@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:doggo/HotlineCreationClass.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class HotlineLinks extends StatefulWidget {
   @override
@@ -9,6 +11,33 @@ class HotlineLinks extends StatefulWidget {
 
 class _HotlineLinksState extends State<HotlineLinks> {
   List<HotlineCreation> hotlineList = new List<HotlineCreation>();
+  SharedPreferences prefs;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    initSP();
+    super.initState();
+  }
+
+  void initSP()async{
+    prefs = await SharedPreferences.getInstance();
+    loadData();
+  }
+
+  void saveData(){
+    List<String> spList = hotlineList.map((index) => json.encode(index.toMap())).toList();
+    prefs.setStringList("hotlineData", spList);
+    print(spList);
+  }
+
+  void loadData(){
+    List<String> spList = prefs.getStringList("hotlineData");
+    hotlineList = spList.map((index) => HotlineCreation.fromMap(json.decode(index))).toList();
+    setState(() {});
+
+  }
+
 
   Future _showAddForm(BuildContext context) async{
     TextEditingController nameCon = TextEditingController();
@@ -54,6 +83,7 @@ class _HotlineLinksState extends State<HotlineLinks> {
               onPressed: (){
                 setState(() {
                   hotlineList.add(HotlineCreation(nameCon.text,hotlineCon.text));
+                  saveData();
                 });
                 Navigator.of(context).pop();
               },
@@ -112,6 +142,7 @@ class _HotlineLinksState extends State<HotlineLinks> {
               setState(() {
                 hotlineList[index].setName=nameCon.text;
                 hotlineList[index].setHotline=hotlineCon.text;
+                saveData();
               });
               Navigator.of(context).pop();
             },
@@ -178,7 +209,7 @@ class _HotlineLinksState extends State<HotlineLinks> {
                             }
                             if (val == 2){ //add delete confirmation dialog
                               hotlineList.removeAt(index);
-//                              saveData();
+                              saveData();
                             }
                           });
                         },

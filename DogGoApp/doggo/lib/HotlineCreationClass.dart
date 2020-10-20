@@ -23,4 +23,15 @@ class HotlineCreation{
     this.hotline = hotline;
   }
 
+  HotlineCreation.fromMap(Map map) :
+        this.name = map['name'],
+        this.hotline = map['hotline'];
+
+  Map toMap(){
+    return {
+      'name': this.name,
+      'hotline': this.hotline,
+    };
+  }
+
 }
