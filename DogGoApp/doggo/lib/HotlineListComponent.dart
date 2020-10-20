@@ -21,7 +21,6 @@ class fetchHotlineList {
             itemCount: sm.length,
             itemBuilder: (BuildContext context, int index) {
               return Container(
-                  height: 80,
                   //color: Colors.amber[colorCodes[index]],
                   child: Row(children: [
                     const SizedBox(width: 30),
@@ -32,7 +31,6 @@ class fetchHotlineList {
                                 '${sm[index].getName}',
                                 style: TextStyle(fontSize: 15),
                               ),
-                              SizedBox(height: 8,),
                               Text('${sm[index].getHotline}',
                                 style: TextStyle(fontSize: 10 ),
                               ),
@@ -43,7 +41,7 @@ class fetchHotlineList {
               );
             },
             separatorBuilder: (BuildContext context,
-                int index) => const Divider(height: 20,),
+                int index) => const Divider(height: 5,),
           )));
 
   Widget emptyList = Container(
