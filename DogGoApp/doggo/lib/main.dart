@@ -138,7 +138,7 @@ class _HomeState extends State<Home> {
       // if failed,use loadFailed(),if no data return,use LoadNodata()
       if(mounted)
         setState(() {
-
+          AddDogList().run();
         });
       _refreshController.loadComplete();
     }
