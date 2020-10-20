@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:doggo/DogCreationClass.dart';
 
-class AddDogList {
+class fetchDogList {
    static List<DogCreation> sm = List<DogCreation>();
 
    getSPlist() async {

@@ -107,7 +107,6 @@ class _DogProfileState extends State<DogProfile> {
                   backgroundColor: Colors.grey[300],
                   backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
                   radius: 35,
-                  //child: Text('AH'),
                 ),
                 const SizedBox(width: 30),
                 Expanded(

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:doggo/ForecastComponent.dart';
+import 'package:doggo/HotlineListComponent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ import 'DogProfileComponent.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'forecast.dart';
-import 'package:doggo/AddDogList.dart';
+import 'package:doggo/DogListComponent.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 void main() {
@@ -116,8 +117,7 @@ class _HomeState extends State<Home> {
         child: Column(
           children: [
             Align(alignment: Alignment.topCenter, child: Text('Useful links')),
-            Text('ASDF'),
-            Text('DSGSDG'),
+            fetchHotlineList().run(),
           ],
         ));
 
@@ -138,7 +138,6 @@ class _HomeState extends State<Home> {
       // if failed,use loadFailed(),if no data return,use LoadNodata()
       if(mounted)
         setState(() {
-          AddDogList().run();
         });
       _refreshController.loadComplete();
     }
@@ -156,7 +155,8 @@ class _HomeState extends State<Home> {
             onPressed: () {
               UpdateHourArray();
               setState(() {
-                AddDogList().getSPlist();
+                fetchDogList().getSPlist();
+                fetchHotlineList().getSPlist();
               });
             },
           ),
@@ -265,15 +265,10 @@ class _HomeState extends State<Home> {
             const SizedBox(height: 20),
             walkDogSection,
             const SizedBox(height: 10),
-            AddDogList().run(),
+            fetchDogList().run(),
             const SizedBox(height: 20),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: usefulLinkSection,
-              ),
-            )
+            usefulLinkSection
+
           ],
         )),
       ),
