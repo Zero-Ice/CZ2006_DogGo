@@ -117,7 +117,7 @@ class _HomeState extends State<Home> {
         child: Column(
           children: [
             Align(alignment: Alignment.topCenter, child: Text('Useful links')),
-            fetchHotlineList().run(),
+            Expanded(child: fetchHotlineList().run(),)
           ],
         ));
 
@@ -259,16 +259,17 @@ class _HomeState extends State<Home> {
             child: Column(
           children: [
             // const SizedBox(height: 20),
-            forecastWidget,
-            // const SizedBox(height: 20),
-            weatherWidget,
-            const SizedBox(height: 20),
-            walkDogSection,
-            const SizedBox(height: 10),
-            fetchDogList().run(),
-            const SizedBox(height: 20),
-            usefulLinkSection
-
+              forecastWidget,
+              // const SizedBox(height: 20),
+              weatherWidget,
+              const SizedBox(height: 20),
+              walkDogSection,
+              const SizedBox(height: 10),
+              fetchDogList().run(),
+              const SizedBox(height: 15),
+              Align(alignment: Alignment.topCenter, child: Text('Useful links')),
+              const SizedBox(height: 10),
+              fetchHotlineList().run()
           ],
         )),
       ),

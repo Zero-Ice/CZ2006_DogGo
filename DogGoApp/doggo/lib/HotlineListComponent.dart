@@ -47,7 +47,7 @@ class fetchHotlineList {
   Widget emptyList = Container(
       child: Column(
           children: [
-            SizedBox(height: 25,),
+            SizedBox(height: 5,),
             Text("There are no Hotline added."),
           ]
       )
