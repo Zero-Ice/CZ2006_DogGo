@@ -10,9 +10,10 @@ class HotlineLinks extends StatefulWidget {
 class _HotlineLinksState extends State<HotlineLinks> {
   List<HotlineCreation> hotlineList = new List<HotlineCreation>();
 
-  Future _showForm(BuildContext context) async{
+  Future _showAddForm(BuildContext context) async{
     TextEditingController nameCon = TextEditingController();
     TextEditingController hotlineCon = TextEditingController();
+
     return showDialog(context: context, builder: (context){
       return SingleChildScrollView(
         child: AlertDialog(
@@ -63,13 +64,70 @@ class _HotlineLinksState extends State<HotlineLinks> {
     });
   }
 
+  Future<HotlineCreation>_showEditForm(int index){
+    TextEditingController nameCon = TextEditingController();
+    TextEditingController hotlineCon = TextEditingController();
+    nameCon.text = "${hotlineList[index].getName}";
+    hotlineCon.text = "${hotlineList[index].getHotline}";
+
+    return showDialog(context: context, builder: (context){
+      return AlertDialog(
+
+        title: Text("Edit Hotline"),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+
+          children:<Widget>[
+            TextFormField (
+              controller: nameCon,
+              decoration: InputDecoration(
+                  labelText: "Name of Hotline"
+              ),
+            ),
+            SizedBox(height: 15,),
+            TextFormField (
+              controller: hotlineCon,
+              decoration: InputDecoration(
+                  labelText: "Hotline Link/Number"
+              ),
+            ),
+          ],
+        ),
+
+        actions:<Widget>[
+          MaterialButton(
+            elevation: 5.0,
+            child: Text("Cancel"),
+            onPressed: (){
+              setState(() {
+              });
+              Navigator.of(context).pop();
+            },
+          ),
+          MaterialButton(
+            elevation: 5.0,
+            child: Text("Save"),
+            onPressed: (){
+              setState(() {
+                hotlineList[index].setName=nameCon.text;
+                hotlineList[index].setHotline=hotlineCon.text;
+              });
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      );
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     Widget addbutton=  FloatingActionButton(
       onPressed: ()  {
         setState((){
-          _showForm(context);
+          _showAddForm(context);
         });
       },
       child:
@@ -116,7 +174,7 @@ class _HotlineLinksState extends State<HotlineLinks> {
                         onSelected: (val) { //1: edit, 2: delete
                           setState(() {
                             if (val == 1){
-//                              editForm(index);
+                              _showEditForm(index);
                             }
                             if (val == 2){ //add delete confirmation dialog
                               hotlineList.removeAt(index);
