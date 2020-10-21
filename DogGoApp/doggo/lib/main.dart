@@ -46,7 +46,7 @@ void main() {
 //     frequency: Duration(minutes: 15),
 //   );
   runApp(new MaterialApp(
-    title: 'Fetch weather test',
+    title: 'My First DogGo',
     initialRoute: '/',
     routes: {
       '/': (context) => Home(),
