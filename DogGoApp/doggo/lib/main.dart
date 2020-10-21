@@ -51,7 +51,6 @@ void main() {
     routes: {
       '/': (context) => Home(),
       '/NotificationSettings': (context) => NotificationSettings(),
-      '/DogProfile': (context) => DogProfile(),
       '/FeedingTime': (context) => FeedingTime(),
       '/VetVisit': (context) => VetVisit(),
       '/HotlineLinks': (context) => HotlineLinks(),
