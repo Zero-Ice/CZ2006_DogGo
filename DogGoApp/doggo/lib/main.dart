@@ -167,9 +167,7 @@ class _HomeState extends State<Home> {
 
     Widget addbutton=  FloatingActionButton(
       onPressed: ()  {
-        setState((){
-          GoToAddDog(context);
-        });
+        GoToAddDog(context);
       },
       child:
       Icon(

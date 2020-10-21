@@ -5,12 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart' as syspaths;
 
 class AddDog extends StatefulWidget {
   final String eName;
   final String eFood;
   final String eBday;
-  AddDog({this.eName,this.eFood,this.eBday});
+  String imgFileName = "";
+  AddDog({this.eName,this.eFood,this.eBday, this.imgFileName});
 
   @override
   _AddDogState createState() => _AddDogState();
@@ -28,17 +31,25 @@ class _AddDogState extends State<AddDog> {
 
   File _image;
   final picker = ImagePicker();
+  String imgFileName;
 
   Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
+    final imageFile = await picker.getImage(source: ImageSource.gallery);
 
     setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
+      if (imageFile != null) {
+        _image = File(imageFile.path);
       } else {
         print('No image selected.');
       }
     });
+
+    final appDir = await syspaths.getApplicationDocumentsDirectory();
+    final fileName = path.basename(imageFile.path);
+    final savedImage = await _image.copy('${appDir.path}/$fileName');
+    print("Saving img with filename " + fileName);
+
+    imgFileName = '${appDir.path}/$fileName';
   }
 
   Widget dateTextHandling(){
@@ -54,6 +65,8 @@ class _AddDogState extends State<AddDog> {
     conDogName = TextEditingController(text: widget.eName);
     conDogFood = TextEditingController(text: widget.eFood);
     conBday = TextEditingController(text: widget.eBday);
+    _image = null;
+
     super.initState();
   }
   @override
@@ -134,9 +147,10 @@ class _AddDogState extends State<AddDog> {
       textColor: Colors.white,
       child: Text( "Save",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold)),
       onPressed: (){
-        setState(() {
-          saveBt=[conDogName.text,conDogFood.text,"$strBirthday"];
-        });
+        saveBt=[conDogName.text,conDogFood.text,"$strBirthday", imgFileName];
+        // setState(() {
+        //         //
+        //         // });
         Navigator.pop(context,saveBt);
       },
     );
@@ -169,19 +183,38 @@ class _AddDogState extends State<AddDog> {
         ]
       ));
 
+    Widget getCircleAvatar() {
+      print("Getting circle avatar");
+      print(widget.imgFileName);
+      if(_image == null && widget.imgFileName == null) {
+        return new CircleAvatar(backgroundColor: Colors.grey[300],
+            radius: 60.0,
+            // backgroundImage: AssetImage(widget.imgFileName),
+            child: Text("Select image"));
+      } else {
+        if(widget.imgFileName != null && widget.imgFileName.isNotEmpty) {
+          return CircleAvatar(backgroundColor: Colors.grey[300],
+            backgroundImage: AssetImage(widget.imgFileName),
+            radius: 60.0,);
+        } else {
+          return CircleAvatar(
+            backgroundColor: Colors.grey[300],
+            // backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
+            backgroundImage:Image.file(_image).image,
+            // child: ClipOval(child: _image == null ? Center(child: Text("No image selected")) : Image.file(_image)),
+
+            radius: 60.0,);
+        }
+      }
+    }
+
     Widget profileImage  = Container(
       child: Center(
           child: GestureDetector(
             onTap: () {
               getImage();
             },
-            child: CircleAvatar(
-                      backgroundColor: Colors.grey[300],
-                      // backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
-                      // backgroundImage: _image == null ? Center(child: Text("No image selected")) : Image.file(_image),
-                      child: ClipOval(child: _image == null ? Center(child: Text("No image selected")) : Image.file(_image)),
-
-                      radius: 60.0,),
+            child:getCircleAvatar(),
           )
       )
     );

@@ -12,7 +12,7 @@ class DogProfile extends StatefulWidget {
   _DogProfileState createState() => dpState;
 
   addToDogList(List<String> result) {
-    dpState.addToDogList(result[0],result[1],result[2]);
+    dpState.addToDogList(result[0],result[1],result[2], result[3]);
   }
 }
 
@@ -22,6 +22,7 @@ class _DogProfileState extends State<DogProfile> {
   String dogFavFood;
   String dogBirthdate;
   SharedPreferences prefs;
+  String fileName = "";
 
   @override
   void initState() {
@@ -52,9 +53,10 @@ class _DogProfileState extends State<DogProfile> {
   //     List<String> result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog()));
   //     addToDogList(result[0],result[1],result[2]);
   // }
-  void addToDogList(name,food,bday){
+  void addToDogList(name,food,bday, fileName){
+    print("Adding dog " + name + " " + fileName);
     setState(() {
-      dogsList.add(DogCreation(name, food, bday));
+      dogsList.add(DogCreation(name, food, bday, fileName));
       saveData();
     });
 
@@ -79,11 +81,12 @@ class _DogProfileState extends State<DogProfile> {
     //   ),
     // );
 
-    void editDogList(index,name,food,bday){
+    void editDogList(index,name,food,bday, fileName){
       setState(() {
         dogsList[index].setName=name;
         dogsList[index].setFavFood=food;
         dogsList[index].setBirthDate=bday;
+        dogsList[index].setFileName=fileName;
         saveData();
       });
     }
@@ -92,8 +95,9 @@ class _DogProfileState extends State<DogProfile> {
       List<String> edited =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog(
         eName: '${dogsList[index].getName}',
         eBday: '${dogsList[index].birthDate}',
-        eFood: '${dogsList[index].favFood}',)));
-      editDogList(index,edited[0],edited[1],edited[2]);
+        eFood: '${dogsList[index].favFood}',
+        imgFileName: '${dogsList[index].getFileName}',)));
+      editDogList(index,edited[0],edited[1],edited[2], edited[3]);
     }
 
 
@@ -108,7 +112,8 @@ class _DogProfileState extends State<DogProfile> {
                 const SizedBox(width: 15),
                 CircleAvatar(
                   backgroundColor: Colors.grey[300],
-                  backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
+                  backgroundImage: AssetImage(dogsList[index].getFileName),
+                  // backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
                   radius: 35,
                 ),
                 const SizedBox(width: 30),
