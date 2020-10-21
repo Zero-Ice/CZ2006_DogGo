@@ -12,7 +12,7 @@ class AddDog extends StatefulWidget {
   final String eName;
   final String eFood;
   final String eBday;
-  String imgFileName = "";
+  final String imgFileName;
   AddDog({this.eName,this.eFood,this.eBday, this.imgFileName});
 
   @override
@@ -29,27 +29,85 @@ class _AddDogState extends State<AddDog> {
   List<String> saveBt = ["","",""];
   DateTime _dateTime;
 
-  File _image;
-  final picker = ImagePicker();
+  // Image picker variables
+  PickedFile _imageFile;
+  dynamic _pickImageError;
+  String _retrieveDataError;
+  final ImagePicker _picker = ImagePicker();
+
   String imgFileName;
 
   Future getImage() async {
-    final imageFile = await picker.getImage(source: ImageSource.gallery);
+    final pickedFile = await _picker.getImage(source: ImageSource.gallery);
 
+    bool picked = false;
     setState(() {
-      if (imageFile != null) {
-        _image = File(imageFile.path);
+      if (pickedFile != null) {
+        picked = true;
+        _imageFile = pickedFile;
       } else {
         print('No image selected.');
       }
     });
 
-    final appDir = await syspaths.getApplicationDocumentsDirectory();
-    final fileName = path.basename(imageFile.path);
-    final savedImage = await _image.copy('${appDir.path}/$fileName');
-    print("Saving img with filename " + fileName);
+    if(picked) {
+      final appDir = await syspaths.getApplicationDocumentsDirectory();
+      final fileName = path.basename(pickedFile.path);
+      final savedImage = await File(pickedFile.path).copy(
+          '${appDir.path}/$fileName');
+      print("Saving img with filename " + fileName);
 
-    imgFileName = '${appDir.path}/$fileName';
+      imgFileName = '${appDir.path}/$fileName';
+    }
+  }
+
+  Future<void> retrieveLostData() async {
+    final LostData response = await _picker.getLostData();
+    if (response.isEmpty) {
+      return;
+    }
+    bool isVideo;
+    if (response.file != null) {
+      if (response.type == RetrieveType.video) {
+        isVideo = true;
+      } else {
+        isVideo = false;
+        setState(() {
+          _imageFile = response.file;
+        });
+      }
+    } else {
+      _retrieveDataError = response.exception.code;
+    }
+  }
+
+  Widget _previewImage() {
+    final Text retrieveError = _getRetrieveErrorWidget();
+    if (retrieveError != null) {
+      return retrieveError;
+    }
+    if (_imageFile != null) {
+        return Image.file(File(_imageFile.path));
+    } else if (_pickImageError != null) {
+      return Text(
+        'Pick image error: $_pickImageError',
+        textAlign: TextAlign.center,
+      );
+    } else {
+      return const Text(
+        'You have not yet picked an image.',
+        textAlign: TextAlign.center,
+      );
+    }
+  }
+
+  Text _getRetrieveErrorWidget() {
+    if (_retrieveDataError != null) {
+      final Text result = Text(_retrieveDataError);
+      _retrieveDataError = null;
+      return result;
+    }
+    return null;
   }
 
   Widget dateTextHandling(){
@@ -61,11 +119,19 @@ class _AddDogState extends State<AddDog> {
   }
   @override
   void initState() {
-    // TODO: implement initState
+    print("INIT ADD DOG");
     conDogName = TextEditingController(text: widget.eName);
     conDogFood = TextEditingController(text: widget.eFood);
     conBday = TextEditingController(text: widget.eBday);
-    _image = null;
+    _imageFile = null;
+    imgFileName = "";
+    if(widget.imgFileName != null) {
+      imgFileName = widget.imgFileName;
+    }
+
+    if(imgFileName != null) {
+      print("IMG FILE NAME " + imgFileName);
+    }
 
     super.initState();
   }
@@ -183,42 +249,55 @@ class _AddDogState extends State<AddDog> {
         ]
       ));
 
-    Widget getCircleAvatar() {
-      print("Getting circle avatar");
-      print(widget.imgFileName);
-      if(_image == null && widget.imgFileName == null) {
-        return new CircleAvatar(backgroundColor: Colors.grey[300],
-            radius: 60.0,
-            // backgroundImage: AssetImage(widget.imgFileName),
-            child: Text("Select image"));
-      } else {
-        if(widget.imgFileName != null && widget.imgFileName.isNotEmpty) {
-          return CircleAvatar(backgroundColor: Colors.grey[300],
-            backgroundImage: AssetImage(widget.imgFileName),
-            radius: 60.0,);
-        } else {
-          return CircleAvatar(
-            backgroundColor: Colors.grey[300],
-            // backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
-            backgroundImage:Image.file(_image).image,
-            // child: ClipOval(child: _image == null ? Center(child: Text("No image selected")) : Image.file(_image)),
-
-            radius: 60.0,);
-        }
-      }
-    }
-
-    Widget profileImage  = Container(
+    Widget addDogProfileImage  = Container(
       child: Center(
           child: GestureDetector(
             onTap: () {
               getImage();
             },
-            child:getCircleAvatar(),
+            child: FutureBuilder<void>(
+              future: retrieveLostData(),
+              builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                  case ConnectionState.waiting:
+                    return const Text(
+                      'You have not yet picked an image.',
+                      textAlign: TextAlign.center,
+                    );
+                  case ConnectionState.done:
+                    return _previewImage();
+                  default:
+                    if (snapshot.hasError) {
+                      return Text(
+                        'Pick image error: ${snapshot.error}}',
+                        textAlign: TextAlign.center,
+                      );
+                    } else {
+                      return const Text(
+                        'You have not yet picked an image.',
+                        textAlign: TextAlign.center,
+                      );
+                    }
+                }
+              },
+            )
+          ),
+    ));
+
+    Widget displayDogProfileImage = Container(
+      child: Center(
+        child: GestureDetector(
+            onTap: () {
+              getImage();
+            },
+          child: CircleAvatar(
+            backgroundImage: AssetImage(imgFileName),
+            radius: 60.0
           )
+        )
       )
     );
-
 
     return Scaffold(
       appBar: AppBar(
@@ -233,7 +312,10 @@ class _AddDogState extends State<AddDog> {
             child: Column(
               children: [
                 SizedBox(height: 20,),
-                profileImage,
+                // imgFileName == null || imgFileName == ""?
+                // addDogProfileImage :
+                // displayDogProfileImage,
+                addDogProfileImage,
                 Divider( height:30,color: Colors.grey[600],),
                 dogParticulars,
                 SizedBox(height: 30,),
