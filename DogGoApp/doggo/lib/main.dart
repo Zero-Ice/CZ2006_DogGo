@@ -348,10 +348,10 @@ class _HomeState extends State<Home> {
               walkDogSection,
               const SizedBox(height: 10),
               fetchDogList().run(),
-              const SizedBox(height: 15),
-              Align(alignment: Alignment.topCenter, child: Text('Useful links')),
-              const SizedBox(height: 10),
-              fetchHotlineList().run()
+              // const SizedBox(height: 15),
+              // Align(alignment: Alignment.topCenter, child: Text('Useful links')),
+              // const SizedBox(height: 10),
+              // fetchHotlineList().run()
           ],
         )),
       ),
