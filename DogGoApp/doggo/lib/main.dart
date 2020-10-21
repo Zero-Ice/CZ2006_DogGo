@@ -190,22 +190,12 @@ class _HomeState extends State<Home> {
     ForecastWidget forecastWidget = ForecastWidget(hoursArray);
     // forecastWidget.setHoursArray(hoursArray);
 
-    // Widget Should I walk my dog button
+    // Widget Should I walk my dog detail
     Widget walkDogSection = Container(
-        child: RaisedButton(
-      onPressed: () {
-        // BackgroundNotif();
-        // setState(() {
-          // if(checkConditions()) {
-          //   BackgroundNotif();
-          // }
-          // testing purpose only
-          // final fbm = FirebaseMessaging();
-          // fbm.requestNotificationPermissions();
-        // });
-      },
-      child: Text("Should I walk my dog?", style: TextStyle(fontSize: 20)),
-    ));
+        child: Center(
+          child: Text("TEST"),
+        ),
+    );
 
     // Widget useful links
     Widget usefulLinkSection = Container(
