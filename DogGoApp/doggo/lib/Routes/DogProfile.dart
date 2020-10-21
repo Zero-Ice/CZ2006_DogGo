@@ -12,7 +12,7 @@ class DogProfile extends StatefulWidget {
   _DogProfileState createState() => dpState;
 
   addToDogList(List<String> result) {
-    dpState.addToDogList(result[0],result[1],result[2]);
+    dpState.addToDogList(result[0],result[1],result[2], result[3]);
   }
 }
 
@@ -22,6 +22,7 @@ class _DogProfileState extends State<DogProfile> {
   String dogFavFood;
   String dogBirthdate;
   SharedPreferences prefs;
+  String fileName = "";
 
   @override
   void initState() {
@@ -52,9 +53,9 @@ class _DogProfileState extends State<DogProfile> {
   //     List<String> result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog()));
   //     addToDogList(result[0],result[1],result[2]);
   // }
-  void addToDogList(name,food,bday){
+  void addToDogList(name,food,bday, fileName){
     setState(() {
-      dogsList.add(DogCreation(name, food, bday));
+      dogsList.add(DogCreation(name, food, bday, fileName));
       saveData();
     });
 

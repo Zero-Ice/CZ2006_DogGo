@@ -28,6 +28,7 @@ class _AddDogState extends State<AddDog> {
 
   File _image;
   final picker = ImagePicker();
+  String fileName;
 
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
@@ -135,7 +136,7 @@ class _AddDogState extends State<AddDog> {
       child: Text( "Save",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold)),
       onPressed: (){
         setState(() {
-          saveBt=[conDogName.text,conDogFood.text,"$strBirthday"];
+          saveBt=[conDogName.text,conDogFood.text,"$strBirthday", fileName];
         });
         Navigator.pop(context,saveBt);
       },
