@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart' as syspaths;
 
 class AddDog extends StatefulWidget {
   final String eName;
@@ -31,15 +33,19 @@ class _AddDogState extends State<AddDog> {
   String fileName;
 
   Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
+    final imageFile = await picker.getImage(source: ImageSource.camera);
 
     setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
+      if (imageFile != null) {
+        _image = File(imageFile.path);
       } else {
         print('No image selected.');
       }
     });
+
+    // final appDir = await syspaths.getApplicationDocumentsDirectory();
+    // final fileName = path.basename(imageFile.path);
+    // final savedImage = await _image.copy('${appDir.path}/$fileName');
   }
 
   Widget dateTextHandling(){
@@ -177,13 +183,17 @@ class _AddDogState extends State<AddDog> {
             onTap: () {
               getImage();
             },
-            child: CircleAvatar(
+            child: _image != null ?
+                    new CircleAvatar(
                       backgroundColor: Colors.grey[300],
                       // backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
-                      // backgroundImage: _image == null ? Center(child: Text("No image selected")) : Image.file(_image),
-                      child: ClipOval(child: _image == null ? Center(child: Text("No image selected")) : Image.file(_image)),
+                      backgroundImage:Image.file(_image).image,
+                      // child: ClipOval(child: _image == null ? Center(child: Text("No image selected")) : Image.file(_image)),
 
-                      radius: 60.0,),
+                      radius: 60.0,) :
+                    new CircleAvatar(backgroundColor: Colors.grey[300],
+                    radius: 60.0,
+                    child: Text("Select image")),
           )
       )
     );
