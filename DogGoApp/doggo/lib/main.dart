@@ -193,7 +193,7 @@ class _HomeState extends State<Home> {
     // Widget Should I walk my dog detail
     Widget walkDogSection = Container(
         child: Center(
-          child: Text("TEST"),
+          child: Text("<Insert dog details>"),
         ),
     );
 
@@ -346,14 +346,11 @@ class _HomeState extends State<Home> {
         child: Container(
             child: Column(
           children: [
-            // const SizedBox(height: 20),
               forecastWidget,
-              // const SizedBox(height: 20),
               weatherWidget,
-              const SizedBox(height: 20),
+              const Divider(height: 20),
               walkDogSection,
-              const SizedBox(height: 10),
-              // fetchDogList().run(),
+            const Divider(height: 20),
               dogProfile,
 
               // const SizedBox(height: 15),
