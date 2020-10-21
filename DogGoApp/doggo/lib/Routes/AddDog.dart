@@ -30,10 +30,10 @@ class _AddDogState extends State<AddDog> {
 
   File _image;
   final picker = ImagePicker();
-  String fileName;
+  String imgFileName;
 
   Future getImage() async {
-    final imageFile = await picker.getImage(source: ImageSource.camera);
+    final imageFile = await picker.getImage(source: ImageSource.gallery);
 
     setState(() {
       if (imageFile != null) {
@@ -43,9 +43,12 @@ class _AddDogState extends State<AddDog> {
       }
     });
 
-    // final appDir = await syspaths.getApplicationDocumentsDirectory();
-    // final fileName = path.basename(imageFile.path);
-    // final savedImage = await _image.copy('${appDir.path}/$fileName');
+    final appDir = await syspaths.getApplicationDocumentsDirectory();
+    final fileName = path.basename(imageFile.path);
+    final savedImage = await _image.copy('${appDir.path}/$fileName');
+    print("Saving img with filename " + fileName);
+
+    imgFileName = '${appDir.path}/$fileName';
   }
 
   Widget dateTextHandling(){
@@ -141,7 +144,7 @@ class _AddDogState extends State<AddDog> {
       textColor: Colors.white,
       child: Text( "Save",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold)),
       onPressed: (){
-        saveBt=[conDogName.text,conDogFood.text,"$strBirthday", fileName];
+        saveBt=[conDogName.text,conDogFood.text,"$strBirthday", imgFileName];
         // setState(() {
         //         //
         //         // });

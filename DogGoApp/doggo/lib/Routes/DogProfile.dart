@@ -54,6 +54,7 @@ class _DogProfileState extends State<DogProfile> {
   //     addToDogList(result[0],result[1],result[2]);
   // }
   void addToDogList(name,food,bday, fileName){
+    print("Adding dog " + name + " " + fileName);
     setState(() {
       dogsList.add(DogCreation(name, food, bday, fileName));
       saveData();
@@ -109,7 +110,8 @@ class _DogProfileState extends State<DogProfile> {
                 const SizedBox(width: 15),
                 CircleAvatar(
                   backgroundColor: Colors.grey[300],
-                  backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
+                  backgroundImage: AssetImage(dogsList[index].getFileName),
+                  // backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
                   radius: 35,
                 ),
                 const SizedBox(width: 30),
