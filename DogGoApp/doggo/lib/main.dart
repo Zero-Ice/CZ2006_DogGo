@@ -275,14 +275,14 @@ class _HomeState extends State<Home> {
                 // ...
               },
             ),
-            ListTile(
-              title: Text('Dog Profile'),
-              onTap: () {
-                // Update the state of the app.
-                Navigator.pushNamed(context, '/DogProfile');
-                // ...
-              },
-            ),
+            // ListTile(
+            //   title: Text('Dog Profile'),
+            //   onTap: () {
+            //     // Update the state of the app.
+            //     Navigator.pushNamed(context, '/DogProfile');
+            //     // ...
+            //   },
+            // ),
             ListTile(
               title: Text('Feeding Times'),
               onTap: () {
