@@ -23,6 +23,7 @@ import 'package:intl/intl.dart';
 import 'forecast.dart';
 import 'package:doggo/DogListComponent.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:flutter/services.dart';
 // import 'BackgroundNotif.dart';
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:workmanager/workmanager.dart';
@@ -159,6 +160,11 @@ class _HomeState extends State<Home> {
       RefreshController(initialRefresh: false);
 
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
     // Widget Weather Section
     Color color = Theme.of(context).primaryColor;
 
