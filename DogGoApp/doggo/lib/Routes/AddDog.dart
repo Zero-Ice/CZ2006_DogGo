@@ -61,6 +61,19 @@ class _AddDogState extends State<AddDog> {
     }
   }
 
+  Future saveImage() async {
+    if(_imageFile != null) {
+      print("SAVING IMAGE");
+      final appDir = await syspaths.getApplicationDocumentsDirectory();
+      final fileName = path.basename(_imageFile.path);
+      final savedImage = await File(_imageFile.path).copy(
+          '${appDir.path}/$fileName');
+      print("Saving img with filename " + fileName);
+
+      imgFileName = '${appDir.path}/$fileName';
+    }
+  }
+
   Future<void> retrieveLostData() async {
     final LostData response = await _picker.getLostData();
     if (response.isEmpty) {
@@ -117,6 +130,8 @@ class _AddDogState extends State<AddDog> {
       return Text(conBday.text);
     }
   }
+
+
   @override
   void initState() {
     print("INIT ADD DOG");
@@ -129,8 +144,10 @@ class _AddDogState extends State<AddDog> {
       imgFileName = widget.imgFileName;
     }
 
-    if(imgFileName != null) {
-      print("IMG FILE NAME " + imgFileName);
+    if(imgFileName.isNotEmpty) {
+      print("imgFileName: " + imgFileName);
+    } else {
+      print("imgFileName is empty");
     }
 
     super.initState();
@@ -214,6 +231,7 @@ class _AddDogState extends State<AddDog> {
       child: Text( "Save",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold)),
       onPressed: (){
         saveBt=[conDogName.text,conDogFood.text,"$strBirthday", imgFileName];
+        saveImage();
         // setState(() {
         //         //
         //         // });
@@ -261,9 +279,14 @@ class _AddDogState extends State<AddDog> {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
                   case ConnectionState.waiting:
-                    return const Text(
-                      'You have not yet picked an image.',
-                      textAlign: TextAlign.center,
+                    return GestureDetector(
+                      child: CircleAvatar(
+                        backgroundColor: Colors.grey[300],
+                        child: const Text(
+                          'You have not yet picked an image.',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     );
                   case ConnectionState.done:
                     return _previewImage();
@@ -292,7 +315,8 @@ class _AddDogState extends State<AddDog> {
               getImage();
             },
           child: CircleAvatar(
-            backgroundImage: AssetImage(imgFileName),
+            // backgroundImage: AssetImage(imgFileName),
+            backgroundImage: FileImage(File(imgFileName)),
             radius: 60.0
           )
         )
@@ -312,10 +336,10 @@ class _AddDogState extends State<AddDog> {
             child: Column(
               children: [
                 SizedBox(height: 20,),
-                // imgFileName == null || imgFileName == ""?
-                // addDogProfileImage :
-                // displayDogProfileImage,
-                addDogProfileImage,
+                imgFileName == null || imgFileName == ""?
+                addDogProfileImage :
+                displayDogProfileImage,
+                // addDogProfileImage,
                 Divider( height:30,color: Colors.grey[600],),
                 dogParticulars,
                 SizedBox(height: 30,),

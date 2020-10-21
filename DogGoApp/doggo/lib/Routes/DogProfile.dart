@@ -116,8 +116,8 @@ class _DogProfileState extends State<DogProfile> {
                 const SizedBox(width: 15),
                 CircleAvatar(
                   backgroundColor: Colors.grey[300],
-                  backgroundImage: AssetImage(dogsList[index].getFileName),
-                  // backgroundImage: FileImage(File(dogsList[index].getFileName)),
+                  // backgroundImage: AssetImage(dogsList[index].getFileName),
+                  backgroundImage: FileImage(File(dogsList[index].getFileName)),
                   radius: 35,
                 ),
                 const SizedBox(width: 30),
