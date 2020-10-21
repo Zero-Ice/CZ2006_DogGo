@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1038367294541",
+    "firebase_url": "https://doggoapp-4b6a4.firebaseio.com",
+    "project_id": "doggoapp-4b6a4",
+    "storage_bucket": "doggoapp-4b6a4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038367294541:android:3d8ceb52efa2c47dfc8804",
+        "android_client_info": {
+          "package_name": "com.example.doggo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1038367294541-dffmi6p2j1v14268b7896jo0mh4indq3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3lkXZrjjGlr3R0DOwkqLSI--NepQFuWY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1038367294541-dffmi6p2j1v14268b7896jo0mh4indq3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

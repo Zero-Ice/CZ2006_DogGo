@@ -12,18 +12,11 @@ class DogProfile extends StatefulWidget {
 }
 
 class _DogProfileState extends State<DogProfile> {
-  int i=0;
-  int j =0;
   List<DogCreation> dogsList = List<DogCreation>();
   String dogName;
   String dogFavFood;
   String dogBirthdate;
-  List l =List();
   SharedPreferences prefs;
-
-
-
-
 
   @override
   void initState() {
@@ -69,7 +62,6 @@ class _DogProfileState extends State<DogProfile> {
       onPressed: ()  {
         setState((){
           GoToAddDog(context);
-          i+=1;
         });
       },
       child:
@@ -109,15 +101,12 @@ class _DogProfileState extends State<DogProfile> {
             itemCount: dogsList.length,
             itemBuilder: (BuildContext context, int index){
             return Container(
-              height: 80,
-              //color: Colors.amber[colorCodes[index]],
               child: Row(children: [
                 const SizedBox(width: 15),
                 CircleAvatar(
                   backgroundColor: Colors.grey[300],
                   backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
                   radius: 35,
-                  //child: Text('AH'),
                 ),
                 const SizedBox(width: 30),
                 Expanded(
