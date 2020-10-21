@@ -1,14 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-
-var time1 = new DateTime(2020, 1, 1, 9, 0);
-var time2 = new DateTime(2020, 1, 1, 19, 30);
-List timings = [time1, time2];
-
-var dog1 = new Dog("Doggo1", timings, "Kibble");
-var dog2 = new Dog("Doggo2", timings, "Meat");
-var dog3 = new Dog("Doggo3", timings, "");
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:doggo/DogCreationClass.dart';
 
 class FeedingTime extends StatefulWidget {
   @override
@@ -16,90 +11,137 @@ class FeedingTime extends StatefulWidget {
 }
 
 class _FeedingTimeState extends State<FeedingTime> {
-  List<Dog> dogList = [dog1, dog2, dog3];
-  TimeOfDay _time = TimeOfDay.now();
-  Future<Null> selectTime(BuildContext context) async {
-    TimeOfDay selectedTime = await showTimePicker(
-      context: context,
-      initialTime: _time,
-    );
+  List<DogCreation> dogsList = List<DogCreation>();
+  SharedPreferences prefs;
+  TimeOfDay time = TimeOfDay.now();
+  TimeOfDay t1, t2;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    initSP();
+    super.initState();
   }
-  Future<Dog>_showEditForm(int index){
+
+  void initSP() async {
+    prefs = await SharedPreferences.getInstance();
+    loadData();
+  }
+
+  void saveData() {
+    List<String> spList = dogsList.map((index) => json.encode(index.toMap()))
+        .toList();
+    prefs.setStringList("dogData", spList);
+  }
+
+  void loadData() {
+    List<String> spList = prefs.getStringList("dogData");
+    dogsList =
+        spList.map((index) => DogCreation.fromMap(json.decode(index))).toList();
+    setState(() {});
+  }
+
+  void deleteFeed(int index) {
+    dogsList[index].setFood = "";
+    dogsList[index].setTimings = "";
+    saveData();
+  }
+
+  String todToStr(TimeOfDay tod) {
+    //what user sees
+    String _addLeadingZeroIfNeeded(int value) {
+      if (value < 10)
+        return '0$value';
+      return value.toString();
+    }
+    final String hourLabel = _addLeadingZeroIfNeeded(tod.hour);
+    final String minuteLabel = _addLeadingZeroIfNeeded(tod.minute);
+
+    return '$hourLabel:$minuteLabel';
+  }
+
+  TimeOfDay strToTOD(String s) {
+    //"16:00" time string -> TimeOfDay object
+    return TimeOfDay(
+        hour: int.parse(s.split(":")[0]), minute: int.parse(s.split(":")[1]));
+  }
+
+  List<String> splitTime(String s) {
+    return s.split(",");
+  }
+
+  Future<DogCreation> _showEditForm(int index) {
     TextEditingController foodController = TextEditingController();
     TextEditingController timeCon1 = TextEditingController();
     TextEditingController timeCon2 = TextEditingController();
-    foodController.text = "${dogList[index].getFood}";
-    DateTime dt1 = dogList[index].getFeedTimings[0];// add condition for empty value
-    DateTime dt2 = dogList[index].getFeedTimings[1];
-    //if (dt1 != null)
-      timeCon1.text = printTime(dt1);
-    //if (dt2 != null)
-      timeCon2.text = printTime(dt2);
-    TimeOfDay t1, t2;
+    if (dogsList[index].getFood.isNotEmpty)
+      foodController.text = "${dogsList[index].getFood}";
+    else
+      foodController.text = "";
+    try {
+      List<String> timeList = splitTime(dogsList[index].getFeedTimings);
+      timeCon1.text = timeList[0];
+      timeCon2.text = timeList[1];
+      t1 = strToTOD(timeList[0]);
+      t2 = strToTOD(timeList[1]);
+    }
+    on RangeError catch (e) {
+      print(e);
+    }
+    on NoSuchMethodError catch (e) {
+      print(e);
+    }
+    on FormatException catch (e) {
+      print(e);
+    }
 
-    final now = new DateTime.now();
-    bool timeChange1 = false; bool timeChange2 = false;
-    return showDialog(context: context, builder: (context){
+    return showDialog(context: context, builder: (context) {
       return AlertDialog(
 
-        title: Text("${dogList[index].getName}"),
+        title: Text("${dogsList[index].getName}"),
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
 
-          children:<Widget>[
-            TextFormField (
+          children: <Widget>[
+            TextFormField(
                 controller: foodController,
                 decoration: InputDecoration(
-                  //border: OutlineInputBorder(),
                     labelText: "Food"
                 )
             ),
             TextFormField(
-              enableInteractiveSelection : false,
+              enableInteractiveSelection: false,
               controller: timeCon1,
               decoration: InputDecoration(
-                //border: OutlineInputBorder(),
                 labelText: 'Feeding Time 1',
               ),
               onTap: () async {
-                TimeOfDay time = TimeOfDay.now(); //TimeOfDay.fromDateTime(dogList[index].getFeedTimings[0]);
                 FocusScope.of(context).requestFocus(new FocusNode());
-                //timeChange1 = true;
                 TimeOfDay picked =
                 await showTimePicker(context: context, initialTime: time);
                 if (picked != null) { //picked != time
-                    setState(() {
-                    //time = picked;
-                    //t1 = time;
-                      t1= picked;
-                    dt1 = new DateTime(now.year, now.month, now.day, t1.hour, t1.minute);
-                    timeCon1.text = printTime(dt1);
+                  setState(() {
+                    t1 = picked;
+                    timeCon1.text = todToStr(t1);
                   });
                 }
               },
             ),
             TextFormField(
-              enableInteractiveSelection : false,
+              enableInteractiveSelection: false,
               controller: timeCon2,
               decoration: InputDecoration(
-                //border: OutlineInputBorder(),
                 labelText: 'Feeding Time 2',
               ),
               onTap: () async {
-                TimeOfDay time = TimeOfDay.now();//TimeOfDay.fromDateTime(dogList[index].getFeedTimings[1]);
                 FocusScope.of(context).requestFocus(new FocusNode());
-
                 TimeOfDay picked =
                 await showTimePicker(context: context, initialTime: time);
                 if (picked != null) { //picked != null &&  picked != time
-                  //timeChange2 = true;
                   setState(() {
-                    //time = picked;
-                    //t2 = time;
                     t2 = picked;
-                    dt2 = new DateTime(now.year, now.month, now.day, t2.hour, t2.minute);
-                    timeCon2.text = printTime(dt2);
+                    timeCon2.text = todToStr(t2);
                   });
                 }
               },
@@ -108,15 +150,17 @@ class _FeedingTimeState extends State<FeedingTime> {
           ],
         ),
 
-        actions:<Widget>[
+        actions: <Widget>[
           MaterialButton(
             elevation: 5.0,
             child: Text("Save"),
-            onPressed: (){
+            onPressed: () {
               setState(() {
-                List dtList= [dt1,dt2];
-                dogList[index].setTimings = dtList;
-                dogList[index].setFood = foodController.text.toString();
+                List strList = [timeCon1.text, timeCon2.text];
+                String s = strList.join(",");
+                dogsList[index].setTimings = s;
+                dogsList[index].setFood = foodController.text.toString();
+                saveData();
               });
               Navigator.of(context).pop();
             },
@@ -128,162 +172,95 @@ class _FeedingTimeState extends State<FeedingTime> {
 
   @override
   Widget build(BuildContext context) {
+    Widget dogListBuilder = Expanded(
+        child: Container(
+            child: ListView.separated(
+              padding: const EdgeInsets.all(8),
+              itemCount: dogsList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                    height: 80,
+                    //color: Colors.amber[colorCodes[index]],
+                    child: Row(children: [
+                      const SizedBox(width: 15),
+                      CircleAvatar(
+                        backgroundColor: Colors.grey[300],
+                        backgroundImage: AssetImage(
+                            'assets/ProfileIcon_Dog.png'),
+                        radius: 35,
+                        //child: Text('AH'),
+                      ),
+                      const SizedBox(width: 30),
+                      Expanded(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('${dogsList[index].getName}'),
+                                SizedBox(height: 5,),
+                                Text('Feeding Times: ${dogsList[index]
+                                    .getFeedTimings}'.replaceAll(",", " ")),
+                                SizedBox(height: 5,),
+                                Text('Food: ${dogsList[index].getFood}'),
+                                SizedBox(height: 5,),
+                              ])),
+                      PopupMenuButton<int>(
+                        onSelected: (val) { //1: edit, 2: delete
+                          setState(() {
+                            if (val == 1) {
+                              _showEditForm(index);
+                              //saveData();
+                            }
+                            if (val == 2) { //add delete confirmation dialog
+                              deleteFeed(index);
+                              //saveData();
+                            }
+                          });
+                        },
+                        itemBuilder: (context) =>
+                        [
+                          PopupMenuItem(
+                            value: 1,
+                            child: Row(
+                              children: <Widget>[
+                                Icon(Icons.edit),
+                                Text('Edit'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 2,
+                            child: Row(
+                              children: <Widget>[
+                                Icon(Icons.delete),
+                                Text('Delete'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    ])
+                );
+              },
+              separatorBuilder: (BuildContext context,
+                  int index) => const Divider(height: 20,),
+            )
+        )
+    );
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Feeding Time"),
+
       ),
-      body: Container(
-          child: Column(
-        children: [
-          Expanded(
-              child: Container(
-                  child: ListView.separated(
-            padding: const EdgeInsets.all(8),
-            itemCount: dogList.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Container(
-                  height: 80,
-                  color: Colors.amber[600],
-                  child: Row(children: [
-                    const SizedBox(width: 15),
-                    CircleAvatar(
-                      backgroundColor: Colors.white,
-                      backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
-                      //child: Text('AH'),
-                    ),
-                    const SizedBox(width: 30),
+      body: Center(
+        child: Column(
+            children: [
+              dogListBuilder,
+            ]
+        ),
+      ),
 
-                    Expanded(
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                          Text(
-                              '${dogList[index].getName} - ${dogList[index].getFrequency} time(s) per day'),
-                          Text(
-                              'Feeding Times: ${dogList[index].printFeedTimings}'),
-                          Text('Food: ${dogList[index].getFood}'),
-                        ])),
-                    const SizedBox(width: 15),
-                    //_popupSettings(index),
-
-                    PopupMenuButton<int>(
-                      onSelected: (val) { //1: edit, 2: delete
-                        setState(() {
-                          if (val == 1){
-                            _showEditForm(index);
-                          }
-                          if (val == 2){ //add delete confirmation dialog
-                            dogList.removeAt(index);
-                          }
-                        });
-                      },
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: 1,
-                          child: Row(
-                            children: <Widget>[
-                              Icon(Icons.edit),
-                              Text('Edit'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 2,
-                          child: Row(
-                            children: <Widget>[
-                              Icon(Icons.delete),
-                              Text('Delete'),
-                            ],
-                          ),
-                        ),
-                      ],
-                    )
-                  ])
-                  //child: Center(child: Text('Dog ${entries[index]}')),
-                  );
-            },
-            separatorBuilder: (BuildContext context, int index) =>
-                const Divider(),
-          )))
-        ],
-      )),
     );
-  }
-}
-
-String printTime(DateTime dt){
-  String result;
-  var hour;
-  var minute;
-  hour = int.parse("${dt.hour}");
-  minute = int.parse("${dt.minute}");
-  if (hour < 10) hour = hour.toString().padLeft(2, '0');
-  if (minute <= 9) minute = minute.toString().padLeft(2, '0');
-
-  result = "$hour:$minute";
-  return result;
-}
-
-class Dog {
-  String name;
-  int frequency;
-  List feedTimings;
-  String food;
-
-  Dog(String name, List feedTimings, String food) {
-    this.name = name;
-    this.frequency = feedTimings.length;
-    this.feedTimings = feedTimings;
-    this.food = food;
-  }
-
-  String get getName {
-    return name;
-  }
-
-  int get getFrequency {
-    return frequency;
-  }
-  List get getFeedTimings{
-    return feedTimings;
-  }
-  String get printFeedTimings {
-    //var period;
-    List<String> temp = new List();
-    var result;
-    var hour;
-    var minute;
-    for (var i = 0; i < feedTimings.length; i++) {
-      hour = int.parse("${feedTimings[i].hour}");
-      minute = int.parse("${feedTimings[i].minute}");
-      if (hour < 10) hour = hour.toString().padLeft(2, '0');
-      if (minute <= 9) minute = minute.toString().padLeft(2, '0');
-
-      result = "$hour:$minute";
-      temp.add(result);
-    }
-
-    return temp.join(", ");
-  }
-
-  String get getFood {
-    return food;
-  }
-
-  set setFrequency(int frequency) {
-    this.frequency = frequency;
-  }
-
-  set setTimings(List feedTimings){
-    this.feedTimings = feedTimings;
-  }
-
-  set deleteTiming(int index){
-    feedTimings.removeAt(index);
-    this.feedTimings = feedTimings;
-  }
-
-  set setFood(String food) {
-    this.food = food;
   }
 }
