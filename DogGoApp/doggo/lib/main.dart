@@ -143,17 +143,10 @@ class _HomeState extends State<Home> {
   int currentHour = DateTime.now().hour;
   List<String> hoursArray = [];
 
-  Future<List<Weather>> futureWeather;
-  Future<List<Forecast>> futureForecasts;
-
   @override
   void initState() {
     super.initState();
     hoursArray = UpdateHourArray();
-    print(hoursArray);
-    futureWeather = fetchAllWeather(hoursArray);
-    futureForecasts = fetchAllForecasts(hoursArray);
-    print('init');
   }
 
   RefreshController _refreshController =
@@ -347,7 +340,9 @@ class _HomeState extends State<Home> {
               const SizedBox(height: 20),
               walkDogSection,
               const SizedBox(height: 10),
-              fetchDogList().run(),
+              // fetchDogList().run(),
+
+
               // const SizedBox(height: 15),
               // Align(alignment: Alignment.topCenter, child: Text('Useful links')),
               // const SizedBox(height: 10),
