@@ -135,9 +135,10 @@ class _AddDogState extends State<AddDog> {
       textColor: Colors.white,
       child: Text( "Save",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold)),
       onPressed: (){
-        setState(() {
-          saveBt=[conDogName.text,conDogFood.text,"$strBirthday", fileName];
-        });
+        saveBt=[conDogName.text,conDogFood.text,"$strBirthday", fileName];
+        // setState(() {
+        //         //
+        //         // });
         Navigator.pop(context,saveBt);
       },
     );
