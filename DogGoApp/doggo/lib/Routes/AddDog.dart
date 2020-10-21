@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddDog extends StatefulWidget {
   final String eName;
@@ -22,6 +25,21 @@ class _AddDogState extends State<AddDog> {
   TextEditingController conBday;
   List<String> saveBt = ["","",""];
   DateTime _dateTime;
+
+  File _image;
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
 
   Widget dateTextHandling(){
     if(conBday.text=="" || conBday.text=="Not Specified"){
@@ -153,10 +171,18 @@ class _AddDogState extends State<AddDog> {
 
     Widget profileImage  = Container(
       child: Center(
-          child: CircleAvatar(
-                    backgroundColor: Colors.grey[300],
-                    backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
-                    radius: 60.0,)
+          child: GestureDetector(
+            onTap: () {
+              getImage();
+            },
+            child: CircleAvatar(
+                      backgroundColor: Colors.grey[300],
+                      // backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
+                      // backgroundImage: _image == null ? Center(child: Text("No image selected")) : Image.file(_image),
+                      child: ClipOval(child: _image == null ? Center(child: Text("No image selected")) : Image.file(_image)),
+
+                      radius: 60.0,),
+          )
       )
     );
 
