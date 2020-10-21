@@ -7,6 +7,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:flutter/material.dart';
+import 'Routes/AddDog.dart';
 import 'Routes/NotificationSettings.dart';
 import 'Routes/DogProfile.dart';
 import 'Routes/FeedingTime.dart';
@@ -23,6 +24,7 @@ import 'package:intl/intl.dart';
 import 'forecast.dart';
 import 'package:doggo/DogListComponent.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:flutter/services.dart';
 // import 'BackgroundNotif.dart';
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:workmanager/workmanager.dart';
@@ -44,12 +46,11 @@ void main() {
 //     frequency: Duration(minutes: 15),
 //   );
   runApp(new MaterialApp(
-    title: 'Fetch weather test',
+    title: 'My First DogGo',
     initialRoute: '/',
     routes: {
       '/': (context) => Home(),
       '/NotificationSettings': (context) => NotificationSettings(),
-      '/DogProfile': (context) => DogProfile(),
       '/FeedingTime': (context) => FeedingTime(),
       '/VetVisit': (context) => VetVisit(),
       '/HotlineLinks': (context) => HotlineLinks(),
@@ -142,23 +143,44 @@ class _HomeState extends State<Home> {
   int currentHour = DateTime.now().hour;
   List<String> hoursArray = [];
 
-  Future<List<Weather>> futureWeather;
-  Future<List<Forecast>> futureForecasts;
+  DogProfile dogProfile = new DogProfile();
 
   @override
   void initState() {
     super.initState();
     hoursArray = UpdateHourArray();
-    print(hoursArray);
-    futureWeather = fetchAllWeather(hoursArray);
-    futureForecasts = fetchAllForecasts(hoursArray);
-    print('init');
+  }
+
+  Future<List<String>> GoToAddDog(BuildContext context) async{
+    List<String> result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog()));
+    dogProfile.addToDogList(result);
   }
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
+    Widget addbutton=  FloatingActionButton(
+      onPressed: ()  {
+        setState((){
+          GoToAddDog(context);
+        });
+      },
+      child:
+      Icon(
+        Icons.add,
+        size: 30,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(50.0),
+      ),
+    );
+
     // Widget Weather Section
     Color color = Theme.of(context).primaryColor;
 
@@ -168,22 +190,12 @@ class _HomeState extends State<Home> {
     ForecastWidget forecastWidget = ForecastWidget(hoursArray);
     // forecastWidget.setHoursArray(hoursArray);
 
-    // Widget Should I walk my dog button
+    // Widget Should I walk my dog detail
     Widget walkDogSection = Container(
-        child: RaisedButton(
-      onPressed: () {
-        // BackgroundNotif();
-        // setState(() {
-          // if(checkConditions()) {
-          //   BackgroundNotif();
-          // }
-          // testing purpose only
-          // final fbm = FirebaseMessaging();
-          // fbm.requestNotificationPermissions();
-        // });
-      },
-      child: Text("Should I walk my dog?", style: TextStyle(fontSize: 20)),
-    ));
+        child: Center(
+          child: Text("<Insert dog details>"),
+        ),
+    );
 
     // Widget useful links
     Widget usefulLinkSection = Container(
@@ -269,14 +281,14 @@ class _HomeState extends State<Home> {
                 // ...
               },
             ),
-            ListTile(
-              title: Text('Dog Profile'),
-              onTap: () {
-                // Update the state of the app.
-                Navigator.pushNamed(context, '/DogProfile');
-                // ...
-              },
-            ),
+            // ListTile(
+            //   title: Text('Dog Profile'),
+            //   onTap: () {
+            //     // Update the state of the app.
+            //     Navigator.pushNamed(context, '/DogProfile');
+            //     // ...
+            //   },
+            // ),
             ListTile(
               title: Text('Feeding Times'),
               onTap: () {
@@ -334,21 +346,26 @@ class _HomeState extends State<Home> {
         child: Container(
             child: Column(
           children: [
-            // const SizedBox(height: 20),
               forecastWidget,
-              // const SizedBox(height: 20),
               weatherWidget,
-              const SizedBox(height: 20),
+              const Divider(height: 20),
               walkDogSection,
-              const SizedBox(height: 10),
-              fetchDogList().run(),
-              const SizedBox(height: 15),
-              Align(alignment: Alignment.topCenter, child: Text('Useful links')),
-              const SizedBox(height: 10),
-              fetchHotlineList().run()
+            const Divider(height: 20),
+              dogProfile,
+
+              // const SizedBox(height: 15),
+              // Align(alignment: Alignment.topCenter, child: Text('Useful links')),
+              // const SizedBox(height: 10),
+              // fetchHotlineList().run()
           ],
         )),
       ),
+        floatingActionButton: Container(
+          height: 65.0,
+          width: 65.0,
+          child: FittedBox(
+              child:addbutton),
+        ),
     );
   }
 }

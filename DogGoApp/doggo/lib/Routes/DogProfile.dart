@@ -1,14 +1,19 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:doggo/Routes/AddDog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doggo/DogCreationClass.dart';
 
-
 class DogProfile extends StatefulWidget {
   @override
-  _DogProfileState createState() => _DogProfileState();
+  _DogProfileState dpState = new _DogProfileState();
+  _DogProfileState createState() => dpState;
+
+  addToDogList(List<String> result) {
+    dpState.addToDogList(result[0],result[1],result[2]);
+  }
 }
 
 class _DogProfileState extends State<DogProfile> {
@@ -43,10 +48,10 @@ class _DogProfileState extends State<DogProfile> {
   }
 
 
-  Future<List<String>> GoToAddDog(BuildContext context) async{
-      List<String> result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog()));
-      addToDogList(result[0],result[1],result[2]);
-  }
+  // Future<List<String>> GoToAddDog(BuildContext context) async{
+  //     List<String> result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog()));
+  //     addToDogList(result[0],result[1],result[2]);
+  // }
   void addToDogList(name,food,bday){
     setState(() {
       dogsList.add(DogCreation(name, food, bday));
@@ -58,23 +63,21 @@ class _DogProfileState extends State<DogProfile> {
   @override
   Widget build(BuildContext context) {
 
-    Widget addbutton=  FloatingActionButton(
-      onPressed: ()  {
-        setState((){
-          GoToAddDog(context);
-        });
-      },
-      child:
-      Icon(
-        Icons.add,
-        size: 30,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(50.0),
-      ),
-
-
-    );
+    // Widget addbutton=  FloatingActionButton(
+    //   onPressed: ()  {
+    //     setState((){
+    //       GoToAddDog(context);
+    //     });
+    //   },
+    //   child:
+    //   Icon(
+    //     Icons.add,
+    //     size: 30,
+    //   ),
+    //   shape: RoundedRectangleBorder(
+    //     borderRadius: BorderRadius.circular(50.0),
+    //   ),
+    // );
 
     void editDogList(index,name,food,bday){
       setState(() {
@@ -94,7 +97,7 @@ class _DogProfileState extends State<DogProfile> {
     }
 
 
-    Widget dogListBuilder =  Expanded(
+    return Expanded(
         child: Container(
           child: ListView.separated(
             padding: const EdgeInsets.all(8),
@@ -161,27 +164,27 @@ class _DogProfileState extends State<DogProfile> {
     );
 
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("DogProfile"),
-
-      ),
-      body: Center(
-        child: Column(
-            children: [
-              dogListBuilder,
-            ]
-        ),
-      ),
-
-
-      floatingActionButton: Container(
-        height: 65.0,
-        width: 65.0,
-        child: FittedBox(
-            child:addbutton),
-      ),
-    );
+    // return Scaffold(
+    //   appBar: AppBar(
+    //     title: Text("DogProfile"),
+    //
+    //   ),
+    //   body: Center(
+    //     child: Column(
+    //         children: [
+    //           dogListBuilder,
+    //         ]
+    //     ),
+    //   ),
+    //
+    //
+    //   floatingActionButton: Container(
+    //     height: 65.0,
+    //     width: 65.0,
+    //     child: FittedBox(
+    //         child:addbutton),
+    //   ),
+    // );
   }
 
 }
