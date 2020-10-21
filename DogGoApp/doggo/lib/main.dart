@@ -7,6 +7,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:flutter/material.dart';
+import 'Routes/AddDog.dart';
 import 'Routes/NotificationSettings.dart';
 import 'Routes/DogProfile.dart';
 import 'Routes/FeedingTime.dart';
@@ -143,10 +144,17 @@ class _HomeState extends State<Home> {
   int currentHour = DateTime.now().hour;
   List<String> hoursArray = [];
 
+  DogProfile dogProfile = new DogProfile();
+
   @override
   void initState() {
     super.initState();
     hoursArray = UpdateHourArray();
+  }
+
+  Future<List<String>> GoToAddDog(BuildContext context) async{
+    List<String> result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog()));
+    dogProfile.addToDogList(result);
   }
 
   RefreshController _refreshController =
@@ -157,6 +165,22 @@ class _HomeState extends State<Home> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
+    Widget addbutton=  FloatingActionButton(
+      onPressed: ()  {
+        setState((){
+          GoToAddDog(context);
+        });
+      },
+      child:
+      Icon(
+        Icons.add,
+        size: 30,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(50.0),
+      ),
+    );
 
     // Widget Weather Section
     Color color = Theme.of(context).primaryColor;
@@ -341,7 +365,7 @@ class _HomeState extends State<Home> {
               walkDogSection,
               const SizedBox(height: 10),
               // fetchDogList().run(),
-
+              dogProfile,
 
               // const SizedBox(height: 15),
               // Align(alignment: Alignment.topCenter, child: Text('Useful links')),
@@ -350,6 +374,12 @@ class _HomeState extends State<Home> {
           ],
         )),
       ),
+        floatingActionButton: Container(
+          height: 65.0,
+          width: 65.0,
+          child: FittedBox(
+              child:addbutton),
+        ),
     );
   }
 }
