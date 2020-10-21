@@ -344,8 +344,8 @@ class _HomeState extends State<Home> {
         child: Container(
             child: Column(
           children: [
-              // forecastWidget,
-              // weatherWidget,
+              forecastWidget,
+              weatherWidget,
               const Divider(height: 20),
               walkDogSection,
             const Divider(height: 20),

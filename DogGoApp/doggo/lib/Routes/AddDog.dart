@@ -12,7 +12,8 @@ class AddDog extends StatefulWidget {
   final String eName;
   final String eFood;
   final String eBday;
-  AddDog({this.eName,this.eFood,this.eBday});
+  String imgFileName = "";
+  AddDog({this.eName,this.eFood,this.eBday, this.imgFileName});
 
   @override
   _AddDogState createState() => _AddDogState();
@@ -64,6 +65,8 @@ class _AddDogState extends State<AddDog> {
     conDogName = TextEditingController(text: widget.eName);
     conDogFood = TextEditingController(text: widget.eFood);
     conBday = TextEditingController(text: widget.eBday);
+    _image = null;
+
     super.initState();
   }
   @override
@@ -180,23 +183,38 @@ class _AddDogState extends State<AddDog> {
         ]
       ));
 
+    Widget getCircleAvatar() {
+      print("Getting circle avatar");
+      print(widget.imgFileName);
+      if(_image == null && widget.imgFileName == null) {
+        return new CircleAvatar(backgroundColor: Colors.grey[300],
+            radius: 60.0,
+            // backgroundImage: AssetImage(widget.imgFileName),
+            child: Text("Select image"));
+      } else {
+        if(widget.imgFileName != null && widget.imgFileName.isNotEmpty) {
+          return CircleAvatar(backgroundColor: Colors.grey[300],
+            backgroundImage: AssetImage(widget.imgFileName),
+            radius: 60.0,);
+        } else {
+          return CircleAvatar(
+            backgroundColor: Colors.grey[300],
+            // backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
+            backgroundImage:Image.file(_image).image,
+            // child: ClipOval(child: _image == null ? Center(child: Text("No image selected")) : Image.file(_image)),
+
+            radius: 60.0,);
+        }
+      }
+    }
+
     Widget profileImage  = Container(
       child: Center(
           child: GestureDetector(
             onTap: () {
               getImage();
             },
-            child: _image != null ?
-                    new CircleAvatar(
-                      backgroundColor: Colors.grey[300],
-                      // backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
-                      backgroundImage:Image.file(_image).image,
-                      // child: ClipOval(child: _image == null ? Center(child: Text("No image selected")) : Image.file(_image)),
-
-                      radius: 60.0,) :
-                    new CircleAvatar(backgroundColor: Colors.grey[300],
-                    radius: 60.0,
-                    child: Text("Select image")),
+            child:getCircleAvatar(),
           )
       )
     );

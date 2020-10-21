@@ -81,11 +81,12 @@ class _DogProfileState extends State<DogProfile> {
     //   ),
     // );
 
-    void editDogList(index,name,food,bday){
+    void editDogList(index,name,food,bday, fileName){
       setState(() {
         dogsList[index].setName=name;
         dogsList[index].setFavFood=food;
         dogsList[index].setBirthDate=bday;
+        dogsList[index].setFileName=fileName;
         saveData();
       });
     }
@@ -94,8 +95,9 @@ class _DogProfileState extends State<DogProfile> {
       List<String> edited =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog(
         eName: '${dogsList[index].getName}',
         eBday: '${dogsList[index].birthDate}',
-        eFood: '${dogsList[index].favFood}',)));
-      editDogList(index,edited[0],edited[1],edited[2]);
+        eFood: '${dogsList[index].favFood}',
+        imgFileName: '${dogsList[index].getFileName}',)));
+      editDogList(index,edited[0],edited[1],edited[2], edited[3]);
     }
 
 
