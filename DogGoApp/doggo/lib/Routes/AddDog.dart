@@ -100,16 +100,33 @@ class _AddDogState extends State<AddDog> {
       return retrieveError;
     }
     if (_imageFile != null) {
-        return Image.file(File(_imageFile.path));
+      return GestureDetector(
+        onTap: () {
+          getImage();
+        },
+        child: CircleAvatar(
+          backgroundImage: FileImage(File(_imageFile.path)),
+          radius: 60.0,
+        ),
+      );
     } else if (_pickImageError != null) {
       return Text(
         'Pick image error: $_pickImageError',
         textAlign: TextAlign.center,
       );
     } else {
-      return const Text(
-        'You have not yet picked an image.',
-        textAlign: TextAlign.center,
+      return GestureDetector(
+        onTap: () {
+          getImage();
+        },
+        child: CircleAvatar(
+          backgroundColor: Colors.grey[300],
+          radius: 60.0,
+          child: const Text(
+            'You have not yet picked an image.',
+            textAlign: TextAlign.center,
+          ),
+        ),
       );
     }
   }
@@ -231,7 +248,7 @@ class _AddDogState extends State<AddDog> {
       child: Text( "Save",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold)),
       onPressed: (){
         if(imgFileName==null){
-          imgFileName="assets/ProfileIcon_Dog.png";
+          imgFileName="";
         }
         saveBt=[conDogName.text,conDogFood.text,"$strBirthday", imgFileName];
         saveImage();
@@ -272,42 +289,45 @@ class _AddDogState extends State<AddDog> {
 
     Widget addDogProfileImage  = Container(
       child: Center(
-          child: GestureDetector(
-            onTap: () {
-              getImage();
-            },
-            child: FutureBuilder<void>(
-              future: retrieveLostData(),
-              builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                  case ConnectionState.waiting:
+          child: FutureBuilder<void>(
+            future: retrieveLostData(),
+            builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                case ConnectionState.waiting:
+                  return CircleAvatar(
+                    backgroundColor: Colors.grey[300],
+                    radius: 60.0,
+                    child: const Text(
+                      'You have not yet picked an image.',
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                case ConnectionState.done:
+                  return _previewImage();
+                default:
+                  if (snapshot.hasError) {
+                    return Text(
+                      'Pick image error: ${snapshot.error}}',
+                      textAlign: TextAlign.center,
+                    );
+                  } else {
                     return GestureDetector(
+                      onTap: () {
+                        getImage();
+                      },
                       child: CircleAvatar(
                         backgroundColor: Colors.grey[300],
+                        radius: 60.0,
                         child: const Text(
                           'You have not yet picked an image.',
                           textAlign: TextAlign.center,
                         ),
                       ),
                     );
-                  case ConnectionState.done:
-                    return _previewImage();
-                  default:
-                    if (snapshot.hasError) {
-                      return Text(
-                        'Pick image error: ${snapshot.error}}',
-                        textAlign: TextAlign.center,
-                      );
-                    } else {
-                      return const Text(
-                        'You have not yet picked an image.',
-                        textAlign: TextAlign.center,
-                      );
-                    }
-                }
-              },
-            )
+                  }
+              }
+            },
           ),
     ));
 
