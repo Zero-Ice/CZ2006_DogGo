@@ -1,14 +1,19 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:doggo/Routes/AddDog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doggo/DogCreationClass.dart';
 
-
 class DogProfile extends StatefulWidget {
   @override
-  _DogProfileState createState() => _DogProfileState();
+  _DogProfileState dpState = new _DogProfileState();
+  _DogProfileState createState() => dpState;
+
+  addToDogList(List<String> result) {
+    dpState.addToDogList(result[0],result[1],result[2], result[3]);
+  }
 }
 
 class _DogProfileState extends State<DogProfile> {
@@ -17,6 +22,7 @@ class _DogProfileState extends State<DogProfile> {
   String dogFavFood;
   String dogBirthdate;
   SharedPreferences prefs;
+  String fileName = "";
 
   @override
   void initState() {
@@ -43,13 +49,14 @@ class _DogProfileState extends State<DogProfile> {
   }
 
 
-  Future<List<String>> GoToAddDog(BuildContext context) async{
-      List<String> result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog()));
-      addToDogList(result[0],result[1],result[2]);
-  }
-  void addToDogList(name,food,bday){
+  // Future<List<String>> GoToAddDog(BuildContext context) async{
+  //     List<String> result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog()));
+  //     addToDogList(result[0],result[1],result[2]);
+  // }
+  void addToDogList(name,food,bday, fileName){
+    print("Adding dog " + name + " " + fileName);
     setState(() {
-      dogsList.add(DogCreation(name, food, bday));
+      dogsList.add(DogCreation(name, food, bday, fileName));
       saveData();
     });
 
@@ -58,29 +65,28 @@ class _DogProfileState extends State<DogProfile> {
   @override
   Widget build(BuildContext context) {
 
-    Widget addbutton=  FloatingActionButton(
-      onPressed: ()  {
-        setState((){
-          GoToAddDog(context);
-        });
-      },
-      child:
-      Icon(
-        Icons.add,
-        size: 30,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(50.0),
-      ),
+    // Widget addbutton=  FloatingActionButton(
+    //   onPressed: ()  {
+    //     setState((){
+    //       GoToAddDog(context);
+    //     });
+    //   },
+    //   child:
+    //   Icon(
+    //     Icons.add,
+    //     size: 30,
+    //   ),
+    //   shape: RoundedRectangleBorder(
+    //     borderRadius: BorderRadius.circular(50.0),
+    //   ),
+    // );
 
-
-    );
-
-    void editDogList(index,name,food,bday){
+    void editDogList(index,name,food,bday, fileName){
       setState(() {
         dogsList[index].setName=name;
         dogsList[index].setFavFood=food;
         dogsList[index].setBirthDate=bday;
+        dogsList[index].setFileName=fileName;
         saveData();
       });
     }
@@ -89,12 +95,17 @@ class _DogProfileState extends State<DogProfile> {
       List<String> edited =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog(
         eName: '${dogsList[index].getName}',
         eBday: '${dogsList[index].birthDate}',
-        eFood: '${dogsList[index].favFood}',)));
-      editDogList(index,edited[0],edited[1],edited[2]);
+        eFood: '${dogsList[index].favFood}',
+        imgFileName: '${dogsList[index].getFileName}',)));
+      if(edited == null || edited.length == 0) {
+        print("MaterialPageRoute AddDog returned null edit");
+        return;
+      }
+      editDogList(index,edited[0],edited[1],edited[2], edited[3]);
     }
 
 
-    Widget dogListBuilder =  Expanded(
+    return Expanded(
         child: Container(
           child: ListView.separated(
             padding: const EdgeInsets.all(8),
@@ -105,7 +116,8 @@ class _DogProfileState extends State<DogProfile> {
                 const SizedBox(width: 15),
                 CircleAvatar(
                   backgroundColor: Colors.grey[300],
-                  backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
+                  // backgroundImage: AssetImage(dogsList[index].getFileName),
+                  backgroundImage: FileImage(File(dogsList[index].getFileName)),
                   radius: 35,
                 ),
                 const SizedBox(width: 30),
@@ -161,27 +173,27 @@ class _DogProfileState extends State<DogProfile> {
     );
 
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("DogProfile"),
-
-      ),
-      body: Center(
-        child: Column(
-            children: [
-              dogListBuilder,
-            ]
-        ),
-      ),
-
-
-      floatingActionButton: Container(
-        height: 65.0,
-        width: 65.0,
-        child: FittedBox(
-            child:addbutton),
-      ),
-    );
+    // return Scaffold(
+    //   appBar: AppBar(
+    //     title: Text("DogProfile"),
+    //
+    //   ),
+    //   body: Center(
+    //     child: Column(
+    //         children: [
+    //           dogListBuilder,
+    //         ]
+    //     ),
+    //   ),
+    //
+    //
+    //   floatingActionButton: Container(
+    //     height: 65.0,
+    //     width: 65.0,
+    //     child: FittedBox(
+    //         child:addbutton),
+    //   ),
+    // );
   }
 
 }
