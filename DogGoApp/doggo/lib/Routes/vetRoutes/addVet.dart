@@ -2,6 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:doggo/DogCreationClass.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+
+
 
 class AddVet extends StatefulWidget {
   @override
@@ -11,7 +16,24 @@ class AddVet extends StatefulWidget {
 
 
   class _AddVetState extends State<AddVet>{
-  String strDogName = "";
+    List<DogCreation> dogsList = List<DogCreation>();
+    SharedPreferences prefs;
+
+
+
+
+
+    void loadData() {
+      List<String> spList = prefs.getStringList("dogData");
+      dogsList =
+          spList.map((index) => DogCreation.fromMap(json.decode(index))).toList();
+      setState(() {});
+    }
+
+    List<DropdownMenuItem<DogCreation>> _dropdownMenuItems;
+    DogCreation _selectedItem;
+
+    String strDogName = "";
     String strDate="";
     String strTime="";
     DateTime saveDate;
@@ -20,6 +42,40 @@ class AddVet extends StatefulWidget {
     TimeOfDay _time;
     TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
     List saveVet;
+
+
+    List<DropdownMenuItem<DogCreation>> buildDropDownMenuItems(List dogsList) {
+      List<DropdownMenuItem<DogCreation>> items = List();
+      for (DogCreation listItem in dogsList) {
+        items.add(
+          DropdownMenuItem(
+            child: Text(listItem.name),
+            value: listItem,
+          ),
+        );
+      }
+      //print(dogsList[0]);
+      return items;
+    }
+
+
+
+
+    void initState() {
+      super.initState();
+      initSP();
+     // print(dogsList[0].getName);
+
+    }
+
+    void initSP() async {
+      prefs = await SharedPreferences.getInstance();
+      loadData();
+      _dropdownMenuItems = buildDropDownMenuItems(dogsList);
+      _selectedItem = _dropdownMenuItems[0].value;
+      print(_selectedItem.name);
+    }
+
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,15 +101,16 @@ class AddVet extends StatefulWidget {
                               style: TextStyle(fontSize: 20),
                             ),
                             SizedBox(width: 10,),
-                    Expanded(child: TextField(
-                      decoration: InputDecoration(hintText: "Type in Dog name",),
-                      onChanged: (String input) {
-                        setState(() {
-                          strDogName=input;
-                        });
-                      },
-                    ),
-                    )],),
+                    Expanded(child: DropdownButton<DogCreation>(
+                        value: _selectedItem,
+                        items: _dropdownMenuItems,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedItem = value;
+                            strDogName=value.name;
+                          });
+                        })),
+                    ],),
 
                         Row(
                           children: [
@@ -140,4 +197,7 @@ class AddVet extends StatefulWidget {
   }
 
 
+
+
 }
+

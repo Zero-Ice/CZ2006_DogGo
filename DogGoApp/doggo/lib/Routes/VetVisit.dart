@@ -1,6 +1,7 @@
 
 import 'package:doggo/Routes/vetRoutes/addVet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:doggo/DogCreationClass.dart';
 
 
 import 'package:flutter/material.dart';
@@ -12,9 +13,8 @@ var vDate=new DateTime(2020,1, 1, 9, 0);
 var vTime = new TimeOfDay(hour: 00, minute: 00);
 List vDateTime = [vDate, vTime];
 
-var appt1 = new Appointment("Doggo1", vDateTime);
-var appt2 = new Appointment("Doggo2", vDateTime);
-var appt3 = new Appointment("Doggo3", vDateTime);
+List<DogCreation> dogsList = List<DogCreation>();
+
 
 
 
@@ -32,7 +32,7 @@ class _VetVisitState extends State<VetVisit> {
   String newTime;
   List l =List();
   List<dynamic> data;
-  List<Appointment> apptList = [appt1,appt2,appt3];
+  List<Appointment> apptList = [];
 
   TimeOfDay _time = TimeOfDay.now();
   Future<Null> selectTime(BuildContext context) async {
@@ -162,9 +162,9 @@ class _VetVisitState extends State<VetVisit> {
   */
   Future<List<String>> GoToAddVet(BuildContext context) async{
     List<dynamic> result =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddVet()));
-    print(result[0]);
-    print(result[1]);
-    print(result[2]);
+   // print(result[0]);
+    //print(result[1]);
+   // print(result[2]);
 
     setState(() {
       String dogName1 = result[0];
