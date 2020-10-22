@@ -48,3 +48,5 @@ app.*.map.json
 DogGoApp/doggo/pubspec.lock
 
 DogGoApp/doggo/android/app/src/profile/gen/com/example/doggo
+
+DogGoApp/doggo/android/local.properties
