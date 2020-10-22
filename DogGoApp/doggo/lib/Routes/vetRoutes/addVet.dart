@@ -74,6 +74,7 @@ class AddVet extends StatefulWidget {
       _dropdownMenuItems = buildDropDownMenuItems(dogsList);
       _selectedItem = _dropdownMenuItems[0].value;
       print(_selectedItem.name);
+      strDogName = _selectedItem.name;
     }
 
 
@@ -107,7 +108,8 @@ class AddVet extends StatefulWidget {
                         onChanged: (value) {
                           setState(() {
                             _selectedItem = value;
-                            strDogName=value.name;
+                            //strDogName=value.name;
+                            strDogName=_selectedItem.name;
                           });
                         })),
                     ],),
@@ -163,7 +165,7 @@ class AddVet extends StatefulWidget {
                             // Navigate back to first screen when tapped.
                             setState((){
                               saveDate = _dateTime;
-                              saveTime = _time;
+                              saveTime = _time; print("addvet dogname: " + strDogName);
                               saveVet=["$strDogName","$saveDate","$strTime"];
                             });
                             Navigator.pop(context,saveVet);
