@@ -26,7 +26,7 @@ class _AddDogState extends State<AddDog> {
   TextEditingController conDogName;
   TextEditingController conDogFood;
   TextEditingController conBday;
-  List<String> saveBt = ["","",""];
+  List<String> saveBt = ["","","",""];
   DateTime _dateTime;
 
   // Image picker variables
@@ -230,6 +230,9 @@ class _AddDogState extends State<AddDog> {
       textColor: Colors.white,
       child: Text( "Save",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold)),
       onPressed: (){
+        if(imgFileName==null){
+          imgFileName="assets/ProfileIcon_Dog.png";
+        }
         saveBt=[conDogName.text,conDogFood.text,"$strBirthday", imgFileName];
         saveImage();
         // setState(() {
