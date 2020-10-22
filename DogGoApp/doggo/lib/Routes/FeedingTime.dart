@@ -1,4 +1,4 @@
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:convert';
@@ -39,13 +39,24 @@ class _FeedingTimeState extends State<FeedingTime> {
     dogsList =
         spList.map((index) => DogCreation.fromMap(json.decode(index))).toList();
     setState(() {});
+
   }
 
   void deleteFeed(int index) {
-    dogsList[index].setFood = "";
-    dogsList[index].setTimings = "";
-    saveData();
+    setState((){
+      dogsList[index].setFood = "";
+      dogsList[index].setTimings = "";
+      saveData();
+    });
+
   }
+
+  // void checkList(){
+  //   for (int i = 0; i < dogsList.length; i++){
+  //     print("feed dog food:");
+  //     print(dogsList[i].getFood);
+  //   }
+  // }
 
   String todToStr(TimeOfDay tod) {
     //what user sees
@@ -185,8 +196,7 @@ class _FeedingTimeState extends State<FeedingTime> {
                       const SizedBox(width: 15),
                       CircleAvatar(
                         backgroundColor: Colors.grey[300],
-                        backgroundImage: AssetImage(
-                            'assets/ProfileIcon_Dog.png'),
+                        backgroundImage: FileImage(File(dogsList[index].getFileName)),
                         radius: 35,
                         //child: Text('AH'),
                       ),
@@ -208,11 +218,9 @@ class _FeedingTimeState extends State<FeedingTime> {
                           setState(() {
                             if (val == 1) {
                               _showEditForm(index);
-                              //saveData();
                             }
                             if (val == 2) { //add delete confirmation dialog
                               deleteFeed(index);
-                              //saveData();
                             }
                           });
                         },

@@ -136,9 +136,11 @@ class _DogProfileState extends State<DogProfile> {
                   onSelected: (val) { //1: edit, 2: delete
                     setState(() {
                       if (val == 1){
+                        loadData();
                         editForm(index);
                       }
                       if (val == 2){ //add delete confirmation dialog
+                        loadData();
                         dogsList.removeAt(index);
                         saveData();
                       }

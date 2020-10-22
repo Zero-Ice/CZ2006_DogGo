@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+import 'dart:io';
 import 'package:doggo/Routes/vetRoutes/addVet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doggo/DogCreationClass.dart';
@@ -32,7 +34,84 @@ class _VetVisitState extends State<VetVisit> {
   String newTime;
   List l =List();
   List<dynamic> data;
+  List<DogCreation> dogsList = List<DogCreation>();
   List<Appointment> apptList = [];
+  SharedPreferences prefs;
+  @override
+  void initState() {
+    // TODO: implement initState
+    initSP();
+    super.initState();
+  }
+
+  void initSP() async {
+    prefs = await SharedPreferences.getInstance();
+    loadData();
+  }
+
+  void saveData() {
+    for (int i = 0; i < apptList.length; i++){
+      List temp = new List<String>();
+      temp.add(apptList[i].getAppt[0].toString());
+      temp.add(todToStr(apptList[i].getAppt[1]));
+      apptList[i].setAllAppt = temp;
+    }
+    List<String> spList = apptList.map((index) => json.encode(index.toMap()))
+        .toList();
+    prefs.setStringList("vetData", spList);
+
+  }
+
+  void loadData() {
+    //get image from dog class
+    List<String> dog = prefs.getStringList("dogData");
+    dogsList = dog.map((index) => DogCreation.fromMap(json.decode(index))).toList();
+
+
+    List<String> spList = prefs.getStringList("vetData");
+    apptList =
+        spList.map((index) => Appointment.fromMap(json.decode(index))).toList();
+    for (int i = 0; i < apptList.length; i++){
+      List temp = new List<dynamic>();
+      temp.add(DateTime.parse(apptList[i].getAppt[0]));
+      temp.add(strToTOD(apptList[i].getAppt[1]));
+      apptList[i].setAllAppt = temp;
+    }
+
+    setState(() {});
+  }
+
+  String todToStr(TimeOfDay tod) {
+    //what user sees
+    String _addLeadingZeroIfNeeded(int value) {
+      if (value < 10)
+        return '0$value';
+      return value.toString();
+    }
+    final String hourLabel = _addLeadingZeroIfNeeded(tod.hour);
+    final String minuteLabel = _addLeadingZeroIfNeeded(tod.minute);
+
+    return '$hourLabel:$minuteLabel';
+  }
+  TimeOfDay strToTOD(String s) {
+    //"16:00" time string -> TimeOfDay object
+    return TimeOfDay(
+        hour: int.parse(s.split(":")[0]), minute: int.parse(s.split(":")[1]));
+  }
+  dynamic getImage(String dogName){
+    try{
+      for (int i = 0; i < dogsList.length; i++){
+        print(dogsList[i].getName);
+        if (dogsList[i].getName == dogName){
+          return FileImage(File(dogsList[i].getFileName));
+        }
+      }
+    }
+    on RangeError catch (e){
+      print(e);
+    }
+
+  }
 
   TimeOfDay _time = TimeOfDay.now();
   Future<Null> selectTime(BuildContext context) async {
@@ -44,12 +123,25 @@ class _VetVisitState extends State<VetVisit> {
   Future<Appointment>_showEditForm(int index){
     TextEditingController timeCon1 = TextEditingController();
     TextEditingController timeCon2 = TextEditingController();
-    DateTime dt1 = apptList[index].getAppt[0];// add condition for empty value
-    TimeOfDay dt2 = apptList[index].getAppt[1];
-    //if (dt1 != null)
-    timeCon1.text = printDate(dt1);
-    //if (dt2 != null)
-    timeCon2.text = printTime(dt2);
+    DateTime dt1;
+    TimeOfDay dt2;
+    try{
+      dt1 = apptList[index].getAppt[0];// add condition for empty value
+      dt2 = apptList[index].getAppt[1];
+      timeCon1.text = printDate(dt1);
+      timeCon2.text = printTime(dt2);
+    }
+    on RangeError catch (e) {
+      print(e);
+    }
+    on NoSuchMethodError catch (e) {
+      print("editform");
+      print(e);
+    }
+    on FormatException catch (e) {
+      print(e);
+    }
+
     TimeOfDay t1, t2;
     DateTime d1;
 
@@ -128,6 +220,8 @@ class _VetVisitState extends State<VetVisit> {
               setState(() {
                 List dtList= [dt1,dt2];
                 apptList[index].setAllAppt = dtList;
+                saveData();
+                loadData();
               });
               Navigator.of(context).pop();
             },
@@ -167,7 +261,7 @@ class _VetVisitState extends State<VetVisit> {
    // print(result[2]);
 
     setState(() {
-      String dogName1 = result[0];
+      String dogName1 = result[0].toString();
       DateTime newDate = DateTime.parse( result[1]);
       TimeOfDay newTime = TimeOfDay(hour:int.parse(result[2].split(":")[0]),minute: int.parse(result[2].split(":")[1]));
       List newDateTime = [newDate, newTime];
@@ -176,10 +270,12 @@ class _VetVisitState extends State<VetVisit> {
       print(newAppt.getDogName);
       print(newAppt.getAppt[0]);
       print(newAppt.getAppt[1]);
+      print("----------");
+      saveData();
+      loadData();
       //print(apptList[4].getDogName);
       //print(apptList[4].getAppt[0]);
       //print(apptList[4].getAppt[1]);
-
     });
   }
 
@@ -219,12 +315,13 @@ class _VetVisitState extends State<VetVisit> {
                         itemBuilder: (BuildContext context, int index) {
                           return Container(
                               height: 80,
-                              color: Colors.blueAccent,
+                              //color: Colors.blueAccent,
                               child: Row(children: [
                                 const SizedBox(width: 15),
                                 CircleAvatar(
-                                  backgroundColor: Colors.white,
-                                  backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
+                                  backgroundColor: Colors.grey[300],
+                                  backgroundImage: getImage(apptList[index].getDogName),
+                                  radius: 35,
                                   //child: Text('AH'),
                                 ),
                                 const SizedBox(width: 30),
@@ -235,8 +332,10 @@ class _VetVisitState extends State<VetVisit> {
                                         children: [
                                           Text(
                                               '${apptList[index].getDogName}'),
+                                          SizedBox(height: 5,),
                                           Text(
                                               'Appointment Date: '),
+                                          SizedBox(height: 5,),
                                           Text('${apptList[index].printDateTime}'),
 
                                         ])),
@@ -251,6 +350,8 @@ class _VetVisitState extends State<VetVisit> {
                                       }
                                       if (val == 2){ //add delete confirmation dialog
                                         apptList.removeAt(index);
+                                        saveData();
+                                        loadData();
                                       }
                                     });
                                   },
@@ -280,7 +381,7 @@ class _VetVisitState extends State<VetVisit> {
                           );
                         },
                         separatorBuilder: (BuildContext context, int index) =>
-                        const Divider(),
+                        const Divider(height: 20,),
                       )))
             ],
           )),
@@ -295,17 +396,27 @@ class _VetVisitState extends State<VetVisit> {
 
 }
 
+
+
 String printTime(TimeOfDay time){
   String result;
   var hour;
   var minute;
-  hour = int.parse("${time.hour}");
-  minute = int.parse("${time.minute}");
-  if (hour < 10) hour = hour.toString().padLeft(2, '0');
-  if (minute <= 9) minute = minute.toString().padLeft(2, '0');
+  try{
+    hour = int.parse("${time.hour}");
+    minute = int.parse("${time.minute}");
+    if (hour < 10) hour = hour.toString().padLeft(2, '0');
+    if (minute <= 9) minute = minute.toString().padLeft(2, '0');
 
-  result = "$hour:$minute";
-  return result;
+    result = "$hour:$minute";
+    return result;
+  }
+  on NoSuchMethodError catch (e) {
+    print("printTime");
+    print(e);
+  }
+
+
 }
 
 String printDate(DateTime dt){
@@ -313,14 +424,20 @@ String printDate(DateTime dt){
   var year;
   var month;
   var day;
-  year = int.parse("${dt.year}");
-  month = int.parse("${dt.month}");
-  day = int.parse("${dt.day}");
+  try{
+    year = int.parse("${dt.year}");
+    month = int.parse("${dt.month}");
+    day = int.parse("${dt.day}");
+    result = "$year:$month:$day";
+    return result;
+  }
+
+  on NoSuchMethodError catch (e) {
+    print("printDate");
+    print(e);
+  }
 
 
-
-  result = "$year:$month:$day";
-  return result;
 }
 
 
@@ -391,22 +508,41 @@ class Appointment{
       result = "$hour:$minute";
       temp.add(result);
     }*/
-    year = int.parse("${allAppt[0].year}");
-    month = int.parse("${allAppt[0].month}");
-    day = int.parse("${allAppt[0].day}");
-    hour = int.parse("${allAppt[1].hour}");
-    minute = int.parse("${allAppt[1].minute}");
+    try{
+      year = int.parse("${allAppt[0].year}");
+      month = int.parse("${allAppt[0].month}");
+      day = int.parse("${allAppt[0].day}");
+      hour = int.parse("${allAppt[1].hour}");
+      minute = int.parse("${allAppt[1].minute}");
 
 
-    if (hour < 10) hour = hour.toString().padLeft(2, '0');
-    if (minute <= 9) minute = minute.toString().padLeft(2, '0');
+      if (hour < 10) hour = hour.toString().padLeft(2, '0');
+      if (minute <= 9) minute = minute.toString().padLeft(2, '0');
 
-    result = "$year/$month/$day - $hour:$minute";
+      result = "$year/$month/$day - $hour:$minute";
 
-    return result;
+      return result;
+    }
+    on NoSuchMethodError catch (e) {
+      print("printDateTime");
+      print(e);
+    }
+
+
+
   }
 
+  Appointment.fromMap(Map<String, dynamic> map){
+    this.dogName = map['dogName'];
+    this.allAppt = map['allAppt'];
+  }
 
+  Map<String, dynamic>toMap() {
+    return {
+      'dogName': this.dogName,
+      'allAppt': this.allAppt,
+    };
+  }
 
 
 
