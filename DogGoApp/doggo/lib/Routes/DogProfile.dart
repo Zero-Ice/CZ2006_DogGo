@@ -97,6 +97,10 @@ class _DogProfileState extends State<DogProfile> {
         eBday: '${dogsList[index].birthDate}',
         eFood: '${dogsList[index].favFood}',
         imgFileName: '${dogsList[index].getFileName}',)));
+      if(edited == null || edited.length == 0) {
+        print("MaterialPageRoute AddDog returned null edit");
+        return;
+      }
       editDogList(index,edited[0],edited[1],edited[2], edited[3]);
     }
 
@@ -112,8 +116,8 @@ class _DogProfileState extends State<DogProfile> {
                 const SizedBox(width: 15),
                 CircleAvatar(
                   backgroundColor: Colors.grey[300],
-                  backgroundImage: AssetImage(dogsList[index].getFileName),
-                  // backgroundImage: AssetImage('assets/ProfileIcon_Dog.png'),
+                  // backgroundImage: AssetImage(dogsList[index].getFileName),
+                  backgroundImage: FileImage(File(dogsList[index].getFileName)),
                   radius: 35,
                 ),
                 const SizedBox(width: 30),

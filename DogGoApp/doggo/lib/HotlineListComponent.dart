@@ -10,6 +10,7 @@ class fetchHotlineList {
   getSPlist() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> spList = prefs.getStringList("hotlineData");
+    if(spList == null || spList.length == 0) return;
     sm = spList.map((index) => HotlineCreation.fromMap(json.decode(index))).toList();
     print(sm.length);
   }
