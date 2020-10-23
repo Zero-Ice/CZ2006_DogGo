@@ -105,6 +105,70 @@ class _DogProfileState extends State<DogProfile> {
       editDogList(index,edited[0],edited[1],edited[2], edited[3]);
     }
 
+    Future _showWalkDogForm(BuildContext context) async{
+      return showDialog(context: context, builder: (context){
+        return  AlertDialog(
+          title: Text("Walk Dog"),
+          content:
+          Column(
+            children: [
+              MaterialButton(
+                elevation: 5.0,
+                child: Text("Walked"),
+                onPressed: (){
+                  setState(() {
+                  });
+                  Navigator.of(context).pop();
+                },
+              ),
+              MaterialButton(
+                elevation: 5.0,
+                child: Text("Cancel"),
+                onPressed: (){
+                  setState(() {
+                  });
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          ),
+
+
+        );
+      });
+    }
+    Future _showFeedDogForm(BuildContext context) async{
+      return showDialog(context: context, builder: (context){
+        return  AlertDialog(
+          title: Text("Feed Dog"),
+          content:
+          Column(
+            children: [
+              MaterialButton(
+                elevation: 5.0,
+                child: Text("Fed"),
+                onPressed: (){
+                  setState(() {
+                  });
+                  Navigator.of(context).pop();
+                },
+              ),
+              MaterialButton(
+                elevation: 5.0,
+                child: Text("Cancel"),
+                onPressed: (){
+                  setState(() {
+                  });
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          ),
+
+
+        );
+      });
+    }
 
     return Expanded(
         child: Container(
@@ -116,15 +180,15 @@ class _DogProfileState extends State<DogProfile> {
               child: Column(
                 children: [
                   Row(children: [
-                  const SizedBox(width: 15),
-                  CircleAvatar(
+                    const SizedBox(width: 15),
+                    CircleAvatar(
                     backgroundColor: Colors.grey[300],
                     // backgroundImage: AssetImage(dogsList[index].getFileName),
                     backgroundImage: FileImage(File(dogsList[index].getFileName)),
                     radius: 35,
-                  ),
-                  const SizedBox(width: 30),
-                  Expanded(
+                    ),
+                    const SizedBox(width: 30),
+                    Expanded(
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -135,30 +199,30 @@ class _DogProfileState extends State<DogProfile> {
                             Text('Birthday: ${dogsList[index].getBirthDate}'),
                             SizedBox(height: 5,),
                           ])),
-                  PopupMenuButton<int>(
-                    onSelected: (val) { //1: edit, 2: delete
-                      setState(() {
-                        if (val == 1){
-                          loadData();
-                          editForm(index);
-                        }
-                        if (val == 2){ //add delete confirmation dialog
-                          loadData();
-                          dogsList.removeAt(index);
-                          saveData();
-                        }
-                      });
-                    },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: 1,
-                        child: Row(
-                          children: <Widget>[
-                            Icon(Icons.edit),
-                            Text('Edit'),
-                          ],
+                    PopupMenuButton<int>(
+                      onSelected: (val) { //1: edit, 2: delete
+                        setState(() {
+                          if (val == 1){
+                            loadData();
+                            editForm(index);
+                          }
+                          if (val == 2){ //add delete confirmation dialog
+                            loadData();
+                            dogsList.removeAt(index);
+                            saveData();
+                          }
+                        });
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 1,
+                          child: Row(
+                            children: <Widget>[
+                              Icon(Icons.edit),
+                              Text('Edit'),
+                            ],
+                          ),
                         ),
-                      ),
                       PopupMenuItem(
                         value: 2,
                         child: Row(
@@ -173,19 +237,41 @@ class _DogProfileState extends State<DogProfile> {
                 ]),
                   Row(
                     children: [
-                      const SizedBox(width: 110),
-                      Icon(FontAwesomeIcons.dog,size: 20,),
-                      const SizedBox(width: 5),
-                      Text("| Walk"),
+                      InkWell(child: Container(
+                        child: Row(
+                          children: [
+                            const SizedBox(width: 110),
+                            Icon(FontAwesomeIcons.dog,size: 20,),
+                            const SizedBox(width: 5),
+                            Text("| Walk"),
+                          ],
+                        ),
+                      ),
+                        onTap: (){
+                          _showWalkDogForm(context);
+                        },
+                      ),
                       const SizedBox(width: 50),
-                      Icon(FontAwesomeIcons.bone,size: 17,),
-                      const SizedBox(width: 10),
-                      Text("| Feed"),
+                      InkWell(
+                        child: Container(
+                          child: Row(
+                            children: [
+
+                              Icon(FontAwesomeIcons.bone,size: 17,),
+                              const SizedBox(width: 10),
+                              Text("| Feed"),
+                            ],
+                          ),
+                        ),
+                        onTap: (){
+                          _showFeedDogForm(context);
+                        },
+                      )
                     ],
                   )
                   ]
-              )
-          );
+                )
+              );
             },separatorBuilder: (BuildContext context, int index) => const Divider( height: 20,),
         )
         )
