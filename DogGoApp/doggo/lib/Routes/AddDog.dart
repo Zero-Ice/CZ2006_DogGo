@@ -28,6 +28,7 @@ class _AddDogState extends State<AddDog> {
   TextEditingController conBday;
   List<String> saveBt = ["","","",""];
   DateTime _dateTime;
+  bool enableSaveButton;
 
   // Image picker variables
   PickedFile _imageFile;
@@ -169,6 +170,18 @@ class _AddDogState extends State<AddDog> {
 
     super.initState();
   }
+
+  bool hasDogName(){
+    setState(() {
+      if(conDogName.text==""){
+        enableSaveButton = false;
+      }else{
+        enableSaveButton = true;
+      }
+    });
+    return enableSaveButton;
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget dogParticulars = Container(
@@ -182,10 +195,21 @@ class _AddDogState extends State<AddDog> {
               'Dog Name        ',
               style: TextStyle(fontSize: 20),
             ),
-            SizedBox(width: 10,),
-            Expanded(child: TextField(
+              SizedBox(width: 10,),
+              Expanded(child: TextFormField(
+              autovalidate: true,
               decoration: InputDecoration(hintText: "Type in Dog name",),
+              validator: (value){
+                if(value.isEmpty){
+                  return "required to save";
+                }else{
+                  return null;
+                }
+              },
               controller: conDogName,
+              onChanged: (val){
+                hasDogName();
+              },
             )),
             ],),
             SizedBox(height: 20,),
@@ -239,6 +263,7 @@ class _AddDogState extends State<AddDog> {
         ),
     );
 
+
     Widget saveButton = RaisedButton(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15)
@@ -246,18 +271,20 @@ class _AddDogState extends State<AddDog> {
       color: Colors.blue,
       textColor: Colors.white,
       child: Text( "Save",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold)),
-      onPressed: (){
-        if(imgFileName==null){
-          imgFileName="";
-        }
-        saveBt=[conDogName.text,conDogFood.text,"$strBirthday", imgFileName];
-        saveImage();
-        // setState(() {
-        //         //
-        //         // });
-        Navigator.pop(context,saveBt);
-      },
+      onPressed: hasDogName()?(){
+      if(imgFileName==null){
+        imgFileName="";
+      }
+      saveBt=[conDogName.text,conDogFood.text,"$strBirthday", imgFileName];
+      saveImage();
+      // setState(() {
+      //         //
+      //         // });
+      Navigator.pop(context,saveBt);
+    }:null,
     );
+
+
 
     Widget cancelButton = RaisedButton(
       shape: RoundedRectangleBorder(
@@ -350,7 +377,6 @@ class _AddDogState extends State<AddDog> {
       appBar: AppBar(
         title: Text("Add a Dog"),
       ),
-
       body: Padding(
         padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
         child: SingleChildScrollView(
@@ -367,9 +393,6 @@ class _AddDogState extends State<AddDog> {
                 dogParticulars,
                 SizedBox(height: 30,),
                 buttonContainer,
-
-
-
             ],
             ),
 
