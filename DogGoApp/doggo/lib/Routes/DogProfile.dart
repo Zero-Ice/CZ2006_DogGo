@@ -108,29 +108,34 @@ class _DogProfileState extends State<DogProfile> {
     Future _showWalkDogForm(BuildContext context) async{
       return showDialog(context: context, builder: (context){
         return  AlertDialog(
-          title: Text("Walk Dog"),
+          title:  Center(child: Text("Walk Dog already?")),
           content:
-          Column(
-            children: [
-              MaterialButton(
-                elevation: 5.0,
-                child: Text("Walked"),
-                onPressed: (){
-                  setState(() {
-                  });
-                  Navigator.of(context).pop();
-                },
-              ),
-              MaterialButton(
-                elevation: 5.0,
-                child: Text("Cancel"),
-                onPressed: (){
-                  setState(() {
-                  });
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
+          Container(
+            height: 100,
+            width: 100,
+            child: Column(
+              children: [
+                MaterialButton(
+                  elevation: 5.0,
+                  child: Text("Yes"),
+                  onPressed: (){
+                    print("walked");
+                    setState(() {
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+                MaterialButton(
+                  elevation: 5.0,
+                  child: Text("Not yet"),
+                  onPressed: (){
+                    setState(() {
+                    });
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            ),
           ),
 
 
@@ -140,35 +145,73 @@ class _DogProfileState extends State<DogProfile> {
     Future _showFeedDogForm(BuildContext context) async{
       return showDialog(context: context, builder: (context){
         return  AlertDialog(
-          title: Text("Feed Dog"),
+          title: Center(child: Text("Feed Dog already?")),
           content:
-          Column(
-            children: [
-              MaterialButton(
-                elevation: 5.0,
-                child: Text("Fed"),
-                onPressed: (){
-                  setState(() {
-                  });
-                  Navigator.of(context).pop();
-                },
-              ),
-              MaterialButton(
-                elevation: 5.0,
-                child: Text("Cancel"),
-                onPressed: (){
-                  setState(() {
-                  });
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
+          Container(
+            height: 100,
+            width: 100,
+            child: Column(
+              children: [
+                MaterialButton(
+                  elevation: 5.0,
+                  child: Text("Yes"),
+                  onPressed: (){
+                    print("fed");
+                    setState(() {
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+                MaterialButton(
+                  elevation: 5.0,
+                  child: Text("Not yet"),
+                  onPressed: (){
+                    setState(() {
+                    });
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            ),
           ),
 
 
         );
       });
     }
+
+    Widget dogFeedAndWalkIcon = Row(
+      children: [
+        InkWell(child: Container(
+          child: Row(
+            children: [
+              Icon(FontAwesomeIcons.dog,size: 22,),
+              const SizedBox(width: 5),
+              Text("| Walk"),
+            ],
+          ),
+        ),
+          onTap: (){
+            _showWalkDogForm(context);
+          },
+        ),
+        SizedBox(width: 15,),
+        InkWell(
+          child: Container(
+            child: Row(
+              children: [
+                Icon(FontAwesomeIcons.bone,size: 19,),
+                const SizedBox(width: 10),
+                Text("| Feed"),
+              ],
+            ),
+          ),
+          onTap: (){
+            _showFeedDogForm(context);
+          },
+        )
+      ],
+    );
 
     return Expanded(
         child: Container(
@@ -187,7 +230,7 @@ class _DogProfileState extends State<DogProfile> {
                     backgroundImage: FileImage(File(dogsList[index].getFileName)),
                     radius: 35,
                     ),
-                    const SizedBox(width: 30),
+                    const SizedBox(width: 15),
                     Expanded(
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,7 +240,8 @@ class _DogProfileState extends State<DogProfile> {
                             Text('Fav Food: ${dogsList[index].geFavFood}'),
                             SizedBox(height: 5,),
                             Text('Birthday: ${dogsList[index].getBirthDate}'),
-                            SizedBox(height: 5,),
+                            SizedBox(height: 8,),
+                            dogFeedAndWalkIcon,
                           ])),
                     PopupMenuButton<int>(
                       onSelected: (val) { //1: edit, 2: delete
@@ -234,39 +278,11 @@ class _DogProfileState extends State<DogProfile> {
                       ),
                     ],
                   )
+
                 ]),
                   Row(
                     children: [
-                      InkWell(child: Container(
-                        child: Row(
-                          children: [
-                            const SizedBox(width: 110),
-                            Icon(FontAwesomeIcons.dog,size: 20,),
-                            const SizedBox(width: 5),
-                            Text("| Walk"),
-                          ],
-                        ),
-                      ),
-                        onTap: (){
-                          _showWalkDogForm(context);
-                        },
-                      ),
-                      const SizedBox(width: 50),
-                      InkWell(
-                        child: Container(
-                          child: Row(
-                            children: [
 
-                              Icon(FontAwesomeIcons.bone,size: 17,),
-                              const SizedBox(width: 10),
-                              Text("| Feed"),
-                            ],
-                          ),
-                        ),
-                        onTap: (){
-                          _showFeedDogForm(context);
-                        },
-                      )
                     ],
                   )
                   ]
