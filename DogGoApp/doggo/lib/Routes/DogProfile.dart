@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:doggo/Routes/AddDog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doggo/DogCreationClass.dart';
 
@@ -112,62 +113,78 @@ class _DogProfileState extends State<DogProfile> {
             itemCount: dogsList.length,
             itemBuilder: (BuildContext context, int index){
             return Container(
-              child: Row(children: [
-                const SizedBox(width: 15),
-                CircleAvatar(
-                  backgroundColor: Colors.grey[300],
-                  // backgroundImage: AssetImage(dogsList[index].getFileName),
-                  backgroundImage: FileImage(File(dogsList[index].getFileName)),
-                  radius: 35,
-                ),
-                const SizedBox(width: 30),
-                Expanded(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Dog: ${dogsList[index].getName}'),
-                          SizedBox(height: 5,),
-                          Text('Fav Food: ${dogsList[index].geFavFood}'),
-                          SizedBox(height: 5,),
-                          Text('Birthday: ${dogsList[index].getBirthDate}'),
-                          SizedBox(height: 5,),
-                        ])),
-                PopupMenuButton<int>(
-                  onSelected: (val) { //1: edit, 2: delete
-                    setState(() {
-                      if (val == 1){
-                        loadData();
-                        editForm(index);
-                      }
-                      if (val == 2){ //add delete confirmation dialog
-                        loadData();
-                        dogsList.removeAt(index);
-                        saveData();
-                      }
-                    });
-                  },
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 1,
-                      child: Row(
-                        children: <Widget>[
-                          Icon(Icons.edit),
-                          Text('Edit'),
-                        ],
+              child: Column(
+                children: [
+                  Row(children: [
+                  const SizedBox(width: 15),
+                  CircleAvatar(
+                    backgroundColor: Colors.grey[300],
+                    // backgroundImage: AssetImage(dogsList[index].getFileName),
+                    backgroundImage: FileImage(File(dogsList[index].getFileName)),
+                    radius: 35,
+                  ),
+                  const SizedBox(width: 30),
+                  Expanded(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Dog: ${dogsList[index].getName}'),
+                            SizedBox(height: 5,),
+                            Text('Fav Food: ${dogsList[index].geFavFood}'),
+                            SizedBox(height: 5,),
+                            Text('Birthday: ${dogsList[index].getBirthDate}'),
+                            SizedBox(height: 5,),
+                          ])),
+                  PopupMenuButton<int>(
+                    onSelected: (val) { //1: edit, 2: delete
+                      setState(() {
+                        if (val == 1){
+                          loadData();
+                          editForm(index);
+                        }
+                        if (val == 2){ //add delete confirmation dialog
+                          loadData();
+                          dogsList.removeAt(index);
+                          saveData();
+                        }
+                      });
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 1,
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.edit),
+                            Text('Edit'),
+                          ],
+                        ),
                       ),
-                    ),
-                    PopupMenuItem(
-                      value: 2,
-                      child: Row(
-                        children: <Widget>[
-                          Icon(Icons.delete),
-                          Text('Delete'),
-                        ],
+                      PopupMenuItem(
+                        value: 2,
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.delete),
+                            Text('Delete'),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                )
-              ])
+                    ],
+                  )
+                ]),
+                  Row(
+                    children: [
+                      const SizedBox(width: 110),
+                      Icon(FontAwesomeIcons.dog,size: 20,),
+                      const SizedBox(width: 5),
+                      Text("| Walk"),
+                      const SizedBox(width: 50),
+                      Icon(FontAwesomeIcons.bone,size: 17,),
+                      const SizedBox(width: 10),
+                      Text("| Feed"),
+                    ],
+                  )
+                  ]
+              )
           );
             },separatorBuilder: (BuildContext context, int index) => const Divider( height: 20,),
         )

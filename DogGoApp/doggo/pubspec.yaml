@@ -32,6 +32,7 @@ dependencies:
   image_picker: ^0.6.7+12
   firebase_messaging: ^7.0.3
   path_provider: ^1.6.21
+  font_awesome_flutter: ^8.10.0
 #  flutter_local_notifications: ^1.4.2
 #  rxdart: ^0.23.1
 #  workmanager: ^0.2.3
