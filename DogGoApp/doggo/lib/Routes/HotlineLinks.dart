@@ -44,28 +44,32 @@ class _HotlineLinksState extends State<HotlineLinks> {
     TextEditingController hotlineCon = TextEditingController();
 
     return showDialog(context: context, builder: (context){
-      return SingleChildScrollView(
-        child: AlertDialog(
+      return AlertDialog(
             title: Text("Add HotLine"),
-          content: Expanded( child:Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              TextFormField (
-                  controller: nameCon,
-                  decoration: InputDecoration(
-                      labelText: "Name of Hotline"
+          content:
+          SingleChildScrollView(
+            child: Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  TextFormField (
+                      controller: nameCon,
+                      decoration: InputDecoration(
+                          labelText: "Name of Hotline"
+                      ),
                   ),
+                  SizedBox(height: 15,),
+                  TextFormField (
+                    controller: hotlineCon,
+                    decoration: InputDecoration(
+                        labelText: "Hotline Link/Number"
+                    ),
+                  ),
+                ]
               ),
-              SizedBox(height: 15,),
-              TextFormField (
-                controller: hotlineCon,
-                decoration: InputDecoration(
-                    labelText: "Hotline Link/Number"
-                ),
-              ),
-            ]
-          ),),
+            ),
+          ),
 
           actions:<Widget>[
             MaterialButton(
@@ -89,8 +93,7 @@ class _HotlineLinksState extends State<HotlineLinks> {
               },
             )
           ],
-        ),
-      );
+        );
     });
   }
 
