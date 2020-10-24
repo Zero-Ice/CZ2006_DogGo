@@ -13,6 +13,8 @@ class _HotlineLinksState extends State<HotlineLinks> {
   List<HotlineCreation> hotlineList = new List<HotlineCreation>();
   SharedPreferences prefs;
 
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -39,62 +41,93 @@ class _HotlineLinksState extends State<HotlineLinks> {
   }
 
 
+
+
   Future _showAddForm(BuildContext context) async{
     TextEditingController nameCon = TextEditingController();
     TextEditingController hotlineCon = TextEditingController();
 
     return showDialog(context: context, builder: (context){
+      bool enableSaveButton;
+      bool isValidated(){
+        setState(() {
+          if(nameCon.text=="" || hotlineCon.text==""){
+            enableSaveButton = false;
+          }else{
+            enableSaveButton = true;
+          }
+        });
+        return enableSaveButton;
+      }
       return AlertDialog(
             title: Text("Add HotLine"),
-          content:
-          SingleChildScrollView(
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  TextFormField (
-                      controller: nameCon,
-                      decoration: InputDecoration(
-                          labelText: "Name of Hotline"
+            content: SingleChildScrollView(
+              child: Container(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      TextFormField(
+                        autovalidate: true,
+                        controller: nameCon,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return "required";
+                          } else {
+                            return null;
+                          }
+
+                        },
+                        decoration:
+                            InputDecoration(labelText: "Name of Hotline"),
                       ),
-                  ),
-                  SizedBox(height: 15,),
-                  TextFormField (
-                    controller: hotlineCon,
-                    decoration: InputDecoration(
-                        labelText: "Hotline Link/Number"
-                    ),
-                  ),
-                ]
+                      SizedBox(
+                        height: 15,
+                      ),
+                      TextFormField(
+                        autovalidate: true,
+                        controller: hotlineCon,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return "required";
+                          } else {
+                            return null;
+                          }
+                        },
+                        decoration:
+                            InputDecoration(labelText: "Hotline Link/Number"),
+                      ),
+                    ]),
               ),
             ),
-          ),
+            actions: <Widget>[
+              MaterialButton(
+                elevation: 5.0,
+                child: Text("Cancel"),
+                onPressed: () {
+                  setState(() {});
+                  Navigator.of(context).pop();
+                },
+              ),
+              MaterialButton(
+                elevation: 5.0,
+                child: Text("Save"),
+                onPressed:() {
+                  if(isValidated()==true){
+                    setState(() {
+                      hotlineList.add(HotlineCreation(nameCon.text, hotlineCon.text));
+                      saveData();
+                    });
+                    Navigator.of(context).pop();
+                  }else{
+                    return null;
+                  }
 
-          actions:<Widget>[
-            MaterialButton(
-              elevation: 5.0,
-              child: Text("Cancel"),
-              onPressed: (){
-                setState(() {
-                });
-                Navigator.of(context).pop();
-              },
-            ),
-            MaterialButton(
-              elevation: 5.0,
-              child: Text("Save"),
-              onPressed: (){
-                setState(() {
-                  hotlineList.add(HotlineCreation(nameCon.text,hotlineCon.text));
-                  saveData();
-                });
-                Navigator.of(context).pop();
-              },
-            )
-          ],
-        );
-    });
+                },
+              )
+            ],
+          );
+        });
   }
 
   Future<HotlineCreation>_showEditForm(int index){
@@ -104,6 +137,17 @@ class _HotlineLinksState extends State<HotlineLinks> {
     hotlineCon.text = "${hotlineList[index].getHotline}";
 
     return showDialog(context: context, builder: (context){
+      bool enableSaveButton;
+      bool isValidated(){
+        setState(() {
+          if(nameCon.text=="" || hotlineCon.text==""){
+            enableSaveButton = false;
+          }else{
+            enableSaveButton = true;
+          }
+        });
+        return enableSaveButton;
+      }
       return AlertDialog(
 
         title: Text("Edit Hotline"),
@@ -113,14 +157,30 @@ class _HotlineLinksState extends State<HotlineLinks> {
 
           children:<Widget>[
             TextFormField (
+              autovalidate: true,
               controller: nameCon,
+              validator: (value) {
+                if (value.isEmpty) {
+                  return "required";
+                } else {
+                  return null;
+                }
+              },
               decoration: InputDecoration(
                   labelText: "Name of Hotline"
               ),
             ),
             SizedBox(height: 15,),
             TextFormField (
+              autovalidate: true,
               controller: hotlineCon,
+              validator: (value) {
+                if (value.isEmpty) {
+                  return "required";
+                } else {
+                  return null;
+                }
+              },
               decoration: InputDecoration(
                   labelText: "Hotline Link/Number"
               ),
@@ -142,12 +202,16 @@ class _HotlineLinksState extends State<HotlineLinks> {
             elevation: 5.0,
             child: Text("Save"),
             onPressed: (){
-              setState(() {
-                hotlineList[index].setName=nameCon.text;
-                hotlineList[index].setHotline=hotlineCon.text;
-                saveData();
-              });
-              Navigator.of(context).pop();
+              if(isValidated()==true) {
+                setState(() {
+                  hotlineList[index].setName = nameCon.text;
+                  hotlineList[index].setHotline = hotlineCon.text;
+                  saveData();
+                });
+                Navigator.of(context).pop();
+              }else{
+                return null;
+              }
             },
           )
         ],

@@ -191,10 +191,10 @@ class _AddDogState extends State<AddDog> {
           children: <Widget> [
             Row(
               children: [
-            Text(
+              Text(
               'Dog Name        ',
               style: TextStyle(fontSize: 20),
-            ),
+             ),
               SizedBox(width: 10,),
               Expanded(child: TextFormField(
               autovalidate: true,
