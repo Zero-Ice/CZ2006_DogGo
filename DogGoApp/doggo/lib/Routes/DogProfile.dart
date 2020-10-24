@@ -16,6 +16,11 @@ class DogProfile extends StatefulWidget {
   addToDogList(List<String> result) {
     dpState.addToDogList(result[0],result[1],result[2], result[3]);
   }
+  refresh() {
+    dpState.setState(() {
+
+    });
+  }
 }
 
 class _DogProfileState extends State<DogProfile> {
