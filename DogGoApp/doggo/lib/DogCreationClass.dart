@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:intl/intl.dart';
 
 class DogCreation {
   String name;
@@ -7,6 +8,8 @@ class DogCreation {
   String feedTimings;
   String food;
   String fileName;
+  String lastFed;
+  String lastWalked;
 
   DogCreation(String name, String favFood, String birthDate, String fileName) {
     this.name = name;
@@ -15,6 +18,9 @@ class DogCreation {
     this.feedTimings = '';
     this.food = '';
     this.fileName = fileName;
+    DateTime now = DateTime.now();
+    this.lastFed = DateFormat("yyyy-MM-dd HH:mm:ss").format(now);
+    this.lastWalked = DateFormat("yyyy-MM-dd HH:mm:ss").format(now);
   }
 
   String get getName {
@@ -53,6 +59,14 @@ class DogCreation {
     return food;
   }
 
+  String get getLastFed {
+    return lastFed;
+  }
+
+  String get getLastWalked {
+    return lastWalked;
+  }
+
   set setTimings(String feedTimings) {
     this.feedTimings = feedTimings;
   }
@@ -65,13 +79,24 @@ class DogCreation {
     this.fileName = fileName;
   }
 
+  set setLastFed(DateTime lastFedDateTime) {
+    this.lastFed = DateFormat("yyyy-MM-dd HH:mm:ss").format(lastFedDateTime);
+  }
+
+  set setLastWalked(DateTime lastWalkedDateTime) {
+    this.lastWalked = DateFormat("yyyy-MM-dd HH:mm:ss").format(lastWalkedDateTime);
+  }
+
   DogCreation.fromMap(Map map) :
         this.name = map['name'],
         this.favFood = map['favFood'],
         this.birthDate= map['birthDate'],
         this.feedTimings = map['feedTimings'],
         this.food = map['food'],
-        this.fileName = map['fileName'];
+        this.fileName = map['fileName'],
+        this.lastFed = map['lastFed'],
+        this.lastWalked = map['lastWalked'];
+
 
   Map toMap() {
     return {
@@ -81,6 +106,8 @@ class DogCreation {
       'feedTimings': this.feedTimings,
       'food': this.food,
       'fileName': this.fileName,
+      'lastFed': this.lastFed,
+      'lastWalked': this.lastWalked,
     };
   }
 
