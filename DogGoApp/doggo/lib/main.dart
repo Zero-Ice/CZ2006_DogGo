@@ -207,6 +207,7 @@ class _HomeState extends State<Home> {
 
     void _onRefresh() async{
       UpdateHourArray();
+      dogProfile.refresh();
       setState(() {
 
       });
