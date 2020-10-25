@@ -1,4 +1,6 @@
 import 'dart:ffi';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 import 'package:doggo/DogCreationClass.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -23,7 +25,8 @@ class _NotificationSettingsState extends State<NotificationSettings> {
     var andrNoti = new AndroidInitializationSettings('doggo_notif_icon');
     var initSetting = new InitializationSettings(android: andrNoti);
     notif = new FlutterLocalNotificationsPlugin();
-    notif.initialize(initSetting, onSelectNotification: doThis);
+    notif.initialize(initSetting);
+    tz.initializeTimeZones();
     initSP();
 
   }
@@ -41,18 +44,26 @@ class _NotificationSettingsState extends State<NotificationSettings> {
 
   }
 
-  Future _showNotif() async{
-    var androidDets = new AndroidNotificationDetails("channelID", "My First DogGo", "channelDescription",importance: Importance.max);
+  Future<void> _scheduledNotif() async{
+    var androidDets = new AndroidNotificationDetails("DoggoApp", "My First DogGo", "channelDescription",importance: Importance.max);
     var genDet = new NotificationDetails(android: androidDets);
+    var timeToShow = DateTime.now().add(Duration(seconds: 5));
+    var time= tz.TZDateTime.now(tz.local).add(Duration(seconds: 5));
 
     print("notif bef");
-    await notif.show(0, "${dogsList[0].getName}", "Bring ", genDet);
+    await notif.zonedSchedule(0, "title", "body", time, genDet, uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, androidAllowWhileIdle: true);
     print("notif ret");
+
+
   }
+
+
 
 
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Notification Settings"),
@@ -68,16 +79,15 @@ class _NotificationSettingsState extends State<NotificationSettings> {
               child: Text('Go back!'),
             ),
             RaisedButton(
-              onPressed: _showNotif,
+              onPressed: _scheduledNotif,
               child: Text('Click Me!'),
             )
           ],
         ),
       ),
     );
-  }
 
-  Future doThis(String stuff) async{
 
   }
+
 }
