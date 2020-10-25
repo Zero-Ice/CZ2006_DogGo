@@ -123,6 +123,7 @@ class AddVet extends StatefulWidget {
                             SizedBox(width: 10,),
                             IconButton(
                               icon: Icon(Icons.calendar_today,color: Colors.black,),
+
                               onPressed: (){
                                 showDatePicker(
                                     context: context,
@@ -148,28 +149,32 @@ class AddVet extends StatefulWidget {
                               onPressed: (){
                                 showTimePicker(
                                     context: context,
-                                    initialTime: _time== null? selectedTime: _time ).then((time) { setState(() {_time=time;});});
+                                    initialTime: _time== null? selectedTime: _time, ).then((time) { setState(() {_time=time;});});
 
                               },
                             ),
                             Expanded(
-
                               child: Text((_time == null? "Appointment Time" : strTime = (_time.toString()).substring(10,15)),
                               ),),
                           ],
                         ),
                         //////////////////////////////////////
                         RaisedButton(
+
                           child: Text('Save'),
                           onPressed: () {
-                            // Navigate back to first screen when tapped.
-                            setState((){
-                              saveDate = _dateTime;
-                              saveTime = _time; print("addvet dogname: " + strDogName);
-                              saveVet=["$strDogName","$saveDate","$strTime"];
-                            });
-                            Navigator.pop(context,saveVet);
-
+                            if(_dateTime == null || _time == null){
+                              return "Date and time cannot be null";
+                            }
+                              // Navigate back to first screen when tapped.
+                              setState(() {
+                                saveDate = _dateTime;
+                                saveTime = _time;
+                                print("addvet dogname: " + strDogName);
+                                saveVet =
+                                ["$strDogName", "$saveDate", "$strTime"];
+                              });
+                              Navigator.pop(context, saveVet);
                           },
                         ),
 

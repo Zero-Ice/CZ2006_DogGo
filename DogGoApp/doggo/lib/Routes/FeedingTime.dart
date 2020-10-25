@@ -15,7 +15,6 @@ class _FeedingTimeState extends State<FeedingTime> {
   SharedPreferences prefs;
   TimeOfDay time = TimeOfDay.now();
   TimeOfDay t1, t2;
-
   @override
   void initState() {
     // TODO: implement initState
@@ -50,13 +49,6 @@ class _FeedingTimeState extends State<FeedingTime> {
     });
 
   }
-
-  // void checkList(){
-  //   for (int i = 0; i < dogsList.length; i++){
-  //     print("feed dog food:");
-  //     print(dogsList[i].getFood);
-  //   }
-  // }
 
   String todToStr(TimeOfDay tod) {
     //what user sees
@@ -108,7 +100,6 @@ class _FeedingTimeState extends State<FeedingTime> {
 
     return showDialog(context: context, builder: (context) {
       return AlertDialog(
-
         title: Text("${dogsList[index].getName}"),
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -166,6 +157,12 @@ class _FeedingTimeState extends State<FeedingTime> {
             elevation: 5.0,
             child: Text("Save"),
             onPressed: () {
+              if (foodController.text.isEmpty){
+                return "food cannot be empty";
+              }
+              if (timeCon1.text.isEmpty && timeCon2.text.isEmpty){
+                return "add a feeding time";
+              }
               setState(() {
                 List strList = [timeCon1.text, timeCon2.text];
                 String s = strList.join(",");
@@ -173,6 +170,7 @@ class _FeedingTimeState extends State<FeedingTime> {
                 dogsList[index].setFood = foodController.text.toString();
                 saveData();
               });
+
               Navigator.of(context).pop();
             },
           )
