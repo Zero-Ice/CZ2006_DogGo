@@ -17,11 +17,9 @@ import 'WeatherComponent.dart';
 import 'checkConditions.dart';
 import 'weather.dart';
 import 'package:weather_icons/weather_icons.dart';
-import 'DogProfileComponent.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'forecast.dart';
-import 'package:doggo/DogListComponent.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter/services.dart';
 // import 'BackgroundNotif.dart';
@@ -231,7 +229,6 @@ class _HomeState extends State<Home> {
             onPressed: () {
               UpdateHourArray();
               setState(() {
-                fetchDogList().getSPlist();
               });
             },
           ),
