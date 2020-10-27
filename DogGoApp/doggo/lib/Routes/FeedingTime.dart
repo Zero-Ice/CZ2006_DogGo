@@ -101,55 +101,57 @@ class _FeedingTimeState extends State<FeedingTime> {
     return showDialog(context: context, builder: (context) {
       return AlertDialog(
         title: Text("${dogsList[index].getName}"),
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
 
-          children: <Widget>[
-            TextFormField(
-                controller: foodController,
+            children: <Widget>[
+              TextFormField(
+                  controller: foodController,
+                  decoration: InputDecoration(
+                      labelText: "Food"
+                  )
+              ),
+              TextFormField(
+                enableInteractiveSelection: false,
+                controller: timeCon1,
                 decoration: InputDecoration(
-                    labelText: "Food"
-                )
-            ),
-            TextFormField(
-              enableInteractiveSelection: false,
-              controller: timeCon1,
-              decoration: InputDecoration(
-                labelText: 'Feeding Time 1',
+                  labelText: 'Feeding Time 1',
+                ),
+                onTap: () async {
+                  FocusScope.of(context).requestFocus(new FocusNode());
+                  TimeOfDay picked =
+                  await showTimePicker(context: context, initialTime: time);
+                  if (picked != null) { //picked != time
+                    setState(() {
+                      t1 = picked;
+                      timeCon1.text = todToStr(t1);
+                    });
+                  }
+                },
               ),
-              onTap: () async {
-                FocusScope.of(context).requestFocus(new FocusNode());
-                TimeOfDay picked =
-                await showTimePicker(context: context, initialTime: time);
-                if (picked != null) { //picked != time
-                  setState(() {
-                    t1 = picked;
-                    timeCon1.text = todToStr(t1);
-                  });
-                }
-              },
-            ),
-            TextFormField(
-              enableInteractiveSelection: false,
-              controller: timeCon2,
-              decoration: InputDecoration(
-                labelText: 'Feeding Time 2',
+              TextFormField(
+                enableInteractiveSelection: false,
+                controller: timeCon2,
+                decoration: InputDecoration(
+                  labelText: 'Feeding Time 2',
+                ),
+                onTap: () async {
+                  FocusScope.of(context).requestFocus(new FocusNode());
+                  TimeOfDay picked =
+                  await showTimePicker(context: context, initialTime: time);
+                  if (picked != null) { //picked != null &&  picked != time
+                    setState(() {
+                      t2 = picked;
+                      timeCon2.text = todToStr(t2);
+                    });
+                  }
+                },
               ),
-              onTap: () async {
-                FocusScope.of(context).requestFocus(new FocusNode());
-                TimeOfDay picked =
-                await showTimePicker(context: context, initialTime: time);
-                if (picked != null) { //picked != null &&  picked != time
-                  setState(() {
-                    t2 = picked;
-                    timeCon2.text = todToStr(t2);
-                  });
-                }
-              },
-            ),
 
-          ],
+            ],
+          ),
         ),
 
         actions: <Widget>[
