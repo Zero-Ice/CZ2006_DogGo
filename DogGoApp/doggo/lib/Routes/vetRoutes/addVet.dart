@@ -91,7 +91,6 @@ class AddVet extends StatefulWidget {
                   child: Column(
                     children: [
                       Container(
-                  color: Colors.blue,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget> [
@@ -113,6 +112,7 @@ class AddVet extends StatefulWidget {
                           });
                         })),
                     ],),
+                        const SizedBox(height: 20),
 
                         Row(
                           children: [
@@ -137,6 +137,8 @@ class AddVet extends StatefulWidget {
                               ),),
                           ],),
                         /////////////////////////////////
+                        const SizedBox(height: 10),
+
                         Row(
                           children: [
                             Text(
@@ -159,6 +161,8 @@ class AddVet extends StatefulWidget {
                           ],
                         ),
                         //////////////////////////////////////
+                        const SizedBox(height: 50),
+
                         RaisedButton(
 
                           child: Text('Save'),
@@ -188,6 +192,7 @@ class AddVet extends StatefulWidget {
                   ),
 
               ),
+
               Align(
                 alignment: Alignment.bottomCenter,
                 child: RaisedButton(
