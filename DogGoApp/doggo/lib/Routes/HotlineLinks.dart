@@ -88,6 +88,7 @@ class _HotlineLinksState extends State<HotlineLinks> {
                       TextFormField(
                         autovalidate: true,
                         controller: hotlineCon,
+                        keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value.isEmpty) {
                             return "required";
@@ -96,7 +97,7 @@ class _HotlineLinksState extends State<HotlineLinks> {
                           }
                         },
                         decoration:
-                            InputDecoration(labelText: "Hotline Link/Number"),
+                            InputDecoration(labelText: "Hotline Number"),
                       ),
                     ]),
               ),
@@ -183,7 +184,7 @@ class _HotlineLinksState extends State<HotlineLinks> {
                 }
               },
               decoration: InputDecoration(
-                  labelText: "Hotline Link/Number"
+                  labelText: "Hotline Number"
               ),
             ),
           ],
