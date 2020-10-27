@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:doggo/BackgroundNotif.dart';
 import 'package:doggo/ForecastComponent.dart';
-import 'package:doggo/HotlineListComponent.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -18,16 +16,15 @@ import 'WeatherComponent.dart';
 import 'checkConditions.dart';
 import 'weather.dart';
 import 'package:weather_icons/weather_icons.dart';
-import 'DogProfileComponent.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'forecast.dart';
-import 'package:doggo/DogListComponent.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter/services.dart';
-// import 'BackgroundNotif.dart';
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// import 'package:workmanager/workmanager.dart';
+import 'package:doggo/Notification.dart' as notification;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
 
 void main() {
 //   WidgetsFlutterBinding.ensureInitialized();
@@ -148,6 +145,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    notification.init();
     hoursArray = UpdateHourArray();
   }
 
@@ -195,16 +193,6 @@ class _HomeState extends State<Home> {
         ),
     );
 
-    // Widget useful links
-    Widget usefulLinkSection = Container(
-        height: 80,
-        child: Column(
-          children: [
-            Align(alignment: Alignment.topCenter, child: Text('Useful links')),
-            Expanded(child: fetchHotlineList().run(),)
-          ],
-        ));
-
     void _onRefresh() async{
       UpdateHourArray();
       dogProfile.refresh();
@@ -242,8 +230,6 @@ class _HomeState extends State<Home> {
             onPressed: () {
               UpdateHourArray();
               setState(() {
-                fetchDogList().getSPlist();
-                fetchHotlineList().getSPlist();
               });
             },
           ),
