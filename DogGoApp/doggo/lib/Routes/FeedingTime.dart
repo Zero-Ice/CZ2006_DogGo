@@ -109,6 +109,15 @@ class _FeedingTimeState extends State<FeedingTime> {
             children: <Widget>[
               TextFormField(
                   controller: foodController,
+                  autovalidate: true,
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return "required";
+                    } else {
+                      return null;
+                    }
+
+                  },
                   decoration: InputDecoration(
                       labelText: "Food"
                   )
@@ -116,6 +125,15 @@ class _FeedingTimeState extends State<FeedingTime> {
               TextFormField(
                 enableInteractiveSelection: false,
                 controller: timeCon1,
+                autovalidate: true,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return "required";
+                  } else {
+                    return null;
+                  }
+
+                },
                 decoration: InputDecoration(
                   labelText: 'Feeding Time 1',
                 ),
@@ -127,6 +145,7 @@ class _FeedingTimeState extends State<FeedingTime> {
                     setState(() {
                       t1 = picked;
                       timeCon1.text = todToStr(t1);
+                      print(t1);
                     });
                   }
                 },
@@ -134,6 +153,15 @@ class _FeedingTimeState extends State<FeedingTime> {
               TextFormField(
                 enableInteractiveSelection: false,
                 controller: timeCon2,
+                autovalidate: true,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return "required";
+                  } else {
+                    return null;
+                  }
+
+                },
                 decoration: InputDecoration(
                   labelText: 'Feeding Time 2',
                 ),
