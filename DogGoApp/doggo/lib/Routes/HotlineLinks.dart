@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:doggo/HotlineCreationClass.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
 class HotlineLinks extends StatefulWidget {
   @override
@@ -263,8 +264,18 @@ class _HotlineLinksState extends State<HotlineLinks> {
                                 Text("Hotline:  ",
                                   style: TextStyle(fontSize: 15,color: Colors.grey[500] ),
                                 ),
-                                Text('${hotlineList[index].getHotline}',
-                                  style: TextStyle(fontSize: 16 ),
+                                GestureDetector(
+                                  onTap: () {
+                                    print("tel:" + hotlineList[index].getHotline);
+                                    UrlLauncher.launch("tel:" + hotlineList[index].getHotline);
+                                    // UrlLauncher.launch('https://flutter.dev');
+                                  },
+                                  child: Text('${hotlineList[index].getHotline}',
+                                    style: TextStyle(fontSize: 16,
+                                    decoration: TextDecoration.underline,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
                                 ),
 
                               ])),
