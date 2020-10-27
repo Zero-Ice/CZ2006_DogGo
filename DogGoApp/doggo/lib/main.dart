@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:doggo/BackgroundNotif.dart';
 import 'package:doggo/ForecastComponent.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,9 +21,10 @@ import 'package:intl/intl.dart';
 import 'forecast.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter/services.dart';
-// import 'BackgroundNotif.dart';
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// import 'package:workmanager/workmanager.dart';
+import 'package:doggo/Notification.dart' as notification;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
 
 void main() {
 //   WidgetsFlutterBinding.ensureInitialized();
@@ -145,6 +145,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    notification.init();
     hoursArray = UpdateHourArray();
   }
 
