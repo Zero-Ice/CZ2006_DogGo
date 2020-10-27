@@ -162,20 +162,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text('My First DogGo'),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.refresh,
-              color: Colors.white,
-            ),
-            iconSize: 35,
-            onPressed: () {
-              UpdateHourArray();
-              setState(() {
-              });
-            },
-          ),
-        ],
+        // backgroundColor: Colors.white,
       ),
       drawer: Drawer(
         // Add a ListView to the drawer. This ensures the user can scroll
@@ -267,8 +254,6 @@ class _HomeState extends State<Home> {
           children: [
               forecastWidget,
               weatherWidget,
-              const Divider(height: 20),
-              walkDogSection,
             const Divider(height: 20),
               dogProfile,
 
