@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:doggo/BackgroundNotif.dart';
 import 'package:doggo/ForecastComponent.dart';
-import 'package:doggo/HotlineListComponent.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -195,16 +194,6 @@ class _HomeState extends State<Home> {
         ),
     );
 
-    // Widget useful links
-    Widget usefulLinkSection = Container(
-        height: 80,
-        child: Column(
-          children: [
-            Align(alignment: Alignment.topCenter, child: Text('Useful links')),
-            Expanded(child: fetchHotlineList().run(),)
-          ],
-        ));
-
     void _onRefresh() async{
       UpdateHourArray();
       dogProfile.refresh();
@@ -243,7 +232,6 @@ class _HomeState extends State<Home> {
               UpdateHourArray();
               setState(() {
                 fetchDogList().getSPlist();
-                fetchHotlineList().getSPlist();
               });
             },
           ),
