@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:convert';
 
+
 class NotificationSettings extends StatefulWidget {
   @override
   _NotificationSettingsState createState() => _NotificationSettingsState();
@@ -27,6 +28,7 @@ class _NotificationSettingsState extends State<NotificationSettings> {
     notif = new FlutterLocalNotificationsPlugin();
     notif.initialize(initSetting);
     tz.initializeTimeZones();
+    tz.setLocalLocation(tz.getLocation('Asia/Singapore'));
     initSP();
 
   }
@@ -50,11 +52,13 @@ class _NotificationSettingsState extends State<NotificationSettings> {
     var timeToShow = DateTime.now().add(Duration(seconds: 5));
     var time= tz.TZDateTime.now(tz.local).add(Duration(seconds: 5));
 
-    print("notif bef");
-    await notif.zonedSchedule(0, "title", "body", time, genDet, uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, androidAllowWhileIdle: true);
-    print("notif ret");
 
+    await notif.zonedSchedule(0, "title", "body", time, genDet, androidAllowWhileIdle: true, uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, payload: time.toString());
 
+    final List<PendingNotificationRequest> pendingNotificationRequests =
+    await notif.pendingNotificationRequests();
+    print("PENDING NOTIF SIZE: " + pendingNotificationRequests.length.toString());
+    print(pendingNotificationRequests[0].payload);
   }
 
 
