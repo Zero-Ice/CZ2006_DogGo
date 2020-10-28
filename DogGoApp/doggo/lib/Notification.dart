@@ -3,6 +3,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 
+
 FlutterLocalNotificationsPlugin notif;
 
 void init() {
@@ -35,4 +36,30 @@ Future<void> scheduleNotification(
   // if(pendingNotificationRequests != null && pendingNotificationRequests.length > 0) {
   //   print(pendingNotificationRequests[0].payload);
   // }
+}
+
+Future<void> scheduleDailyNotification(
+    int id, String title, String body1, String body2, tz.TZDateTime t1, tz.TZDateTime t2) async {
+  var androidDets = new AndroidNotificationDetails(
+      "DoggoApp", "My First DogGo", "channelDescription",
+      importance: Importance.max);
+  var genDet = new NotificationDetails(android: androidDets);
+
+  await notif.zonedSchedule(id+1, title, body1, t1.toLocal(), genDet,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+      UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time, //daily
+      payload: t1.toString());
+
+  await notif.zonedSchedule(id+2, title, body2, t2.toLocal(), genDet,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+      UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+      payload: t2.toString());
+}
+Future<void> cancelFeedNoti(int id) async {
+  await notif.cancel(id+1);
+  await notif.cancel(id+2);
 }
