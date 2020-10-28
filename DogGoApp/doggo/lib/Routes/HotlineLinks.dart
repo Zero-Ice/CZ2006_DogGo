@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:doggo/HotlineCreationClass.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -88,6 +89,7 @@ class _HotlineLinksState extends State<HotlineLinks> {
                       TextFormField(
                         autovalidate: true,
                         controller: hotlineCon,
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value.isEmpty) {
