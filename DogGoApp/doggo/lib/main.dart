@@ -212,7 +212,7 @@ class _HomeState extends State<Home> {
               },
             ),
             ListTile(
-              title: Text('Hotline and Links'),
+              title: Text('Hotlines'),
               onTap: () {
                 // Update the state of the app.
                 Navigator.pushNamed(context, '/HotlineLinks');
