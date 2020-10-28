@@ -7,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doggo/DogCreationClass.dart';
+import 'package:doggo/Notification.dart';
 
 class DogProfile extends StatefulWidget {
   @override
@@ -295,6 +296,7 @@ class _DogProfileState extends State<DogProfile> {
                           }
                           if (val == 2){ //add delete confirmation dialog
                             loadData();
+                            cancelFeedNoti(int.parse(dogsList[index].getNotificationID));
                             dogsList.removeAt(index);
                             saveData();
                           }

@@ -10,6 +10,7 @@ class DogCreation {
   String fileName;
   String lastFed;
   String lastWalked;
+  String notificationID;
 
   DogCreation(String name, String favFood, String birthDate, String fileName) {
     this.name = name;
@@ -21,6 +22,7 @@ class DogCreation {
     DateTime now = DateTime.now();
     this.lastFed = DateFormat("yyyy-MM-dd HH:mm:ss").format(now);
     this.lastWalked = DateFormat("yyyy-MM-dd HH:mm:ss").format(now);
+    this.notificationID = '';
   }
 
   String get getName {
@@ -67,6 +69,10 @@ class DogCreation {
     return lastWalked;
   }
 
+  String get getNotificationID{
+    return notificationID;
+  }
+
   set setTimings(String feedTimings) {
     this.feedTimings = feedTimings;
   }
@@ -87,6 +93,10 @@ class DogCreation {
     this.lastWalked = DateFormat("yyyy-MM-dd HH:mm:ss").format(lastWalkedDateTime);
   }
 
+  set setNotificationID(String id){
+    this.notificationID = id;
+  }
+
   DogCreation.fromMap(Map map) :
         this.name = map['name'],
         this.favFood = map['favFood'],
@@ -95,8 +105,8 @@ class DogCreation {
         this.food = map['food'],
         this.fileName = map['fileName'],
         this.lastFed = map['lastFed'],
-        this.lastWalked = map['lastWalked'];
-
+        this.lastWalked = map['lastWalked'],
+        this.notificationID = map['notificationID'];
 
   Map toMap() {
     return {
@@ -108,6 +118,7 @@ class DogCreation {
       'fileName': this.fileName,
       'lastFed': this.lastFed,
       'lastWalked': this.lastWalked,
+      'notificationID': this.notificationID,
     };
   }
 

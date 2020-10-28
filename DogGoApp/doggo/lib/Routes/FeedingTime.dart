@@ -1,9 +1,13 @@
 import 'dart:io';
+import 'package:doggo/Notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doggo/DogCreationClass.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'dart:math';
 
 class FeedingTime extends StatefulWidget {
   @override
@@ -13,8 +17,12 @@ class FeedingTime extends StatefulWidget {
 class _FeedingTimeState extends State<FeedingTime> {
   List<DogCreation> dogsList = List<DogCreation>();
   SharedPreferences prefs;
+  String dogName;
+  String food;
   TimeOfDay time = TimeOfDay.now();
   TimeOfDay t1, t2;
+  int currentID;
+  var rng = new Random();
   @override
   void initState() {
     // TODO: implement initState
@@ -73,10 +81,27 @@ class _FeedingTimeState extends State<FeedingTime> {
     return s.split(",");
   }
 
+  tz.TZDateTime notiTime(int hour, int minute){
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate =
+    tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+    return scheduledDate;
+  }
+
+
   Future<DogCreation> _showEditForm(int index) {
     TextEditingController foodController = TextEditingController();
     TextEditingController timeCon1 = TextEditingController();
     TextEditingController timeCon2 = TextEditingController();
+    try{
+      currentID = int.parse(dogsList[index].getNotificationID);
+    }
+    on FormatException catch (e){
+      print(e);
+    }
     if (dogsList[index].getFood.isNotEmpty)
       foodController.text = "${dogsList[index].getFood}";
     else
@@ -139,13 +164,12 @@ class _FeedingTimeState extends State<FeedingTime> {
                 ),
                 onTap: () async {
                   FocusScope.of(context).requestFocus(new FocusNode());
-                  TimeOfDay picked =
+                  TimeOfDay picked1 =
                   await showTimePicker(context: context, initialTime: time);
-                  if (picked != null) { //picked != time
+                  if (picked1 != null) { //picked != time
                     setState(() {
-                      t1 = picked;
+                      t1 = picked1;
                       timeCon1.text = todToStr(t1);
-                      print(t1);
                     });
                   }
                 },
@@ -167,11 +191,11 @@ class _FeedingTimeState extends State<FeedingTime> {
                 ),
                 onTap: () async {
                   FocusScope.of(context).requestFocus(new FocusNode());
-                  TimeOfDay picked =
+                  TimeOfDay picked2 =
                   await showTimePicker(context: context, initialTime: time);
-                  if (picked != null) { //picked != null &&  picked != time
+                  if (picked2 != null) { //picked != null &&  picked != time
                     setState(() {
-                      t2 = picked;
+                      t2 = picked2;
                       timeCon2.text = todToStr(t2);
                     });
                   }
@@ -190,14 +214,22 @@ class _FeedingTimeState extends State<FeedingTime> {
               if (foodController.text.isEmpty){
                 return "food cannot be empty";
               }
-              if (timeCon1.text.isEmpty && timeCon2.text.isEmpty){
+              if (timeCon1.text.isEmpty || timeCon2.text.isEmpty){
                 return "add a feeding time";
               }
               setState(() {
+                cancelFeedNoti(currentID);
+                int randomID = rng.nextInt(900000) + 100000;
+                dogName = dogsList[index].getName;
+                food = foodController.text.toString();
                 List strList = [timeCon1.text, timeCon2.text];
                 String s = strList.join(",");
                 dogsList[index].setTimings = s;
-                dogsList[index].setFood = foodController.text.toString();
+                dogsList[index].setFood = food;
+                dogsList[index].setNotificationID = randomID.toString();
+                // print(t1.hour.toString() + t1.minute.toString());
+                // print(t2.hour.toString() + t2.minute.toString());
+                scheduleDailyNotification(randomID, "$dogName's Feeding Time", "Meal 1: $food",  "Meal 2: $food", notiTime(t1.hour, t1.minute), notiTime(t2.hour, t2.minute));
                 saveData();
               });
 
@@ -248,6 +280,7 @@ class _FeedingTimeState extends State<FeedingTime> {
                               _showEditForm(index);
                             }
                             if (val == 2) { //add delete confirmation dialog
+                              cancelFeedNoti(int.parse(dogsList[index].getNotificationID)); //cancel notifications
                               deleteFeed(index);
                             }
                           });
