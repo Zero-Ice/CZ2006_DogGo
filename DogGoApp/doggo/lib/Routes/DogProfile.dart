@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:doggo/Routes/AddDog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doggo/DogCreationClass.dart';
 
@@ -14,6 +16,11 @@ class DogProfile extends StatefulWidget {
   addToDogList(List<String> result) {
     dpState.addToDogList(result[0],result[1],result[2], result[3]);
   }
+  refresh() {
+    dpState.setState(() {
+
+    });
+  }
 }
 
 class _DogProfileState extends State<DogProfile> {
@@ -23,6 +30,10 @@ class _DogProfileState extends State<DogProfile> {
   String dogBirthdate;
   SharedPreferences prefs;
   String fileName = "";
+
+  final DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
+  final walkingInterval = 6;
+  final feedingInterval = 12;
 
   @override
   void initState() {
@@ -59,38 +70,68 @@ class _DogProfileState extends State<DogProfile> {
       dogsList.add(DogCreation(name, food, bday, fileName));
       saveData();
     });
+  }
 
+  int getLastWalkedInHours(int index) {
+    DateTime lastWalked = dateFormat.parse(dogsList[index].getLastWalked);
+    DateTime now = DateTime.now();
+
+    int hoursDiff = now.difference(lastWalked).inHours;
+    return hoursDiff;
+  }
+
+  int getLastFedInHours(int index) {
+    DateTime lastFed = dateFormat.parse(dogsList[index].getLastFed);
+    DateTime now = DateTime.now();
+
+    int hoursDiff = now.difference(lastFed).inHours;
+    return hoursDiff;
+  }
+
+  Color getColorBasedOnPercentage(double percentage) {
+    if(percentage < 50.0) {
+      return Colors.green;
+    } else if(percentage < 75.0) {
+      return Colors.orange;
+    } else if(percentage < 90.0) {
+      return Colors.deepOrange;
+    } else {
+      return Colors.red;
+    }
+  }
+
+  Color getWalkIconColor(int index) {
+    if(dogsList[index].getLastWalked == null) return Colors.black;
+
+    int lastWalkedHours = getLastWalkedInHours(index);
+    // Find the % from walkingInterval. Lower the better
+    double percentage = lastWalkedHours / walkingInterval * 100.0;
+    
+    return getColorBasedOnPercentage(percentage);
+  }
+
+  Color getFeedIconColor(int index) {
+    if(dogsList[index].getLastFed == null) return Colors.black;
+
+    int lastFedHours = getLastFedInHours(index);
+    // Find the % from walkingInterval. Lower the better
+    double percentage = lastFedHours / feedingInterval * 100.0;
+
+    return getColorBasedOnPercentage(percentage);
+  }
+
+  void editDogList(index,name,food,bday, fileName){
+    setState(() {
+      dogsList[index].setName=name;
+      dogsList[index].setFavFood=food;
+      dogsList[index].setBirthDate=bday;
+      dogsList[index].setFileName=fileName;
+      saveData();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-
-    // Widget addbutton=  FloatingActionButton(
-    //   onPressed: ()  {
-    //     setState((){
-    //       GoToAddDog(context);
-    //     });
-    //   },
-    //   child:
-    //   Icon(
-    //     Icons.add,
-    //     size: 30,
-    //   ),
-    //   shape: RoundedRectangleBorder(
-    //     borderRadius: BorderRadius.circular(50.0),
-    //   ),
-    // );
-
-    void editDogList(index,name,food,bday, fileName){
-      setState(() {
-        dogsList[index].setName=name;
-        dogsList[index].setFavFood=food;
-        dogsList[index].setBirthDate=bday;
-        dogsList[index].setFileName=fileName;
-        saveData();
-      });
-    }
-
     void editForm(index) async{
       List<String> edited =await Navigator.push(context,MaterialPageRoute(builder: (context) => AddDog(
         eName: '${dogsList[index].getName}',
@@ -104,6 +145,116 @@ class _DogProfileState extends State<DogProfile> {
       editDogList(index,edited[0],edited[1],edited[2], edited[3]);
     }
 
+    Future _showWalkDogForm(BuildContext context, int index) async{
+      return showDialog(context: context, builder: (context){
+        return  AlertDialog(
+          title:  Center(child: Text("Walked the Dog?\nLast walked " + getLastWalkedInHours(index).toString() + " hours ago", textAlign: TextAlign.center,)),
+          content:
+          Container(
+            height: 100,
+            width: 100,
+            child: Column(
+              children: [
+                MaterialButton(
+                  elevation: 5.0,
+                  child: Text("Yes"),
+                  onPressed: (){
+                    print("walked");
+                    setState(() {
+                      dogsList[index].setLastWalked = DateTime.now();
+                      saveData();
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+                MaterialButton(
+                  elevation: 5.0,
+                  child: Text("Not yet"),
+                  onPressed: (){
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            ),
+          ),
+        );
+      });
+    }
+
+    Future _showFeedDogForm(BuildContext context, int index) async{
+      return showDialog(context: context, builder: (context){
+        return  AlertDialog(
+          title: Center(child: Text("Fed the Dog?\nLast fed " + getLastFedInHours(index).toString() + " hours ago", textAlign: TextAlign.center,)),
+          content:
+          Container(
+            height: 100,
+            width: 100,
+            child: Column(
+              children: [
+                MaterialButton(
+                  elevation: 5.0,
+                  child: Text("Yes"),
+                  onPressed: (){
+                    print("fed");
+                    setState(() {
+                      dogsList[index].setLastFed = DateTime.now();
+                      saveData();
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+                MaterialButton(
+                  elevation: 5.0,
+                  child: Text("Not yet"),
+                  onPressed: (){
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            ),
+          ),
+        );
+      });
+    }
+
+    Widget getDogFeedAndWalkUI(int index) {
+      return Row(
+        children: [
+          InkWell(child: Container(
+            child: Row(
+              children: [
+                Icon(FontAwesomeIcons.dog,
+                    size: 22,
+                    color: getWalkIconColor(index)),
+                const SizedBox(width: 5),
+                Text("| Walk"),
+              ],
+            ),
+          ),
+            onTap: (){
+              _showWalkDogForm(context, index);
+            },
+          ),
+          SizedBox(width: 15,),
+          InkWell(
+            child: Container(
+              child: Row(
+                children: [
+                  Icon(FontAwesomeIcons.bone,
+                    size: 19,
+                    color: getFeedIconColor(index)),
+                  const SizedBox(width: 10),
+                  Text("| Feed"),
+                ],
+              ),
+            ),
+            onTap: (){
+              _showFeedDogForm(context, index);
+            },
+          )
+        ],
+      );
+    }
 
     return Expanded(
         child: Container(
@@ -112,90 +263,78 @@ class _DogProfileState extends State<DogProfile> {
             itemCount: dogsList.length,
             itemBuilder: (BuildContext context, int index){
             return Container(
-              child: Row(children: [
-                const SizedBox(width: 15),
-                CircleAvatar(
-                  backgroundColor: Colors.grey[300],
-                  // backgroundImage: AssetImage(dogsList[index].getFileName),
-                  backgroundImage: FileImage(File(dogsList[index].getFileName)),
-                  radius: 35,
-                ),
-                const SizedBox(width: 30),
-                Expanded(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Dog: ${dogsList[index].getName}'),
-                          SizedBox(height: 5,),
-                          Text('Fav Food: ${dogsList[index].geFavFood}'),
-                          SizedBox(height: 5,),
-                          Text('Birthday: ${dogsList[index].getBirthDate}'),
-                          SizedBox(height: 5,),
-                        ])),
-                PopupMenuButton<int>(
-                  onSelected: (val) { //1: edit, 2: delete
-                    setState(() {
-                      if (val == 1){
-                        loadData();
-                        editForm(index);
-                      }
-                      if (val == 2){ //add delete confirmation dialog
-                        loadData();
-                        dogsList.removeAt(index);
-                        saveData();
-                      }
-                    });
-                  },
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 1,
-                      child: Row(
-                        children: <Widget>[
-                          Icon(Icons.edit),
-                          Text('Edit'),
-                        ],
-                      ),
+              child: Column(
+                children: [
+                  Row(children: [
+                    const SizedBox(width: 15),
+                    CircleAvatar(
+                    backgroundColor: Colors.grey[300],
+                    // backgroundImage: AssetImage(dogsList[index].getFileName),
+                    backgroundImage: FileImage(File(dogsList[index].getFileName)),
+                    radius: 35,
                     ),
-                    PopupMenuItem(
-                      value: 2,
-                      child: Row(
-                        children: <Widget>[
-                          Icon(Icons.delete),
-                          Text('Delete'),
-                        ],
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Dog: ${dogsList[index].getName}'),
+                            SizedBox(height: 5,),
+                            Text('Fav Food: ${dogsList[index].geFavFood}'),
+                            SizedBox(height: 5,),
+                            Text('Birthday: ${dogsList[index].getBirthDate}'),
+                            SizedBox(height: 8,),
+                            getDogFeedAndWalkUI(index),
+                          ])),
+                    PopupMenuButton<int>(
+                      onSelected: (val) { //1: edit, 2: delete
+                        setState(() {
+                          if (val == 1){
+                            loadData();
+                            editForm(index);
+                          }
+                          if (val == 2){ //add delete confirmation dialog
+                            loadData();
+                            dogsList.removeAt(index);
+                            saveData();
+                          }
+                        });
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 1,
+                          child: Row(
+                            children: <Widget>[
+                              Icon(Icons.edit),
+                              Text('Edit'),
+                            ],
+                          ),
+                        ),
+                      PopupMenuItem(
+                        value: 2,
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.delete),
+                            Text('Delete'),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  )
+
+                ]),
+                  Row(
+                    children: [
+
+                    ],
+                  )
+                  ]
                 )
-              ])
-          );
+              );
             },separatorBuilder: (BuildContext context, int index) => const Divider( height: 20,),
         )
         )
     );
-
-
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: Text("DogProfile"),
-    //
-    //   ),
-    //   body: Center(
-    //     child: Column(
-    //         children: [
-    //           dogListBuilder,
-    //         ]
-    //     ),
-    //   ),
-    //
-    //
-    //   floatingActionButton: Container(
-    //     height: 65.0,
-    //     width: 65.0,
-    //     child: FittedBox(
-    //         child:addbutton),
-    //   ),
-    // );
   }
 
 }

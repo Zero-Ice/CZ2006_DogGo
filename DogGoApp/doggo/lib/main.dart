@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:doggo/BackgroundNotif.dart';
 import 'package:doggo/ForecastComponent.dart';
-import 'package:doggo/HotlineListComponent.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -18,39 +16,22 @@ import 'WeatherComponent.dart';
 import 'checkConditions.dart';
 import 'weather.dart';
 import 'package:weather_icons/weather_icons.dart';
-import 'DogProfileComponent.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'forecast.dart';
-import 'package:doggo/DogListComponent.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter/services.dart';
-// import 'BackgroundNotif.dart';
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// import 'package:workmanager/workmanager.dart';
+import 'package:doggo/Notification.dart' as notification;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
 
 void main() {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   Workmanager.initialize(
-//       callbackDispatcher,
-//       isInDebugMode: true
-//   );
-//   // Periodic task registration
-//   Workmanager.registerPeriodicTask(
-//     "2",
-//
-//     // returned in callbackDispatcher
-//     "simplePeriodicTask",
-//
-//     // Minimum frequency is 15 min
-//     frequency: Duration(minutes: 15),
-//   );
   runApp(new MaterialApp(
     title: 'My First DogGo',
     initialRoute: '/',
     routes: {
       '/': (context) => Home(),
-      '/NotificationSettings': (context) => NotificationSettings(),
       '/FeedingTime': (context) => FeedingTime(),
       '/VetVisit': (context) => VetVisit(),
       '/HotlineLinks': (context) => HotlineLinks(),
@@ -60,48 +41,6 @@ void main() {
     ),
   ));
 }
-
-// Notification config
-// void callbackDispatcher() {
-//   Workmanager.executeTask((task, inputData) {
-//
-//     // initialise the plugin of flutterlocalnotifications.
-//     FlutterLocalNotificationsPlugin flip = new FlutterLocalNotificationsPlugin();
-//
-//     // app_icon needs to be a added as a drawable
-//     // resource to the Android head project.
-//     var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
-//     var IOS = new IOSInitializationSettings();
-//
-//     // initialise settings for both Android and iOS device.
-//     var settings = new InitializationSettings(android, IOS);
-//     flip.initialize(settings);
-//     _showNotificationWithDefaultSound(flip);
-//     return Future.value(true);
-//   });
-// }
-//
-// Future _showNotificationWithDefaultSound(flip) async {
-//
-//   // Show a notification after every 15 minute with the first
-//   // appearance happening a minute after invoking the method
-//   var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-//       ' ',
-//       importance: Importance.Max,
-//       priority: Priority.High
-//   );
-//   var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-//
-//   // initialise channel platform for both Android and iOS device.
-//   var platformChannelSpecifics = new NotificationDetails(
-//       androidPlatformChannelSpecifics,
-//       iOSPlatformChannelSpecifics
-//   );
-//   await flip.show(0, 'Dog waiting for you',
-//       'You must walk your dog now',
-//       platformChannelSpecifics, payload: 'Default_Sound'
-//   );
-// }
 
 // Returns a list of string from +=2 from current hour and current hour, starting from -2 to +2
 List<String> UpdateHourArray() {
@@ -148,6 +87,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    notification.init();
     hoursArray = UpdateHourArray();
   }
 
@@ -195,18 +135,9 @@ class _HomeState extends State<Home> {
         ),
     );
 
-    // Widget useful links
-    Widget usefulLinkSection = Container(
-        height: 80,
-        child: Column(
-          children: [
-            Align(alignment: Alignment.topCenter, child: Text('Useful links')),
-            Expanded(child: fetchHotlineList().run(),)
-          ],
-        ));
-
     void _onRefresh() async{
       UpdateHourArray();
+      dogProfile.refresh();
       setState(() {
 
       });
@@ -231,22 +162,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text('My First DogGo'),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.refresh,
-              color: Colors.white,
-            ),
-            iconSize: 35,
-            onPressed: () {
-              UpdateHourArray();
-              setState(() {
-                fetchDogList().getSPlist();
-                fetchHotlineList().getSPlist();
-              });
-            },
-          ),
-        ],
+        // backgroundColor: Colors.white,
       ),
       drawer: Drawer(
         // Add a ListView to the drawer. This ensures the user can scroll
@@ -271,14 +187,6 @@ class _HomeState extends State<Home> {
                     ),
                   ],
                 )),
-            ListTile(
-              title: Text('Notification Settings'),
-              onTap: () {
-                // Update the state of the app.
-                Navigator.pushNamed(context, '/NotificationSettings');
-                // ...
-              },
-            ),
             // ListTile(
             //   title: Text('Dog Profile'),
             //   onTap: () {
@@ -346,8 +254,6 @@ class _HomeState extends State<Home> {
           children: [
               forecastWidget,
               weatherWidget,
-              const Divider(height: 20),
-              walkDogSection,
             const Divider(height: 20),
               dogProfile,
 
