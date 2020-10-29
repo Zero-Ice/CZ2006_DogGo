@@ -16,19 +16,30 @@ void init() {
 }
 
 Future<void> scheduleNotification(
-    String title, String body, tz.TZDateTime timeToShowNotif) async {
+    int id, String dogName, tz.TZDateTime timeToShowNotif) async {
   var androidDets = new AndroidNotificationDetails(
       "DoggoApp", "My First DogGo", "channelDescription",
       importance: Importance.max);
   var genDet = new NotificationDetails(android: androidDets);
-  var timeToShow = DateTime.now().add(Duration(seconds: 5));
-  var time = tz.TZDateTime.now(tz.local).add(Duration(seconds: 5));
-
-  await notif.zonedSchedule(0, title, body, time, genDet,
+  // var timeToShow = DateTime.now().add(Duration(seconds: 5));
+  // var time = tz.TZDateTime.now(tz.local).add(Duration(seconds: 5));
+  tz.TZDateTime twoHoursBefore = timeToShowNotif.subtract(const Duration(hours: 2));
+  String title = "Vet Appointment";
+  String formatTwoHours = formatTime(twoHoursBefore);
+  String formatActual = formatTime(timeToShowNotif);
+  String msg1 = "$dogName's vet visit today at $formatTwoHours";
+  String msg2 = "$dogName's vet visit now at $formatActual";
+  await notif.zonedSchedule(id+1, title, msg1, twoHoursBefore.toLocal(), genDet,
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
-      payload: time.toString());
+      payload: twoHoursBefore.toString());
+
+  await notif.zonedSchedule(id+2, title, msg2, timeToShowNotif.toLocal(), genDet,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+      UILocalNotificationDateInterpretation.absoluteTime,
+      payload: timeToShowNotif.toString());
 
   // final List<PendingNotificationRequest> pendingNotificationRequests =
   // await notif.pendingNotificationRequests();
@@ -59,7 +70,16 @@ Future<void> scheduleDailyNotification(
       matchDateTimeComponents: DateTimeComponents.time,
       payload: t2.toString());
 }
-Future<void> cancelFeedNoti(int id) async {
+Future<void> cancelNoti(int id) async {
   await notif.cancel(id+1);
   await notif.cancel(id+2);
+}
+
+String formatTime(tz.TZDateTime dt){
+  var hour, minute;
+  hour = dt.hour;
+  minute = dt.minute;
+  if (hour < 10) hour = hour.toString().padLeft(2, '0');
+  if (minute <= 9) minute = minute.toString().padLeft(2, '0');
+  return "$hour:$minute";
 }

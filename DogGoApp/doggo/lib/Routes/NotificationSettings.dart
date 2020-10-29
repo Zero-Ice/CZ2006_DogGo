@@ -86,7 +86,7 @@ class _NotificationSettingsState extends State<NotificationSettings> {
             ),
             RaisedButton(
               onPressed: () {
-                notification.scheduleNotification("title", "body", tz.TZDateTime.now(tz.local));
+                notification.scheduleNotification(0,"title",tz.TZDateTime.now(tz.local));
               },
               // onPressed: () {
               //

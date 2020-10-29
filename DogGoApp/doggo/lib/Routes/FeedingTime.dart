@@ -218,7 +218,7 @@ class _FeedingTimeState extends State<FeedingTime> {
                 return "add a feeding time";
               }
               setState(() {
-                cancelFeedNoti(currentID);
+                cancelNoti(currentID);
                 int randomID = rng.nextInt(900000) + 100000;
                 dogName = dogsList[index].getName;
                 food = foodController.text.toString();
@@ -280,7 +280,7 @@ class _FeedingTimeState extends State<FeedingTime> {
                               _showEditForm(index);
                             }
                             if (val == 2) { //add delete confirmation dialog
-                              cancelFeedNoti(int.parse(dogsList[index].getNotificationID)); //cancel notifications
+                              cancelNoti(int.parse(dogsList[index].getNotificationID)); //cancel notifications
                               deleteFeed(index);
                             }
                           });

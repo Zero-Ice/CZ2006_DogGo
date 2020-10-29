@@ -1,11 +1,13 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:doggo/Notification.dart';
 import 'package:doggo/Routes/vetRoutes/addVet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doggo/DogCreationClass.dart';
-
-
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -37,6 +39,9 @@ class _VetVisitState extends State<VetVisit> {
   List<DogCreation> dogsList = List<DogCreation>();
   List<Appointment> apptList = [];
   SharedPreferences prefs;
+  int currentID;
+  var rng = new Random();
+  bool expired = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -112,24 +117,49 @@ class _VetVisitState extends State<VetVisit> {
     }
 
   }
-
-  TimeOfDay _time = TimeOfDay.now();
-  Future<Null> selectTime(BuildContext context) async {
-    TimeOfDay selectedTime = await showTimePicker(
-      context: context,
-      initialTime: _time,
-    );
+  tz.TZDateTime notiDT(int year, int month, int day, int hour, int minute){
+    tz.TZDateTime scheduledDate =
+    tz.TZDateTime(tz.local, year, month, day, hour, minute);
+    return scheduledDate;
   }
+  bool checkFuture(int year, int month, int day, int hour, int minute){
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    DateTime temp = DateTime(year, month, day, hour, minute);
+    if (temp.isAfter(now)){
+      return true;
+    }
+    return false;
+  }
+
+  // TimeOfDay _time = TimeOfDay.now();
+  // Future<Null> selectTime(BuildContext context) async {
+  //   TimeOfDay selectedTime = await showTimePicker(
+  //     context: context,
+  //     initialTime: _time,
+  //   );
+  // }
   Future<Appointment>_showEditForm(int index){
     TextEditingController timeCon1 = TextEditingController();
     TextEditingController timeCon2 = TextEditingController();
     DateTime dt1;
     TimeOfDay dt2;
+    dogName = apptList[index].getDogName;
+    try{
+      currentID = apptList[index].getNotificationID;
+    }
+    on FormatException catch (e){
+      print(e);
+    }
     try{
       dt1 = apptList[index].getAppt[0];// add condition for empty value
       dt2 = apptList[index].getAppt[1];
       timeCon1.text = printDate(dt1);
       timeCon2.text = printTime(dt2);
+      final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+      DateTime temp = DateTime(dt1.year, dt1.month, dt1.day, dt2.hour, dt2.minute);
+      if (temp.isAfter(now)) {
+        expired = true;
+      }
     }
     on RangeError catch (e) {
       print(e);
@@ -145,8 +175,8 @@ class _VetVisitState extends State<VetVisit> {
     TimeOfDay t1, t2;
     DateTime d1;
 
-    final now = new DateTime.now();
-    bool timeChange1 = false; bool timeChange2 = false;
+    // final now = new DateTime.now();
+    // bool timeChange1 = false; bool timeChange2 = false;
     return showDialog(context: context, builder: (context){
       return AlertDialog(
 
@@ -217,9 +247,17 @@ class _VetVisitState extends State<VetVisit> {
             elevation: 5.0,
             child: Text("Save"),
             onPressed: (){
+              if (checkFuture(dt1.year, dt1.month, dt1.day, dt2.hour, dt2.minute) == false){
+                return "appointment date must be in the future";
+              }
               setState(() {
+                cancelNoti(currentID);
+                int randomID = rng.nextInt(900000) + 100000;
                 List dtList= [dt1,dt2];
                 apptList[index].setAllAppt = dtList;
+                apptList[index].setNotificationID = randomID;
+                scheduleNotification(randomID, "$dogName"
+                    ,notiDT(dt1.year, dt1.month, dt1.day, dt2.hour, dt2.minute));
                 saveData();
                 loadData();
               });
@@ -261,21 +299,17 @@ class _VetVisitState extends State<VetVisit> {
    // print(result[2]);
 
     setState(() {
+      int randomID = rng.nextInt(900000) + 100000;
       String dogName1 = result[0].toString();
-      DateTime newDate = DateTime.parse( result[1]);
+      DateTime newDate = DateTime.parse(result[1]);
       TimeOfDay newTime = TimeOfDay(hour:int.parse(result[2].split(":")[0]),minute: int.parse(result[2].split(":")[1]));
       List newDateTime = [newDate, newTime];
-      Appointment newAppt = new Appointment(dogName1,newDateTime);
+      scheduleNotification(randomID, "$dogName1"
+          , notiDT(newDate.year, newDate.month, newDate.day, newTime.hour, newTime.minute));
+      Appointment newAppt = new Appointment(dogName1,newDateTime, randomID);
       apptList.add(newAppt);
-      print(newAppt.getDogName);
-      print(newAppt.getAppt[0]);
-      print(newAppt.getAppt[1]);
-      print("----------");
       saveData();
       loadData();
-      //print(apptList[4].getDogName);
-      //print(apptList[4].getAppt[0]);
-      //print(apptList[4].getAppt[1]);
     });
   }
 
@@ -336,7 +370,12 @@ class _VetVisitState extends State<VetVisit> {
                                           Text(
                                               'Appointment Date: '),
                                           SizedBox(height: 5,),
-                                          Text('${apptList[index].printDateTime}'),
+                                          Text('${apptList[index].printDateTime}',
+                                              style: TextStyle(
+                                                  decoration: checkFuture(apptList[index].getAppt[0].year, apptList[index].getAppt[0].month,
+                                                      apptList[index].getAppt[0].day, apptList[index].getAppt[1].hour, apptList[index].getAppt[0].minute) ?
+                                                  TextDecoration.none : TextDecoration.lineThrough
+                                              ),),
 
                                         ])),
                                 const SizedBox(width: 15),
@@ -349,6 +388,7 @@ class _VetVisitState extends State<VetVisit> {
                                         _showEditForm(index);
                                       }
                                       if (val == 2){ //add delete confirmation dialog
+                                        cancelNoti(apptList[index].getNotificationID);
                                         apptList.removeAt(index);
                                         saveData();
                                         loadData();
@@ -449,13 +489,15 @@ class Appointment{
   String strDate="";
   String strTime="";
   List allAppt;
+  int notificationID;
 
 
-  Appointment(String dogName,  List allAppt){
+  Appointment(String dogName,  List allAppt, int notificationID){
     this.dogName = dogName;
     this.strDate = strDate;
     this.strTime = strTime;
     this.allAppt = allAppt;
+    this.notificationID = notificationID;
   }
 
   String get getDogName{
@@ -473,6 +515,10 @@ class Appointment{
   List get getAppt{
     return allAppt;
   }
+
+  int get getNotificationID{
+    return notificationID;
+  }
   set setStrDate(String date){
     this.strDate = date;
   }
@@ -484,7 +530,9 @@ class Appointment{
   set setAllAppt (List allAppt){
     this.allAppt = allAppt;
   }
-
+  set setNotificationID(int notificationID){
+    this.notificationID = notificationID;
+  }
   set deleteAppt(int index){
     allAppt.removeAt(index);
     this.allAppt = allAppt;
@@ -499,15 +547,6 @@ class Appointment{
     var year;
     var month;
     var day;
-    /*for (var i = 0; i < allAppt.length; i++) {
-      hour = int.parse("${allAppt[i].hour}");
-      minute = int.parse("${allAppt[i].minute}");
-      if (hour < 10) hour = hour.toString().padLeft(2, '0');
-      if (minute <= 9) minute = minute.toString().padLeft(2, '0');
-
-      result = "$hour:$minute";
-      temp.add(result);
-    }*/
     try{
       year = int.parse("${allAppt[0].year}");
       month = int.parse("${allAppt[0].month}");
@@ -535,12 +574,14 @@ class Appointment{
   Appointment.fromMap(Map<String, dynamic> map){
     this.dogName = map['dogName'];
     this.allAppt = map['allAppt'];
+    this.notificationID = map['notificationID'];
   }
 
   Map<String, dynamic>toMap() {
     return {
       'dogName': this.dogName,
       'allAppt': this.allAppt,
+      'notificationID': this.notificationID,
     };
   }
 
