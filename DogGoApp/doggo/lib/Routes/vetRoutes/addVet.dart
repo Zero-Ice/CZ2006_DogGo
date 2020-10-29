@@ -5,7 +5,8 @@ import 'package:flutter/widgets.dart';
 import 'package:doggo/DogCreationClass.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 
 class AddVet extends StatefulWidget {
@@ -167,8 +168,13 @@ class AddVet extends StatefulWidget {
 
                           child: Text('Save'),
                           onPressed: () {
+                            final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+                            DateTime temp = DateTime(_dateTime.year, _dateTime.month, _dateTime.day, _time.hour, _time.minute);
                             if(_dateTime == null || _time == null){
                               return "Date and time cannot be null";
+                            }
+                            if (temp.isBefore(now)) {
+                              return "Date and time must be in the future";
                             }
                               // Navigate back to first screen when tapped.
                               setState(() {

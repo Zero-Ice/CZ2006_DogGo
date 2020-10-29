@@ -296,7 +296,7 @@ class _DogProfileState extends State<DogProfile> {
                           }
                           if (val == 2){ //add delete confirmation dialog
                             loadData();
-                            cancelFeedNoti(int.parse(dogsList[index].getNotificationID));
+                            cancelNoti(int.parse(dogsList[index].getNotificationID));
                             dogsList.removeAt(index);
                             saveData();
                           }
