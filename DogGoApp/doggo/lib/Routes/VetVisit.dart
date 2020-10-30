@@ -1,8 +1,8 @@
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:doggo/Notification.dart';
 import 'package:doggo/Routes/vetRoutes/addVet.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doggo/DogCreationClass.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -315,7 +315,6 @@ class _VetVisitState extends State<VetVisit> {
 
   @override
   Widget build(BuildContext context) {
-
     Widget addbutton=  FloatingActionButton(
       onPressed: ()  {
         setState((){
@@ -373,7 +372,7 @@ class _VetVisitState extends State<VetVisit> {
                                           Text('${apptList[index].printDateTime}',
                                               style: TextStyle(
                                                   decoration: checkFuture(apptList[index].getAppt[0].year, apptList[index].getAppt[0].month,
-                                                      apptList[index].getAppt[0].day, apptList[index].getAppt[1].hour, apptList[index].getAppt[0].minute) ?
+                                                      apptList[index].getAppt[0].day, apptList[index].getAppt[1].hour, apptList[index].getAppt[1].minute) ?
                                                   TextDecoration.none : TextDecoration.lineThrough
                                               ),),
 
