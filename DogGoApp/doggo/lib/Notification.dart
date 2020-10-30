@@ -17,6 +17,7 @@ void init() {
 
 Future<void> scheduleNotification(
     int id, String dogName, tz.TZDateTime timeToShowNotif) async {
+  final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
   var androidDets = new AndroidNotificationDetails(
       "DoggoApp", "My First DogGo", "channelDescription",
       importance: Importance.max);
@@ -25,28 +26,33 @@ Future<void> scheduleNotification(
   // var time = tz.TZDateTime.now(tz.local).add(Duration(seconds: 5));
   tz.TZDateTime twoHoursBefore = timeToShowNotif.subtract(const Duration(hours: 2));
   String title = "Vet Appointment";
-  String formatTwoHours = formatTime(twoHoursBefore);
-  String formatActual = formatTime(timeToShowNotif);
-  String msg1 = "$dogName's vet visit today at $formatTwoHours";
-  String msg2 = "$dogName's vet visit now at $formatActual";
-  await notif.zonedSchedule(id+1, title, msg1, twoHoursBefore.toLocal(), genDet,
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      payload: twoHoursBefore.toString());
+  String time = formatTime(timeToShowNotif);
+  String msg1 = "$dogName's vet visit today at $time";
+  String msg2 = "$dogName's vet visit now at $time";
+  try{
+    await notif.zonedSchedule(id+1, title, msg1, twoHoursBefore.toLocal(), genDet,
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+        payload: twoHoursBefore.toString());
+  }
+  catch (e){
+    print(e);
+  }
 
   await notif.zonedSchedule(id+2, title, msg2, timeToShowNotif.toLocal(), genDet,
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
       UILocalNotificationDateInterpretation.absoluteTime,
       payload: timeToShowNotif.toString());
-
+  //pendingNotificationRequests();
   // final List<PendingNotificationRequest> pendingNotificationRequests =
   // await notif.pendingNotificationRequests();
   // print("PENDING NOTIF SIZE: " + pendingNotificationRequests.length.toString());
   // if(pendingNotificationRequests != null && pendingNotificationRequests.length > 0) {
   //   print(pendingNotificationRequests[0].payload);
   // }
+
 }
 
 Future<void> scheduleDailyNotification(
@@ -70,6 +76,14 @@ Future<void> scheduleDailyNotification(
       matchDateTimeComponents: DateTimeComponents.time,
       payload: t2.toString());
 }
+Future<void> pendingNotificationRequests() async{
+  List<PendingNotificationRequest> requestList = await notif.pendingNotificationRequests();
+  for (int i = 0; i< requestList.length; i++){
+    print("upcoming noti:");
+    print(requestList[i].payload);
+  }
+}
+
 Future<void> cancelNoti(int id) async {
   await notif.cancel(id+1);
   await notif.cancel(id+2);
@@ -83,3 +97,5 @@ String formatTime(tz.TZDateTime dt){
   if (minute <= 9) minute = minute.toString().padLeft(2, '0');
   return "$hour:$minute";
 }
+
+
