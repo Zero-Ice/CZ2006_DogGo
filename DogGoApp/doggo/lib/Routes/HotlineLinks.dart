@@ -325,7 +325,7 @@ class _HotlineLinksState extends State<HotlineLinks> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("HotlineLinks"),
+        title: Text("Hotlines"),
       ),
       body: Center(
         child: Column(
